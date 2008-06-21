@@ -56,8 +56,11 @@ class PlasmoBiff : public Plasma::Applet
     QRectF boundingRect() const;
 
   public slots:
-    void configureDialog();
+    //void configureDialog();
     void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);
+
+  protected:
+    void createConfigurationInterface(KConfigDialog *parent);
 
   private:
     void drawEmail(int index, const QRectF& rect, QPainter* painter) ;

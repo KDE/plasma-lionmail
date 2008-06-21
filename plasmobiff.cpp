@@ -32,6 +32,8 @@
 #include <QGraphicsItem>
 #include <QColor>
 
+#include <KConfigDialog>
+
 #include <plasma/svg.h>
 
 PlasmoBiff::PlasmoBiff(QObject *parent, const QVariantList &args)
@@ -90,20 +92,15 @@ void PlasmoBiff::constraintsUpdated()
   }
 
 }
-
-void PlasmoBiff::configureDialog()
+void PlasmoBiff::createConfigurationInterface(KConfigDialog *parent)
 {
-  if (m_dialog == 0) {
-    m_dialog = new KDialog;
-    m_dialog->setCaption( "Configure PlasmoBiff" );
+    QWidget *widget = new QWidget();
+    ui.setupUi(widget);
 
-    ui.setupUi(m_dialog->mainWidget());
-    m_dialog->setButtons( KDialog::Ok | KDialog::Cancel | KDialog::Apply );
+    ui.setupUi(widget);
+    parent->setButtons( KDialog::Ok | KDialog::Cancel | KDialog::Apply );
     connect( m_dialog, SIGNAL(applyClicked()), this, SLOT(configAccepted()) );
     connect( m_dialog, SIGNAL(okClicked()), this, SLOT(configAccepted()) );
-
-  }
-  m_dialog->show();
 }
 
 void PlasmoBiff::paintInterface(QPainter * painter, const QStyleOptionGraphicsItem * option, const QRect &contentsRect)
