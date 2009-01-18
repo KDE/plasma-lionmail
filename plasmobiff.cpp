@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2007 by Thomas Moenicke                                 *
- *   thomas.moenicke@kdemail.net                                           *
+ *   Copyright 2007 by Thomas Moenicke <thomas.moenicke@kdemail.net>       *
+ *   Copyright 2009 by Sebastian Kügler <sebas@kde.org>                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -35,44 +35,32 @@
 #include <KConfigDialog>
 
 #include <plasma/svg.h>
+#include <plasma/theme.h>
 
 PlasmoBiff::PlasmoBiff(QObject *parent, const QVariantList &args)
-  : Plasma::Applet(parent, args),
-    m_dialog(0),
-    m_fmFrom(QApplication::font()),
-    m_fmSubject(QApplication::font())
+  : Plasma::Applet(parent, args)
 {
-    setFlags(QGraphicsItem::ItemIsMovable);
-
-    KConfigGroup cg = config();
-    m_xPixelSize = cg.readEntry("xsize", 413);
-    m_yPixelSize = cg.readEntry("ysize", 307);
-
     m_theme = new Plasma::Svg(this);
     m_theme->setImagePath("widgets/akonadi");
     m_theme->setContainsMultipleImages(false);
-    m_theme->resize(m_xPixelSize,m_yPixelSize);
 
-    // DataEngine
+    m_subjectList[0] = QString("Hello CampKDE, hallo Jamaica!"); // ;-)
+
+    m_fontFrom = Plasma::Theme::defaultTheme()->font(Plasma::Theme::DefaultFont);
+    m_fontSubject = Plasma::Theme::defaultTheme()->font(Plasma::Theme::DefaultFont);
+}
+
+void PlasmoBiff::init()
+{
     engine = dataEngine("akonadi");
     engine->connectAllSources(this);
     connect(engine, SIGNAL(newSource(QString)), SLOT(newSource(QString)));
 
-    QFontMetrics fmFrom(QApplication::font());
-    QFontMetrics fmSubject(QApplication::font());
-
-    m_fontFrom.setPointSize(9);
-    m_fontFrom.setFamily("Sans Serif");
-
-    m_fontSubject.setBold(true);
-    m_fontSubject.setPointSize(9);
-    m_fontSubject.setFamily("Sans Serif");
-
-    m_subjectList[0] = QString("hello aKademy");
-
+    resize(413, 307);
+    m_theme->resize(413, 307);
 }
 
-PlasmoBiff::~ PlasmoBiff()
+PlasmoBiff::~PlasmoBiff()
 {
 }
 
@@ -81,10 +69,8 @@ void PlasmoBiff::createConfigurationInterface(KConfigDialog *parent)
     QWidget *widget = new QWidget();
     ui.setupUi(widget);
 
-    ui.setupUi(widget);
-    parent->setButtons( KDialog::Ok | KDialog::Cancel | KDialog::Apply );
-    connect( m_dialog, SIGNAL(applyClicked()), this, SLOT(configAccepted()) );
-    connect( m_dialog, SIGNAL(okClicked()), this, SLOT(configAccepted()) );
+    connect(parent, SIGNAL(applyClicked()), this, SLOT(configAccepted()));
+    connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
 }
 
 void PlasmoBiff::paintInterface(QPainter * painter, const QStyleOptionGraphicsItem * option, const QRect &contentsRect)
@@ -129,9 +115,13 @@ void PlasmoBiff::drawEmail(int index, const QRectF& rect, QPainter* painter)
         from.append("...");
     }
     //  qDebug() << m_fontFrom.family() << m_fontFrom.pixelSize() << m_fontFrom.pointSize();
+
+    QFontMetrics fmFrom(m_fontFrom);
+    QFontMetrics fmSubject(m_fontFrom);
+
     painter->setFont(m_fontFrom);
-    painter->drawText((int)(rect.width()/2 - m_fmFrom.width(from) / 2),
-                (int)((rect.height()/2) - m_fmFrom.xHeight()*3),
+    painter->drawText((int)(rect.width()/2 - fmFrom.width(from) / 2),
+                (int)((rect.height()/2) - fmFrom.xHeight()*3),
                 from);
 
     QString subject = m_subjectList[index];
@@ -143,8 +133,8 @@ void PlasmoBiff::drawEmail(int index, const QRectF& rect, QPainter* painter)
     }
 
     painter->setFont(m_fontSubject);
-    painter->drawText((int)(rect.width()/2 - m_fmSubject.width(subject) / 2),
-                (int)((rect.height()/2) - m_fmSubject.xHeight()*3 + 15),
+    painter->drawText((int)(rect.width()/2 - fmSubject.width(subject) / 2),
+                (int)((rect.height()/2) - fmSubject.xHeight()*3 + 15),
                 subject);
 
     // restore
@@ -155,6 +145,7 @@ void PlasmoBiff::drawEmail(int index, const QRectF& rect, QPainter* painter)
 
 void PlasmoBiff::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
+    Q_UNUSED( source );
     m_fromList[3] = m_fromList[2];
     m_subjectList[3] = m_subjectList[2];
 

@@ -51,6 +51,7 @@ class PlasmoBiff : public Plasma::Applet
         PlasmoBiff(QObject* parent, const QVariantList &args);
         ~PlasmoBiff();
 
+        void init();
         void paintInterface(QPainter *painter, const QStyleOptionGraphicsItem *option, const QRect &contentsRect );
 
     public slots:
@@ -69,14 +70,7 @@ class PlasmoBiff : public Plasma::Applet
         Plasma::Svg* m_theme;
         Plasma::DataEngine *engine;
 
-        int m_xPixelSize;
-        int m_yPixelSize;
-
-        KDialog *m_dialog;
         Ui::plasmobiffConfig ui;
-
-        QFontMetrics m_fmFrom;
-        QFontMetrics m_fmSubject;
 
         QFont m_fontFrom;
         QFont m_fontSubject;
