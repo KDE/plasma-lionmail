@@ -42,33 +42,33 @@ PlasmoBiff::PlasmoBiff(QObject *parent, const QVariantList &args)
     m_fmFrom(QApplication::font()),
     m_fmSubject(QApplication::font())
 {
-  setFlags(QGraphicsItem::ItemIsMovable);
+    setFlags(QGraphicsItem::ItemIsMovable);
 
-  KConfigGroup cg = config();
-  m_xPixelSize = cg.readEntry("xsize", 413);
-  m_yPixelSize = cg.readEntry("ysize", 307);
+    KConfigGroup cg = config();
+    m_xPixelSize = cg.readEntry("xsize", 413);
+    m_yPixelSize = cg.readEntry("ysize", 307);
 
-  m_theme = new Plasma::Svg(this);
-  m_theme->setImagePath("widgets/akonadi");
-  m_theme->setContainsMultipleImages(false);
-  m_theme->resize(m_xPixelSize,m_yPixelSize);
+    m_theme = new Plasma::Svg(this);
+    m_theme->setImagePath("widgets/akonadi");
+    m_theme->setContainsMultipleImages(false);
+    m_theme->resize(m_xPixelSize,m_yPixelSize);
 
-  // DataEngine
-  engine = dataEngine("akonadi");
-  engine->connectAllSources(this);
-  connect( engine, SIGNAL(newSource(QString)), SLOT(newSource(QString)) );
+    // DataEngine
+    engine = dataEngine("akonadi");
+    engine->connectAllSources(this);
+    connect(engine, SIGNAL(newSource(QString)), SLOT(newSource(QString)));
 
-  QFontMetrics fmFrom(QApplication::font());
-  QFontMetrics fmSubject(QApplication::font());
+    QFontMetrics fmFrom(QApplication::font());
+    QFontMetrics fmSubject(QApplication::font());
 
-  m_fontFrom.setPointSize(9);
-  m_fontFrom.setFamily("Sans Serif");
+    m_fontFrom.setPointSize(9);
+    m_fontFrom.setFamily("Sans Serif");
 
-  m_fontSubject.setBold(true);
-  m_fontSubject.setPointSize(9);
-  m_fontSubject.setFamily("Sans Serif");
+    m_fontSubject.setBold(true);
+    m_fontSubject.setPointSize(9);
+    m_fontSubject.setFamily("Sans Serif");
 
-  m_subjectList[0] = QString("hello aKademy");
+    m_subjectList[0] = QString("hello aKademy");
 
 }
 
@@ -89,90 +89,90 @@ void PlasmoBiff::createConfigurationInterface(KConfigDialog *parent)
 
 void PlasmoBiff::paintInterface(QPainter * painter, const QStyleOptionGraphicsItem * option, const QRect &contentsRect)
 {
-  Q_UNUSED( option )
-  Q_UNUSED( contentsRect )
+    Q_UNUSED( option )
+    Q_UNUSED( contentsRect )
 
-  painter->setRenderHint(QPainter::SmoothPixmapTransform);
-  // draw the main background stuff
-  m_theme->paint(painter, boundingRect(), "email_frame");
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    // draw the main background stuff
+    m_theme->paint(painter, boundingRect(), "email_frame");
 
-  // Use layouts?
-  QRectF bRect = boundingRect();
-  bRect.setX(bRect.x()+93);
+    // Use layouts?
+    QRectF bRect = boundingRect();
+    bRect.setX(bRect.x()+93);
 
-  // draw the 4 channels
-  bRect.setY(bRect.y()+102);
-  drawEmail(0, bRect, painter);
+    // draw the 4 channels
+    bRect.setY(bRect.y()+102);
+    drawEmail(0, bRect, painter);
 
-  bRect.setY(bRect.y()-88);
-  drawEmail(1, bRect, painter);
+    bRect.setY(bRect.y()-88);
+    drawEmail(1, bRect, painter);
 
-  bRect.setY(bRect.y()-88);
-  drawEmail(2, bRect, painter);
+    bRect.setY(bRect.y()-88);
+    drawEmail(2, bRect, painter);
 
-  bRect.setY(bRect.y()-88);
-  drawEmail(3, bRect, painter);
-
+    bRect.setY(bRect.y()-88);
+    drawEmail(3, bRect, painter);
 }
 
 void PlasmoBiff::drawEmail(int index, const QRectF& rect, QPainter* painter)
 {
 
-  QPen _pen = painter->pen();
-  QFont _font = painter->font();
+    QPen _pen = painter->pen();
+    QFont _font = painter->font();
 
-  painter->setPen(Qt::white);
+    painter->setPen(Qt::white);
 
-  QString from = m_fromList[index];
-  if(from.size() > 33) // cut if too long
-    {
-      from.resize(30);
-      from.append("...");
+    QString from = m_fromList[index];
+    // cut if too long
+    if(from.size() > 33) {
+        from.resize(30);
+        from.append("...");
     }
-  //  qDebug() << m_fontFrom.family() << m_fontFrom.pixelSize() << m_fontFrom.pointSize();
-  painter->setFont(m_fontFrom);
-  painter->drawText((int)(rect.width()/2 - m_fmFrom.width(from) / 2),
-		    (int)((rect.height()/2) - m_fmFrom.xHeight()*3),
-		    from);
+    //  qDebug() << m_fontFrom.family() << m_fontFrom.pixelSize() << m_fontFrom.pointSize();
+    painter->setFont(m_fontFrom);
+    painter->drawText((int)(rect.width()/2 - m_fmFrom.width(from) / 2),
+                (int)((rect.height()/2) - m_fmFrom.xHeight()*3),
+                from);
 
-  QString subject = m_subjectList[index];
-  if(subject.size() > 33) // cut
-    {
-      subject.resize(30);
-      subject.append("...");
+    QString subject = m_subjectList[index];
+    // cut
+    // how about KSqueezedLabel?
+    if (subject.size() > 33) {
+        subject.resize(30);
+        subject.append("...");
     }
 
-  painter->setFont(m_fontSubject);
-  painter->drawText((int)(rect.width()/2 - m_fmSubject.width(subject) / 2),
-		    (int)((rect.height()/2) - m_fmSubject.xHeight()*3 + 15),
-		    subject);
+    painter->setFont(m_fontSubject);
+    painter->drawText((int)(rect.width()/2 - m_fmSubject.width(subject) / 2),
+                (int)((rect.height()/2) - m_fmSubject.xHeight()*3 + 15),
+                subject);
 
-  // restore
-  painter->setFont(_font);
-  painter->setPen(_pen);
+    // restore
+    painter->setFont(_font);
+    painter->setPen(_pen);
 
 }
 
 void PlasmoBiff::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
-  m_fromList[3] = m_fromList[2];
-  m_subjectList[3] = m_subjectList[2];
+    m_fromList[3] = m_fromList[2];
+    m_subjectList[3] = m_subjectList[2];
 
-  m_fromList[2] = m_fromList[1];
-  m_subjectList[2] = m_subjectList[1];
+    m_fromList[2] = m_fromList[1];
+    m_subjectList[2] = m_subjectList[1];
 
-  m_fromList[1] = m_fromList[0];
-  m_subjectList[1] = m_subjectList[0];
+    m_fromList[1] = m_fromList[0];
+    m_subjectList[1] = m_subjectList[0];
 
-  m_fromList[0] = data["From"].toString();
-  m_subjectList[0] = data["Subject"].toString();
+    m_fromList[0] = data["From"].toString();
+    m_subjectList[0] = data["Subject"].toString();
 
-  update();
+    update();
 }
 
 void PlasmoBiff::newSource(const QString & source)
 {
-  engine->connectSource( source, this );
+    engine->connectSource(source, this);
 }
 
 #include "plasmobiff.moc"

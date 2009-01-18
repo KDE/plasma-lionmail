@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2007 by Thomas Moenicke                                 *
- *   thomas.moenicke@kdemail.net                                           *
+ *   Copyright 2007 by Thomas Moenicke <thomas.moenicke@kdemail.net>       *
+ *   Copyright 2009 by Sebastian Kügler <sebas@kde.org>                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -47,43 +47,42 @@ class PlasmoBiff : public Plasma::Applet
 {
   Q_OBJECT
 
- public:
-    PlasmoBiff(QObject* parent, const QVariantList &args);
-    ~PlasmoBiff();
+    public:
+        PlasmoBiff(QObject* parent, const QVariantList &args);
+        ~PlasmoBiff();
 
-    void paintInterface(QPainter *painter, const QStyleOptionGraphicsItem *option, const QRect &contentsRect );
+        void paintInterface(QPainter *painter, const QStyleOptionGraphicsItem *option, const QRect &contentsRect );
 
-  public slots:
-    //void configureDialog();
-    void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);
+    public slots:
+        void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);
 
-  protected:
-    void createConfigurationInterface(KConfigDialog *parent);
+    protected:
+        void createConfigurationInterface(KConfigDialog *parent);
 
-  private:
-    void drawEmail(int index, const QRectF& rect, QPainter* painter) ;
+    private:
+        void drawEmail(int index, const QRectF& rect, QPainter* painter) ;
 
-  private slots:
-    void newSource( const QString &source );
+    private slots:
+        void newSource( const QString &source );
 
-  private:
-    Plasma::Svg* m_theme;
-    Plasma::DataEngine *engine;
+    private:
+        Plasma::Svg* m_theme;
+        Plasma::DataEngine *engine;
 
-    int m_xPixelSize;
-    int m_yPixelSize;
+        int m_xPixelSize;
+        int m_yPixelSize;
 
-    KDialog *m_dialog;
-    Ui::plasmobiffConfig ui;
+        KDialog *m_dialog;
+        Ui::plasmobiffConfig ui;
 
-    QFontMetrics m_fmFrom;
-    QFontMetrics m_fmSubject;
+        QFontMetrics m_fmFrom;
+        QFontMetrics m_fmSubject;
 
-    QFont m_fontFrom;
-    QFont m_fontSubject;
+        QFont m_fontFrom;
+        QFont m_fontSubject;
 
-    QMap<int,QString> m_fromList;
-    QMap<int,QString> m_subjectList;
+        QMap<int,QString> m_fromList;
+        QMap<int,QString> m_subjectList;
 };
 
 K_EXPORT_PLASMA_APPLET(plasmobiff, PlasmoBiff)
