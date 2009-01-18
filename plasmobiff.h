@@ -51,9 +51,7 @@ class PlasmoBiff : public Plasma::Applet
     PlasmoBiff(QObject* parent, const QVariantList &args);
     ~PlasmoBiff();
 
-    void constraintsUpdated();
     void paintInterface(QPainter *painter, const QStyleOptionGraphicsItem *option, const QRect &contentsRect );
-    QRectF boundingRect() const;
 
   public slots:
     //void configureDialog();
@@ -71,7 +69,7 @@ class PlasmoBiff : public Plasma::Applet
   private:
     Plasma::Svg* m_theme;
     Plasma::DataEngine *engine;
-    QRectF m_bounds;
+
     int m_xPixelSize;
     int m_yPixelSize;
 

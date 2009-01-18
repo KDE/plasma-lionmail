@@ -58,8 +58,6 @@ PlasmoBiff::PlasmoBiff(QObject *parent, const QVariantList &args)
   engine->connectAllSources(this);
   connect( engine, SIGNAL(newSource(QString)), SLOT(newSource(QString)) );
 
-  constraintsUpdated();
-
   QFontMetrics fmFrom(QApplication::font());
   QFontMetrics fmSubject(QApplication::font());
 
@@ -78,20 +76,6 @@ PlasmoBiff::~ PlasmoBiff()
 {
 }
 
-void PlasmoBiff::constraintsUpdated()
-{
-  prepareGeometryChange();
-
-  if (formFactor() == Plasma::Planar ||
-      formFactor() == Plasma::MediaCenter) {
-    QSize s = m_theme->size();
-    m_bounds = QRect(0, 0, s.width(), s.height());
-  } else {
-    QFontMetrics fm(QApplication::font());
-    m_bounds = QRectF(0 ,0 ,fm.width("email@something.org"), fm.height() * 1.5);
-  }
-
-}
 void PlasmoBiff::createConfigurationInterface(KConfigDialog *parent)
 {
     QWidget *widget = new QWidget();
@@ -112,6 +96,7 @@ void PlasmoBiff::paintInterface(QPainter * painter, const QStyleOptionGraphicsIt
   // draw the main background stuff
   m_theme->paint(painter, boundingRect(), "email_frame");
 
+  // Use layouts?
   QRectF bRect = boundingRect();
   bRect.setX(bRect.x()+93);
 
@@ -128,11 +113,6 @@ void PlasmoBiff::paintInterface(QPainter * painter, const QStyleOptionGraphicsIt
   bRect.setY(bRect.y()-88);
   drawEmail(3, bRect, painter);
 
-}
-
-QRectF PlasmoBiff::boundingRect() const
-{
-  return m_bounds;
 }
 
 void PlasmoBiff::drawEmail(int index, const QRectF& rect, QPainter* painter)
