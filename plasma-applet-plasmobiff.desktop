@@ -2,6 +2,7 @@
 Name=PlasmoBiff
 Name[x-test]=xxPlasmoBiffxx
 Type=Service
+Icon=akonadi
 X-KDE-ServiceTypes=Plasma/Applet
 
 X-KDE-Library=plasma_applet_plasmobiff

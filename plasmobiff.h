@@ -54,7 +54,7 @@ class PlasmoBiff : public Plasma::PopupApplet
         void init();
         //void paintInterface(QPainter *painter, const QStyleOptionGraphicsItem *option, const QRect &contentsRect );
 
-        QWidget * widget();
+        QGraphicsWidget* _graphicsWidget();
 
     public slots:
         void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);
@@ -63,7 +63,7 @@ class PlasmoBiff : public Plasma::PopupApplet
         void createConfigurationInterface(KConfigDialog *parent);
 
     private:
-        void drawEmail(int index, const QRectF& rect, QPainter* painter) ;
+        //void drawEmail(int index, const QRectF& rect, QPainter* painter) ;
 
     private slots:
         void newSource( const QString &source );

@@ -34,8 +34,9 @@
 
 #include <KConfigDialog>
 
-#include <plasma/svg.h>
-#include <plasma/theme.h>
+#include <Plasma/Svg>
+#include <Plasma/Theme>
+#include <Plasma/Extender>
 
 #include "mailextender.h"
 
@@ -48,10 +49,12 @@ PlasmoBiff::PlasmoBiff(QObject *parent, const QVariantList &args)
     m_theme->setContainsMultipleImages(false);
 
     m_subjectList[0] = QString("Hello CampKDE, hallo Jamaica!"); // ;-)
+    setBackgroundHints(StandardBackground);
 
     m_fontFrom = Plasma::Theme::defaultTheme()->font(Plasma::Theme::DefaultFont);
     m_fontSubject = Plasma::Theme::defaultTheme()->font(Plasma::Theme::DefaultFont);
     setPopupIcon("akonadi");
+    _graphicsWidget();
 }
 
 void PlasmoBiff::init()
@@ -60,8 +63,16 @@ void PlasmoBiff::init()
     engine->connectAllSources(this);
     connect(engine, SIGNAL(newSource(QString)), SLOT(newSource(QString)));
 
-    resize(413, 307);
     m_theme->resize(413, 307);
+    resize(413, 307); // move to constraintsevent
+    extender()->setEmptyExtenderMessage(i18n("empty..."));
+
+
+    /*
+    extender();
+    m_mailView = new MailExtender(this, extender());
+    //extender()->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+    */
 }
 
 PlasmoBiff::~PlasmoBiff()
@@ -77,15 +88,13 @@ void PlasmoBiff::createConfigurationInterface(KConfigDialog *parent)
     connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
 }
 
-
-QWidget* PlasmoBiff::widget()
+QGraphicsWidget* PlasmoBiff::_graphicsWidget()
 {
     if (!m_mailView) {
         m_mailView = new MailExtender(this, extender());
     }
-    return m_mailView->widget();
+    return m_mailView->graphicsWidget();
 }
-
 /*
 // TODO: Maybe reimplement it, showing some number
 void PlasmoBiff::paintInterface(QPainter * painter, const QStyleOptionGraphicsItem * option, const QRect &contentsRect)
@@ -114,7 +123,6 @@ void PlasmoBiff::paintInterface(QPainter * painter, const QStyleOptionGraphicsIt
     bRect.setY(bRect.y()-88);
     drawEmail(3, bRect, painter);
 }
-*/
 
 
 void PlasmoBiff::drawEmail(int index, const QRectF& rect, QPainter* painter)
@@ -159,7 +167,7 @@ void PlasmoBiff::drawEmail(int index, const QRectF& rect, QPainter* painter)
     painter->setPen(_pen);
 
 }
-
+*/
 void PlasmoBiff::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
     Q_UNUSED( source );
