@@ -37,9 +37,12 @@
 #include <plasma/svg.h>
 #include <plasma/theme.h>
 
+#include "mailextender.h"
+
 PlasmoBiff::PlasmoBiff(QObject *parent, const QVariantList &args)
-  : Plasma::Applet(parent, args)
+  : Plasma::PopupApplet(parent, args)
 {
+    m_mailView = 0;
     m_theme = new Plasma::Svg(this);
     m_theme->setImagePath("widgets/akonadi");
     m_theme->setContainsMultipleImages(false);
@@ -48,6 +51,7 @@ PlasmoBiff::PlasmoBiff(QObject *parent, const QVariantList &args)
 
     m_fontFrom = Plasma::Theme::defaultTheme()->font(Plasma::Theme::DefaultFont);
     m_fontSubject = Plasma::Theme::defaultTheme()->font(Plasma::Theme::DefaultFont);
+    setPopupIcon("akonadi");
 }
 
 void PlasmoBiff::init()
@@ -73,6 +77,17 @@ void PlasmoBiff::createConfigurationInterface(KConfigDialog *parent)
     connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
 }
 
+
+QWidget* PlasmoBiff::widget()
+{
+    if (!m_mailView) {
+        m_mailView = new MailExtender(this, extender());
+    }
+    return m_mailView->widget();
+}
+
+/*
+// TODO: Maybe reimplement it, showing some number
 void PlasmoBiff::paintInterface(QPainter * painter, const QStyleOptionGraphicsItem * option, const QRect &contentsRect)
 {
     Q_UNUSED( option )
@@ -99,6 +114,8 @@ void PlasmoBiff::paintInterface(QPainter * painter, const QStyleOptionGraphicsIt
     bRect.setY(bRect.y()-88);
     drawEmail(3, bRect, painter);
 }
+*/
+
 
 void PlasmoBiff::drawEmail(int index, const QRectF& rect, QPainter* painter)
 {
@@ -165,5 +182,7 @@ void PlasmoBiff::newSource(const QString & source)
 {
     engine->connectSource(source, this);
 }
+
+K_EXPORT_PLASMA_APPLET(plasmobiff, PlasmoBiff)
 
 #include "plasmobiff.moc"

@@ -1,7 +1,9 @@
 project(plasmobiff)
 
 set(plasmobiff_SRCS
-	plasmobiff.cpp)
+	plasmobiff.cpp
+    mailextender.cpp
+    )
 
 kde4_add_ui_files(plasmobiff_SRCS plasmobiffConfig.ui )
 kde4_add_plugin(plasma_applet_plasmobiff ${plasmobiff_SRCS})

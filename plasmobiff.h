@@ -32,18 +32,18 @@
 #include <QGraphicsItem>
 #include <QColor>
 
-#include <plasma/applet.h>
+#include <plasma/popupapplet.h>
 #include <plasma/dataengine.h>
 #include "ui_plasmobiffConfig.h"
 
-class KDialog;
+class MailExtender;
 
 namespace Plasma
 {
-  class Svg;
+    class Svg;
 }
 
-class PlasmoBiff : public Plasma::Applet
+class PlasmoBiff : public Plasma::PopupApplet
 {
   Q_OBJECT
 
@@ -52,7 +52,9 @@ class PlasmoBiff : public Plasma::Applet
         ~PlasmoBiff();
 
         void init();
-        void paintInterface(QPainter *painter, const QStyleOptionGraphicsItem *option, const QRect &contentsRect );
+        //void paintInterface(QPainter *painter, const QStyleOptionGraphicsItem *option, const QRect &contentsRect );
+
+        QWidget * widget();
 
     public slots:
         void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);
@@ -67,6 +69,7 @@ class PlasmoBiff : public Plasma::Applet
         void newSource( const QString &source );
 
     private:
+        MailExtender* m_mailView;
         Plasma::Svg* m_theme;
         Plasma::DataEngine *engine;
 
@@ -79,6 +82,5 @@ class PlasmoBiff : public Plasma::Applet
         QMap<int,QString> m_subjectList;
 };
 
-K_EXPORT_PLASMA_APPLET(plasmobiff, PlasmoBiff)
 
 #endif
