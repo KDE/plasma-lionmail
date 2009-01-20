@@ -69,7 +69,7 @@ class PlasmoBiff : public Plasma::PopupApplet
         void newSource( const QString &source );
 
     private:
-        QList<MailExtender*> m_mailViews;
+        QList<MailExtender*> m_extenders;
         //MailExtender* m_mailView;
         //MailExtender* m_mailView2;
         Plasma::Svg* m_theme;

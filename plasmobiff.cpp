@@ -43,7 +43,6 @@
 PlasmoBiff::PlasmoBiff(QObject *parent, const QVariantList &args)
   : Plasma::PopupApplet(parent, args)
 {
-    //m_mailViews = 0;
     m_theme = new Plasma::Svg(this);
     m_theme->setImagePath("widgets/akonadi");
     m_theme->setContainsMultipleImages(false);
@@ -86,14 +85,14 @@ void PlasmoBiff::initExtender()
     MailExtender* mailView = new MailExtender(this, extender());
     mailView->setIcon("view-pim-mail");
     mailView->setDescription("Private Emails"); // FIXME: sample text
-    mailView->setInfo("33 unread");
+    mailView->setInfo("2 unread");
 
     MailExtender* mailView2 = new MailExtender(this, extender());
-    mailView->setIcon("mail-send");
-    mailView->setDescription("Recently Sent"); // FIXME: sample text
-    mailView->setInfo("14 emails");
+    mailView2->setIcon("mail-send");
+    mailView2->setDescription("Received Today"); // FIXME: sample text
+    mailView2->setInfo("14 emails, 3 unread");
 
-    m_mailViews << mailView << mailView2;
+    m_extenders << mailView2 << mailView;
 }
 /*
 // TODO: Maybe reimplement it, showing some number
@@ -189,6 +188,7 @@ void PlasmoBiff::dataUpdated(const QString &source, const Plasma::DataEngine::Da
 void PlasmoBiff::newSource(const QString & source)
 {
     engine->connectSource(source, this);
+    // We could create MailExtenders here ...
 }
 
 K_EXPORT_PLASMA_APPLET(plasmobiff, PlasmoBiff)
