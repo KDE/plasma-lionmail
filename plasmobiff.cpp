@@ -43,7 +43,7 @@
 PlasmoBiff::PlasmoBiff(QObject *parent, const QVariantList &args)
   : Plasma::PopupApplet(parent, args)
 {
-    m_mailView = 0;
+    //m_mailViews = 0;
     m_theme = new Plasma::Svg(this);
     m_theme->setImagePath("widgets/akonadi");
     m_theme->setContainsMultipleImages(false);
@@ -54,7 +54,7 @@ PlasmoBiff::PlasmoBiff(QObject *parent, const QVariantList &args)
     m_fontFrom = Plasma::Theme::defaultTheme()->font(Plasma::Theme::DefaultFont);
     m_fontSubject = Plasma::Theme::defaultTheme()->font(Plasma::Theme::DefaultFont);
     setPopupIcon("akonadi");
-    _graphicsWidget();
+    initExtender();
 }
 
 void PlasmoBiff::init()
@@ -66,13 +66,6 @@ void PlasmoBiff::init()
     m_theme->resize(413, 307);
     resize(413, 307); // move to constraintsevent
     extender()->setEmptyExtenderMessage(i18n("empty..."));
-
-
-    /*
-    extender();
-    m_mailView = new MailExtender(this, extender());
-    //extender()->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-    */
 }
 
 PlasmoBiff::~PlasmoBiff()
@@ -88,12 +81,19 @@ void PlasmoBiff::createConfigurationInterface(KConfigDialog *parent)
     connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
 }
 
-QGraphicsWidget* PlasmoBiff::_graphicsWidget()
+void PlasmoBiff::initExtender()
 {
-    if (!m_mailView) {
-        m_mailView = new MailExtender(this, extender());
-    }
-    return m_mailView->graphicsWidget();
+    MailExtender* mailView = new MailExtender(this, extender());
+    mailView->setIcon("view-pim-mail");
+    mailView->setDescription("Private Emails"); // FIXME: sample text
+    mailView->setInfo("33 unread");
+
+    MailExtender* mailView2 = new MailExtender(this, extender());
+    mailView->setIcon("mail-send");
+    mailView->setDescription("Recently Sent"); // FIXME: sample text
+    mailView->setInfo("14 emails");
+
+    m_mailViews << mailView << mailView2;
 }
 /*
 // TODO: Maybe reimplement it, showing some number

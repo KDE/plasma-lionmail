@@ -54,7 +54,7 @@ class PlasmoBiff : public Plasma::PopupApplet
         void init();
         //void paintInterface(QPainter *painter, const QStyleOptionGraphicsItem *option, const QRect &contentsRect );
 
-        QGraphicsWidget* _graphicsWidget();
+        void initExtender();
 
     public slots:
         void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);
@@ -69,7 +69,9 @@ class PlasmoBiff : public Plasma::PopupApplet
         void newSource( const QString &source );
 
     private:
-        MailExtender* m_mailView;
+        QList<MailExtender*> m_mailViews;
+        //MailExtender* m_mailView;
+        //MailExtender* m_mailView2;
         Plasma::Svg* m_theme;
         Plasma::DataEngine *engine;
 
