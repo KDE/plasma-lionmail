@@ -1,5 +1,7 @@
 project(plasmobiff)
 
+add_subdirectory(emailmessage)
+
 set(plasmobiff_SRCS
 	plasmobiff.cpp
     mailextender.cpp

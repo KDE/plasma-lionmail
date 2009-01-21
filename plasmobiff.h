@@ -34,6 +34,7 @@
 
 #include <plasma/popupapplet.h>
 #include <plasma/dataengine.h>
+#include <Plasma/ToolTipManager>
 #include "ui_plasmobiffConfig.h"
 
 class MailExtender;
@@ -55,6 +56,7 @@ class PlasmoBiff : public Plasma::PopupApplet
         //void paintInterface(QPainter *painter, const QStyleOptionGraphicsItem *option, const QRect &contentsRect );
 
         void initExtender();
+        void updateToolTip(const QString query, const int matches);
 
     public slots:
         void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);
@@ -70,10 +72,9 @@ class PlasmoBiff : public Plasma::PopupApplet
 
     private:
         QList<MailExtender*> m_extenders;
-        //MailExtender* m_mailView;
-        //MailExtender* m_mailView2;
         Plasma::Svg* m_theme;
         Plasma::DataEngine *engine;
+        Plasma::ToolTipContent m_toolTip;
 
         Ui::plasmobiffConfig ui;
 

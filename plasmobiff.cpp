@@ -65,6 +65,8 @@ void PlasmoBiff::init()
     m_theme->resize(413, 307);
     resize(413, 307); // move to constraintsevent
     extender()->setEmptyExtenderMessage(i18n("empty..."));
+    updateToolTip("", 0);
+
 }
 
 PlasmoBiff::~PlasmoBiff()
@@ -94,6 +96,26 @@ void PlasmoBiff::initExtender()
 
     m_extenders << mailView2 << mailView;
 }
+
+void PlasmoBiff::updateToolTip(const QString query, const int matches)
+{
+
+    if (!query.isEmpty()) {
+        m_toolTip = Plasma::ToolTipContent(i18nc("Tooltip main title text", "Crystal Desktop Search"),
+                        i18ncp("Tooltip sub text", "Last search: %2 (%1 match)", "Last search: %2 (%1 matches)", matches, query),
+                        KIcon("nepomuk").pixmap(IconSize(KIconLoader::Desktop))
+                    );
+    } else {
+        m_toolTip = Plasma::ToolTipContent(i18nc("No search has been done yet", "Crystal Desktop Search"),
+                        i18nc("Tooltip sub text", "Click on the icon to start searching"),
+                        KIcon("nepomuk").pixmap(IconSize(KIconLoader::Desktop))
+                    );
+
+    }
+        Plasma::ToolTipManager::self()->setContent(this, m_toolTip);
+}
+
+
 /*
 // TODO: Maybe reimplement it, showing some number
 void PlasmoBiff::paintInterface(QPainter * painter, const QStyleOptionGraphicsItem * option, const QRect &contentsRect)
