@@ -38,6 +38,7 @@ namespace Plasma
     class IconWidget;
     class Dialog;
     class Label;
+    class WebView;
 }
 
 class EmailDialog : public QObject
@@ -49,8 +50,22 @@ class EmailDialog : public QObject
         virtual ~EmailDialog();
 
         QGraphicsWidget* dialog();
+        Plasma::IconWidget* m_expandIcon;
+
+        Plasma::IconWidget* m_icon;
+        Plasma::Label* m_subjectLabel;
+        Plasma::Label* m_toLabel;
+        Plasma::WebView* m_body;
+
+    public Q_SLOTS:
+
+        void toggleBody();
+        void showBody();
+        void hideBody();
 
     private :
+        bool m_showBody;
+
         void buildDialog();
         void updateColors();
 
@@ -60,9 +75,6 @@ class EmailDialog : public QObject
         // The applet attached to this item
         EmailMessage * m_emailmessage;
 
-        Plasma::IconWidget* m_icon;
-        Plasma::Label* m_subjectLabel;
-        Plasma::Label* m_toLabel;
 };
 
 #endif

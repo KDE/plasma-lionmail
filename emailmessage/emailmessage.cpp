@@ -33,7 +33,7 @@
 
 //plasma
 #include <Plasma/Dialog>
-
+#include <Plasma/Label>
 #include <Plasma/IconWidget>
 #include <Plasma/Theme>
 #include <Plasma/ToolTipManager>
@@ -94,16 +94,39 @@ void EmailMessage::popupEvent(bool show)
     }
 }
 
+void EmailMessage::constraintsEvent(Plasma::Constraints constraints)
+{
+    if (constraints & (Plasma::FormFactorConstraint | Plasma::SizeConstraint)) {
+
+        if (contentsRect().height() > 100) {
+            m_dialog->showBody();
+        } else {
+            m_dialog->hideBody();
+        }
+        update();
+    }
+}
+/*
+void EmailMessage::setSmall
+        if (contentsRect().height() > 100) {
+            m_dialog->hideBody();
+        } else {
+            m_dialog->showBody();
+        }
+
+*/
+
 void EmailMessage::setSubject(const QString& subject)
 {
     m_subject = subject;
+    m_dialog->m_subjectLabel->setText(subject);
     // TODO: update widgets...
 }
 
 void EmailMessage::setTo(const QStringList& toList)
 {
     m_to = toList;
-    // TODO: update widgets...
+    m_dialog->m_toLabel->setText(toList.join(", "));
 }
 
 void EmailMessage::setBody(const QString& body)
