@@ -57,17 +57,19 @@ class EmailDialog : public QObject
         Plasma::Label* m_toLabel;
         Plasma::WebView* m_body;
 
+        long id;
+
     public Q_SLOTS:
 
         void toggleBody();
         void showBody();
         void hideBody();
+        void updateColors();
 
     private :
         bool m_showBody;
 
         void buildDialog();
-        void updateColors();
 
         // The widget which displays in the panel
         QGraphicsWidget *m_widget;

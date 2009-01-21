@@ -23,6 +23,7 @@
 //Qt
 #include <QLabel>
 #include <QStringList>
+#include <QGraphicsLinearLayout>
 
 // Plasma
 #include <Plasma/Label>
@@ -30,6 +31,8 @@
 
 // own
 #include "plasmobiff.h"
+
+class EmailMessage;
 
 class MailExtender : public Plasma::ExtenderItem
 {
@@ -46,6 +49,8 @@ class MailExtender : public Plasma::ExtenderItem
         void setInfo(const QString& info);
         QString icon();
 
+        void addEmail(EmailMessage* email);
+
     private slots:
         void updateColors();
 
@@ -56,6 +61,8 @@ class MailExtender : public Plasma::ExtenderItem
         QString m_info;
 
         PlasmoBiff* m_applet;
+
+        QGraphicsLinearLayout* m_messageLayout;
 
         Plasma::IconWidget* m_icon;
         QGraphicsWidget* m_widget;

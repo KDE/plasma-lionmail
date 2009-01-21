@@ -29,7 +29,8 @@
 #include <KIcon>
 #include <KGlobalSettings>
 
-//plasm
+//plasma
+#include <Plasma/Applet>
 #include <Plasma/Dialog>
 #include <Plasma/Theme>
 #include <Plasma/IconWidget>
@@ -37,6 +38,7 @@
 //own
 #include "mailextender.h"
 #include "plasmobiff.h"
+#include "emailmessage/emailmessage.h"
 
 
 MailExtender::MailExtender(PlasmoBiff * applet, Plasma::Extender *ext)
@@ -65,6 +67,12 @@ QGraphicsWidget* MailExtender::graphicsWidget()
     | m_i |  m_label            |
     | con |  m_infoLabel        |
     +-----+---------------------+
+    | emailmessage ...          |
+    +---------------------------+
+    | emailmessage ...          |
+    +---------------------------+
+    | emailmessage ...          |
+    +---------------------------+
     */
 
     int iconsize = 32;
@@ -74,14 +82,15 @@ QGraphicsWidget* MailExtender::graphicsWidget()
     m_widget = new QGraphicsWidget(this);
 
     QGraphicsGridLayout* layout = new QGraphicsGridLayout(m_widget);
-    layout->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    layout->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
     layout->setColumnFixedWidth(0, iconsize);
-    layout->setColumnMinimumWidth(1, 160);
+    layout->setColumnMinimumWidth(1, 200);
     layout->setHorizontalSpacing(0);
 
     // larger icon on the left
     m_icon = new Plasma::IconWidget(m_widget);
-    m_icon->setIcon(icon());
+    //m_icon->setIcon(icon());
+    m_icon->setIcon("akonadi");
     m_icon->resize(iconsize, iconsize);
     m_icon->setMinimumHeight(iconsize);
     m_icon->setMaximumHeight(iconsize);
@@ -99,6 +108,38 @@ QGraphicsWidget* MailExtender::graphicsWidget()
     m_infoLabel->nativeWidget()->setWordWrap(false);
     layout->addItem(m_infoLabel, 1, 1);
 
+    m_messageLayout = new QGraphicsLinearLayout(layout);
+    m_messageLayout->setSpacing(0);
+    m_messageLayout->setOrientation(Qt::Vertical);
+/*
+    {
+        EmailMessage *email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
+        //email->setParent(this);
+        email->setParentItem(m_widget);
+        email->setBackgroundHints(Plasma::Applet::NoBackground);
+        email->init();
+        email->updateConstraints(Plasma::StartupCompletedConstraint);
+        email->setMinimumHeight(120);
+        email->setMinimumWidth(200);
+
+        addEmail(email);
+    }
+*/
+    {
+        EmailMessage *email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
+        email->setParent(this);
+        email->setParentItem(m_widget);
+        email->setBackgroundHints(Plasma::Applet::NoBackground);
+        email->init();
+        email->updateConstraints(Plasma::StartupCompletedConstraint);
+        //email->setMinimumHeight(120);
+        //email->setMinimumWidth(200);
+
+        addEmail(email);
+    }
+
+
+    layout->addItem(m_messageLayout, 3, 0, 1, 3);
 
     m_widget->setLayout(layout);
 
@@ -107,6 +148,13 @@ QGraphicsWidget* MailExtender::graphicsWidget()
     connect(Plasma::Theme::defaultTheme(), SIGNAL(themeChanged()), this, SLOT(updateColors()));
     updateColors();
     return m_widget;
+}
+
+void MailExtender::addEmail(EmailMessage* email)
+{
+    //m_widget->layout()->addItem(
+    m_messageLayout->addItem(email->graphicsWidget());
+
 }
 
 void MailExtender::setDescription(const QString& desc)

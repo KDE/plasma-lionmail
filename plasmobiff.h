@@ -55,7 +55,7 @@ class PlasmoBiff : public Plasma::PopupApplet
         void init();
         //void paintInterface(QPainter *painter, const QStyleOptionGraphicsItem *option, const QRect &contentsRect );
 
-        void initExtender();
+        void initExtenderItem();
         void updateToolTip(const QString query, const int matches);
 
     public slots:

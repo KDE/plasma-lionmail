@@ -56,7 +56,7 @@ EmailMessage::EmailMessage(QObject *parent, const QVariantList &args)
 
     // initialize the widget
     (void)graphicsWidget();
-
+    m_dialog->hideBody();
     //resize(graphicsWidget()->sizeHint());
 }
 
@@ -66,9 +66,10 @@ EmailMessage::~EmailMessage()
 
 void EmailMessage::init()
 {
+    kDebug() << "init: email";
     KConfigGroup cg = config();
 
-    m_icon = new Plasma::IconWidget(KIcon("nepomuk",NULL), QString());
+    m_icon = new Plasma::IconWidget(KIcon("view-pim-mail",NULL), QString());
 
     Plasma::ToolTipManager::self()->registerWidget(this);
 
@@ -81,7 +82,9 @@ void EmailMessage::init()
 
 QGraphicsWidget* EmailMessage::graphicsWidget()
 {
+    kDebug() << "init: email";
     if (!m_dialog) {
+        kDebug() << "new EmailDialog";
         m_dialog = new EmailDialog(this);
     }
     return m_dialog->dialog();
@@ -141,7 +144,7 @@ void EmailMessage::setAbstract(const QString& abstract)
     // TODO: update widgets...
 }
 
-void EmailMessage::setDate(const QDate& date)
+void EmailMessage::setDate(const KDateTime& date)
 {
     m_date = date;
     // TODO: update widgets...

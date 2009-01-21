@@ -46,6 +46,7 @@ PlasmoBiff::PlasmoBiff(QObject *parent, const QVariantList &args)
     m_theme = new Plasma::Svg(this);
     m_theme->setImagePath("widgets/akonadi");
     m_theme->setContainsMultipleImages(false);
+    setHasConfigurationInterface(true);
 
     m_subjectList[0] = QString("Hello CampKDE, hallo Jamaica!"); // ;-)
     setBackgroundHints(StandardBackground);
@@ -59,12 +60,12 @@ void PlasmoBiff::init()
 {
     engine = dataEngine("akonadi");
     engine->connectAllSources(this);
-    connect(engine, SIGNAL(newSource(QString)), SLOT(newSource(QString)));
+    connect(engine, SIGNAL(sourceAdded(QString)), SLOT(newSource(QString)));
 
     m_theme->resize(413, 307);
     resize(413, 307); // move to constraintsevent
     extender()->setEmptyExtenderMessage(i18n("empty..."));
-    initExtender();
+    initExtenderItem();
     updateToolTip("", 0);
 
 }
@@ -78,23 +79,26 @@ void PlasmoBiff::createConfigurationInterface(KConfigDialog *parent)
     QWidget *widget = new QWidget();
     ui.setupUi(widget);
 
-    connect(parent, SIGNAL(applyClicked()), this, SLOT(configAccepted()));
-    connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
+    //connect(parent, SIGNAL(applyClicked()), this, SLOT(configAccepted()));
+    //connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
 }
 
-void PlasmoBiff::initExtender()
+void PlasmoBiff::initExtenderItem()
 {
     MailExtender* mailView = new MailExtender(this, extender());
     mailView->setIcon("view-pim-mail");
     mailView->setDescription("Private Emails"); // FIXME: sample text
     mailView->setInfo("2 unread");
 
+/*
     MailExtender* mailView2 = new MailExtender(this, extender());
     mailView2->setIcon("mail-send");
     mailView2->setDescription("Received Today"); // FIXME: sample text
     mailView2->setInfo("14 emails, 3 unread");
 
     m_extenders << mailView2 << mailView;
+*/
+    m_extenders << mailView;
 }
 
 void PlasmoBiff::updateToolTip(const QString query, const int matches)
@@ -184,14 +188,10 @@ void PlasmoBiff::drawEmail(int index, const QRectF& rect, QPainter* painter)
 void PlasmoBiff::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
     Q_UNUSED( source );
-    m_fromList[3] = m_fromList[2];
-    m_subjectList[3] = m_subjectList[2];
+  //  EmailMessage *email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
 
-    m_fromList[2] = m_fromList[1];
-    m_subjectList[2] = m_subjectList[1];
 
-    m_fromList[1] = m_fromList[0];
-    m_subjectList[1] = m_subjectList[0];
+    //mailView->addEmail(email);
 
     m_fromList[0] = data["From"].toString();
     m_subjectList[0] = data["Subject"].toString();
@@ -201,6 +201,7 @@ void PlasmoBiff::dataUpdated(const QString &source, const Plasma::DataEngine::Da
 
 void PlasmoBiff::newSource(const QString & source)
 {
+    kDebug() << "New:" << source;
     engine->connectSource(source, this);
     // We could create MailExtenders here ...
 }

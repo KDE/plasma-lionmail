@@ -23,7 +23,7 @@
 //Plasma
 #include <Plasma/PopupApplet>
 #include <Plasma/ToolTipManager>
-
+#include <KDateTime>
 
 class QGraphicsProxyWidget;
 
@@ -57,7 +57,7 @@ class EmailMessage : public Plasma::PopupApplet
         void setBody(const QString& body);
         void setAbstract(const QString& abstract);
 
-        void setDate(const QDate& date);
+        void setDate(const KDateTime& date);
 
         enum AppletSize {
             Tiny = 0,
@@ -81,7 +81,7 @@ class EmailMessage : public Plasma::PopupApplet
 
         // Email data
         QString m_subject;
-        QDate m_date;
+        KDateTime m_date;
 
         QStringList m_to;
         QStringList m_from;
