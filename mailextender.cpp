@@ -126,6 +126,11 @@ void MailExtender::setIcon(const QString& icon)
     ExtenderItem::setIcon(icon);
 }
 
+QString MailExtender::icon()
+{
+    return "akonadi"; // TODO: iconstring should be customizable
+}
+
 void MailExtender::setInfo(const QString& info)
 {
     if (m_infoLabel) {
