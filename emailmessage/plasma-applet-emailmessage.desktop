@@ -1,0 +1,17 @@
+[Desktop Entry]
+Name=Crystal Desktop Search
+Icon=view-pim-mail
+Type=Service
+X-KDE-ServiceTypes=Plasma/Applet
+
+X-KDE-Library=plasma_applet_emailmessage
+X-KDE-PluginInfo-Author=Sebastian Kügler
+X-KDE-PluginInfo-Email=sebas@kde.org
+X-KDE-PluginInfo-Name=emailmessage
+X-KDE-PluginInfo-Version=0.1
+X-KDE-PluginInfo-Website=http://plasma.kde.org/
+X-KDE-PluginInfo-Category=Utilities
+X-KDE-PluginInfo-Depends=
+X-KDE-PluginInfo-License=GPL
+X-KDE-PluginInfo-EnabledByDefault=true
+
