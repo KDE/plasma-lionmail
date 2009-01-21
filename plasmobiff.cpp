@@ -53,7 +53,6 @@ PlasmoBiff::PlasmoBiff(QObject *parent, const QVariantList &args)
     m_fontFrom = Plasma::Theme::defaultTheme()->font(Plasma::Theme::DefaultFont);
     m_fontSubject = Plasma::Theme::defaultTheme()->font(Plasma::Theme::DefaultFont);
     setPopupIcon("akonadi");
-    initExtender();
 }
 
 void PlasmoBiff::init()
@@ -65,6 +64,7 @@ void PlasmoBiff::init()
     m_theme->resize(413, 307);
     resize(413, 307); // move to constraintsevent
     extender()->setEmptyExtenderMessage(i18n("empty..."));
+    initExtender();
     updateToolTip("", 0);
 
 }
