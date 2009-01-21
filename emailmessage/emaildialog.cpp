@@ -115,7 +115,6 @@ void EmailDialog::buildDialog()
 
 void EmailDialog::toggleBody()
 {
-    //m_showBody = !m_showBody;
     if (!m_showBody) {
         showBody();
     } else {

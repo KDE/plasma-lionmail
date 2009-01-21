@@ -1,5 +1,6 @@
 [Desktop Entry]
-Name=Crystal Desktop Search
+Name=Email Message
+Comment=View an email
 Icon=view-pim-mail
 Type=Service
 X-KDE-ServiceTypes=Plasma/Applet
