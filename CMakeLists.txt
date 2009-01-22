@@ -1,18 +1,18 @@
-project(plasmobiff)
+project(lionmail)
 
 add_subdirectory(emailmessage)
 
-set(plasmobiff_SRCS
-    plasmobiff.cpp
+set(lionmail_SRCS
+    lionmail.cpp
     mailextender.cpp
     emailmessage/emaildialog.cpp
     )
 
-kde4_add_ui_files(plasmobiff_SRCS plasmobiffConfig.ui )
-kde4_add_plugin(plasma_applet_plasmobiff ${plasmobiff_SRCS})
-target_link_libraries(plasma_applet_plasmobiff ${KDE4_PLASMA_LIBS} ${KDE4_KIO_LIBS} ${QT_QTWEBKIT_LIBRARY}
+kde4_add_ui_files(lionmail_SRCS lionmailConfig.ui )
+kde4_add_plugin(plasma_applet_lionmail ${lionmail_SRCS})
+target_link_libraries(plasma_applet_lionmail ${KDE4_PLASMA_LIBS} ${KDE4_KIO_LIBS} ${QT_QTWEBKIT_LIBRARY}
 )
 
-install(TARGETS plasma_applet_plasmobiff DESTINATION ${PLUGIN_INSTALL_DIR})
-install(FILES plasma-applet-plasmobiff.desktop DESTINATION ${SERVICES_INSTALL_DIR})
+install(TARGETS plasma_applet_lionmail DESTINATION ${PLUGIN_INSTALL_DIR})
+install(FILES plasma-applet-lionmail.desktop DESTINATION ${SERVICES_INSTALL_DIR})
 install(FILES desktoptheme/akonadi.svg DESTINATION ${DATA_INSTALL_DIR}/desktoptheme/default/widgets)

@@ -37,11 +37,11 @@
 
 //own
 #include "mailextender.h"
-#include "plasmobiff.h"
+#include "lionmail.h"
 #include "emailmessage/emailmessage.h"
 
 
-MailExtender::MailExtender(PlasmoBiff * applet, Plasma::Extender *ext)
+MailExtender::MailExtender(LionMail * applet, Plasma::Extender *ext)
     : Plasma::ExtenderItem(ext),
       m_widget(0),
       m_info(0),

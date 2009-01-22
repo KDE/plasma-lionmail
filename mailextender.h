@@ -30,7 +30,7 @@
 #include <Plasma/ExtenderItem>
 
 // own
-#include "plasmobiff.h"
+#include "lionmail.h"
 
 class EmailMessage;
 
@@ -39,7 +39,7 @@ class MailExtender : public Plasma::ExtenderItem
     Q_OBJECT
 
     public:
-        MailExtender(PlasmoBiff * applet, Plasma::Extender *ext = 0);
+        MailExtender(LionMail * applet, Plasma::Extender *ext = 0);
         virtual ~MailExtender();
 
         QGraphicsWidget* graphicsWidget();
@@ -60,7 +60,7 @@ class MailExtender : public Plasma::ExtenderItem
         QString m_description;
         QString m_info;
 
-        PlasmoBiff* m_applet;
+        LionMail* m_applet;
 
         QGraphicsLinearLayout* m_messageLayout;
 
