@@ -126,16 +126,6 @@ QGraphicsWidget* MailExtender::graphicsWidget()
     }
 */
     {
-        EmailMessage *email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
-        email->setParent(this);
-        email->setParentItem(m_widget);
-        email->setBackgroundHints(Plasma::Applet::NoBackground);
-        email->init();
-        email->updateConstraints(Plasma::StartupCompletedConstraint);
-        //email->setMinimumHeight(120);
-        //email->setMinimumWidth(200);
-
-        addEmail(email);
     }
 
 
@@ -152,7 +142,12 @@ QGraphicsWidget* MailExtender::graphicsWidget()
 
 void MailExtender::addEmail(EmailMessage* email)
 {
-    //m_widget->layout()->addItem(
+    email->setParent(this);
+    email->setParentItem(m_widget);
+    email->setBackgroundHints(Plasma::Applet::NoBackground);
+    email->init();
+    email->updateConstraints(Plasma::StartupCompletedConstraint);
+
     m_messageLayout->addItem(email->graphicsWidget());
 
 }

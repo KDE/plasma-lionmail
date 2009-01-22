@@ -38,7 +38,7 @@
 #include "ui_plasmobiffConfig.h"
 
 class MailExtender;
-
+class EmailMessage;
 namespace Plasma
 {
     class Svg;
@@ -58,6 +58,8 @@ class PlasmoBiff : public Plasma::PopupApplet
         void initExtenderItem();
         void updateToolTip(const QString query, const int matches);
 
+        void initData();
+
     public slots:
         void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);
 
@@ -71,6 +73,7 @@ class PlasmoBiff : public Plasma::PopupApplet
         void newSource( const QString &source );
 
     private:
+        QHash<QString, EmailMessage*> emails;
         QList<MailExtender*> m_extenders;
         Plasma::Svg* m_theme;
         Plasma::DataEngine *engine;

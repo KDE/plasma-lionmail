@@ -75,7 +75,7 @@ void EmailDialog::buildDialog()
 
 
     m_icon = new Plasma::IconWidget(m_widget);
-    m_icon->setIcon("view-pim-mail");
+    //m_icon->setIcon("view-pim-mail");
     m_icon->resize(iconsize, iconsize);
     m_icon->setMinimumHeight(iconsize);
     m_icon->setMaximumHeight(iconsize);

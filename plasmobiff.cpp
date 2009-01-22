@@ -37,8 +37,10 @@
 #include <Plasma/Svg>
 #include <Plasma/Theme>
 #include <Plasma/Extender>
+#include <Plasma/DataEngine>
 
 #include "mailextender.h"
+#include "emailmessage/emailmessage.h"
 
 PlasmoBiff::PlasmoBiff(QObject *parent, const QVariantList &args)
   : Plasma::PopupApplet(parent, args)
@@ -66,8 +68,8 @@ void PlasmoBiff::init()
     resize(413, 307); // move to constraintsevent
     extender()->setEmptyExtenderMessage(i18n("empty..."));
     initExtenderItem();
+    initData();
     updateToolTip("", 0);
-
 }
 
 PlasmoBiff::~PlasmoBiff()
@@ -86,7 +88,7 @@ void PlasmoBiff::createConfigurationInterface(KConfigDialog *parent)
 void PlasmoBiff::initExtenderItem()
 {
     MailExtender* mailView = new MailExtender(this, extender());
-    mailView->setIcon("view-pim-mail");
+    //mailView->setIcon("view-pim-mail");
     mailView->setDescription("Private Emails"); // FIXME: sample text
     mailView->setInfo("2 unread");
 
@@ -185,12 +187,31 @@ void PlasmoBiff::drawEmail(int index, const QRectF& rect, QPainter* painter)
 
 }
 */
+void PlasmoBiff::initData()
+{
+    const QStringList& sources = dataEngine("akonadi")->query("Subject")["sources"].toStringList();
+    kDebug() << sources;
+    foreach (const QString &source, sources) {
+        //kDebug() << "BatterySource:" << battery_source;
+        dataUpdated(source, dataEngine("akonadi")->query(source));
+    }
+
+}
+
 void PlasmoBiff::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
     Q_UNUSED( source );
-  //  EmailMessage *email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
+    //  EmailMessage *email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
 
+    kDebug() << "Source" << source;
+    if (!emails.contains(source)) {
+        EmailMessage *email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
+        //email->setMinimumHeight(120);
+        //email->setMinimumWidth(200);
 
+        m_extenders[0]->addEmail(email);
+        emails[source] = email;
+    }
     //mailView->addEmail(email);
 
     m_fromList[0] = data["From"].toString();
@@ -201,9 +222,10 @@ void PlasmoBiff::dataUpdated(const QString &source, const Plasma::DataEngine::Da
 
 void PlasmoBiff::newSource(const QString & source)
 {
-    kDebug() << "New:" << source;
+    kDebug() << "------------- New:" << source;
     engine->connectSource(source, this);
     // We could create MailExtenders here ...
+
 }
 
 K_EXPORT_PLASMA_APPLET(plasmobiff, PlasmoBiff)
