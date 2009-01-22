@@ -54,6 +54,7 @@ MailExtender::MailExtender(PlasmoBiff * applet, Plasma::Extender *ext)
     setTitle("jaMailca");
     setName("jaMailca Exenderitem");
     graphicsWidget();
+    setMinimumHeight(600);
 }
 
 MailExtender::~MailExtender()
@@ -125,10 +126,6 @@ QGraphicsWidget* MailExtender::graphicsWidget()
         addEmail(email);
     }
 */
-    {
-    }
-
-
     layout->addItem(m_messageLayout, 3, 0, 1, 3);
 
     m_widget->setLayout(layout);

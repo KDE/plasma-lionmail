@@ -56,6 +56,8 @@ PlasmoBiff::PlasmoBiff(QObject *parent, const QVariantList &args)
     m_fontFrom = Plasma::Theme::defaultTheme()->font(Plasma::Theme::DefaultFont);
     m_fontSubject = Plasma::Theme::defaultTheme()->font(Plasma::Theme::DefaultFont);
     setPopupIcon("akonadi");
+
+    m_maxEmails = 6;
 }
 
 void PlasmoBiff::init()
@@ -190,7 +192,7 @@ void PlasmoBiff::drawEmail(int index, const QRectF& rect, QPainter* painter)
 void PlasmoBiff::initData()
 {
     const QStringList& sources = dataEngine("akonadi")->query("Subject")["sources"].toStringList();
-    kDebug() << sources;
+    kDebug() << "Source" << sources;
     foreach (const QString &source, sources) {
         //kDebug() << "BatterySource:" << battery_source;
         dataUpdated(source, dataEngine("akonadi")->query(source));
@@ -204,10 +206,15 @@ void PlasmoBiff::dataUpdated(const QString &source, const Plasma::DataEngine::Da
     //  EmailMessage *email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
 
     kDebug() << "Source" << source;
-    if (!emails.contains(source)) {
+    if (emails.count() < m_maxEmails && !emails.contains(source)) {
         EmailMessage *email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
-        //email->setMinimumHeight(120);
-        //email->setMinimumWidth(200);
+
+        // Only set email-specific properties here, layouttweaks and the like should go into MailExtender
+        email->m_dialog->setSubject(data["Subject"].toString());
+        email->m_dialog->setFrom(data["From"].toStringList());
+        email->m_dialog->setFrom(data["To"].toStringList());
+        email->m_dialog->setFrom(data["Cc"].toStringList());
+        email->m_dialog->setFrom(data["Bcc"].toStringList());
 
         m_extenders[0]->addEmail(email);
         emails[source] = email;

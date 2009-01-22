@@ -145,7 +145,7 @@ void EmailMessage::setAbstract(const QString& abstract)
     // TODO: update widgets...
 }
 
-void EmailMessage::setDate(const KDateTime& date)
+void EmailMessage::setDate(const QDate& date)
 {
     m_date = date;
     // TODO: update widgets...

@@ -59,6 +59,19 @@ class EmailDialog : public QObject
 
         long id;
 
+        void setTo(const QStringList& toList);
+        void setFrom(const QStringList& fromList);
+        void setCc(const QStringList& ccList);
+        void setBcc(const QStringList& bccList);
+        void setFlags(const QStringList& flagList);
+
+        void setSubject(const QString& subject);
+        void setBody(const QString& body);
+        void setAbstract(const QString& abstract);
+
+        void setDate(const QDate& date);
+
+
     public Q_SLOTS:
 
         void toggleBody();

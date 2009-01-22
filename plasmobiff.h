@@ -60,6 +60,7 @@ class PlasmoBiff : public Plasma::PopupApplet
 
         void initData();
 
+
     public slots:
         void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);
 
@@ -74,6 +75,7 @@ class PlasmoBiff : public Plasma::PopupApplet
 
     private:
         QHash<QString, EmailMessage*> emails;
+        int m_maxEmails;
         QList<MailExtender*> m_extenders;
         Plasma::Svg* m_theme;
         Plasma::DataEngine *engine;

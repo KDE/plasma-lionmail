@@ -70,7 +70,7 @@ void EmailDialog::buildDialog()
     QGraphicsGridLayout *layout = new QGraphicsGridLayout(m_widget);
     layout->setColumnFixedWidth(0, iconsize);
     layout->setColumnFixedWidth(2, 22);
-    layout->setColumnMinimumWidth(1, 160);
+    layout->setColumnMinimumWidth(1, 180);
     layout->setHorizontalSpacing(4);
 
 
@@ -86,11 +86,11 @@ void EmailDialog::buildDialog()
     m_subjectLabel = new Plasma::Label(m_widget);
     m_subjectLabel->setText("<b>Re: sell me a beer, mon</b>");
     m_subjectLabel->setMaximumHeight(iconsize/2);
-    m_subjectLabel->setStyleSheet("text-weight: bold");
+    //m_subjectLabel->setStyleSheet("text-weight: bold");
     layout->addItem(m_subjectLabel, 0, 1);
 
     m_toLabel = new Plasma::Label(m_widget);
-    m_toLabel->setText("<b>From:</b> Bob Marley <bmarley@kde.org>");
+    m_toLabel->setText("<b>Recipient:</b> Bob Marley <bmarley@kde.org>");
     m_toLabel->setMaximumHeight(iconsize/2);
     m_toLabel->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
     m_toLabel->nativeWidget()->setWordWrap(false);
@@ -134,10 +134,10 @@ void EmailDialog::hideBody()
 
 void EmailDialog::showBody()
 {
-        m_body->show();
-        m_expandIcon->setIcon("arrow-up-double");
-        m_showBody = true;
-        kDebug() << "showing body";
+    m_body->show();
+    m_expandIcon->setIcon("arrow-up-double");
+    m_showBody = true;
+    kDebug() << "showing body";
 }
 
 void EmailDialog::updateColors()
@@ -151,5 +151,43 @@ void EmailDialog::updateColors()
     m_widget->setPalette(p);
     m_body->page()->setPalette(p);
 }
+
+void EmailDialog::setSubject(const QString& subject)
+{
+    //m_subject = subject;
+    m_subjectLabel->setText(subject);
+    // TODO: update widgets...
+}
+
+void EmailDialog::setTo(const QStringList& toList)
+{
+    //m_to = toList;
+    m_toLabel->setText(toList.join(", "));
+}
+
+void EmailDialog::setBody(const QString& body)
+{
+}
+
+void EmailDialog::setAbstract(const QString& abstract)
+{
+}
+
+void EmailDialog::setDate(const QDate& date)
+{
+}
+
+void EmailDialog::setFrom(const QStringList& fromList)
+{
+}
+
+void EmailDialog::setCc(const QStringList& ccList)
+{
+}
+
+void EmailDialog::setBcc(const QStringList& bccList)
+{
+}
+
 
 #include "emaildialog.moc"

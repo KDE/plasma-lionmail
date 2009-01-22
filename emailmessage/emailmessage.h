@@ -47,6 +47,9 @@ class EmailMessage : public Plasma::PopupApplet
         QGraphicsWidget* graphicsWidget();
         void constraintsEvent(Plasma::Constraints constraints);
 
+        ///The dialog displaying matches
+        EmailDialog* m_dialog;
+
         void setTo(const QStringList& toList);
         void setFrom(const QStringList& fromList);
         void setCc(const QStringList& ccList);
@@ -57,7 +60,7 @@ class EmailMessage : public Plasma::PopupApplet
         void setBody(const QString& body);
         void setAbstract(const QString& abstract);
 
-        void setDate(const KDateTime& date);
+        void setDate(const QDate& date);
 
         enum AppletSize {
             Tiny = 0,
@@ -75,13 +78,11 @@ class EmailMessage : public Plasma::PopupApplet
         ///the icon used when the applet is in the taskbar
         Plasma::IconWidget *m_icon;
 
-        ///The dialog displaying matches
-        EmailDialog* m_dialog;
 
 
         // Email data
         QString m_subject;
-        KDateTime m_date;
+        QDate m_date;
 
         QStringList m_to;
         QStringList m_from;
