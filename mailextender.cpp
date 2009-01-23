@@ -18,15 +18,12 @@
 */
 
 //Qt
-#include <QLabel>
-#include <QVBoxLayout>
-#include <QTimer>
 #include <QGraphicsGridLayout>
+#include <QLabel>
 
 //KDE
 #include <KDebug>
 #include <KColorScheme>
-#include <KIcon>
 #include <KGlobalSettings>
 
 //plasma

@@ -21,12 +21,9 @@
 #define EMAILDIALOG_H
 
 //Qt
-#include <QLabel>
-#include <QStringList>
 #include <QGraphicsGridLayout>
 
 // KDE
-#include <KLineEdit>
 #include <KPushButton>
 
 //own

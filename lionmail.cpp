@@ -20,17 +20,9 @@
 
 #include "lionmail.h"
 
-#include <QApplication>
-#include <QImage>
-#include <QPaintDevice>
-#include <QLabel>
-#include <QPixmap>
-#include <QPaintEvent>
 #include <QPainter>
-#include <QX11Info>
 #include <QWidget>
 #include <QGraphicsItem>
-#include <QColor>
 
 #include <KConfigDialog>
 

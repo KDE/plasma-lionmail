@@ -22,14 +22,8 @@
 #include "emaildialog.h"
 
 //Qt
-#include <QTimer>
-#include <QClipboard>
 
 //KDE
-#include <KIcon>
-#include <KConfigDialog>
-#include <KStandardDirs>
-#include <KToolInvocation>
 
 //plasma
 #include <Plasma/Dialog>

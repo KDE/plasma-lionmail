@@ -21,8 +21,6 @@
 #define MAILEXTENDER_H
 
 //Qt
-#include <QLabel>
-#include <QStringList>
 #include <QGraphicsLinearLayout>
 #include <QGraphicsGridLayout>
 

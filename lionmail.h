@@ -21,16 +21,8 @@
 #ifndef LIONMAIL_H
 #define LIONMAIL_H
 
-#include <QImage>
-#include <QPaintDevice>
-#include <QLabel>
-#include <QPixmap>
-#include <QPaintEvent>
 #include <QPainter>
-#include <QX11Info>
-#include <QWidget>
 #include <QGraphicsItem>
-#include <QColor>
 
 #include <plasma/popupapplet.h>
 #include <plasma/dataengine.h>

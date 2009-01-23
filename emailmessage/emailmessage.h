@@ -23,9 +23,7 @@
 //Plasma
 #include <Plasma/PopupApplet>
 #include <Plasma/ToolTipManager>
-#include <KDateTime>
 
-class QGraphicsProxyWidget;
 
 #include "emaildialog.h"
 
@@ -33,7 +31,6 @@ class QGraphicsProxyWidget;
 namespace Plasma
 {
     class IconWidget;
-    class ToolTipContent;
 }
 
 class EmailMessage : public Plasma::PopupApplet
