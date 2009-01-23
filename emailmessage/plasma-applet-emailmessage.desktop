@@ -1,6 +1,20 @@
 [Desktop Entry]
 Name=Email Message
+Name[gl]=Mensaxe de correo
+Name[km]=សារ​អ៊ីមែល
+Name[nds]=Nettpost-Naricht
+Name[pt]=Mensagem de E-mail
+Name[pt_BR]=Mensagem de E-mail
+Name[tr]=E-posta İletisi
+Name[uk]=Надіслати листа
 Comment=View an email
+Comment[gl]=Lea un correo
+Comment[km]=មើល​អ៊ីមែល
+Comment[nds]=En Nettbreef ankieken
+Comment[pt]=Ver um e-mail
+Comment[pt_BR]=Ver um e-mail
+Comment[tr]=Bir e-posta göster
+Comment[uk]=Перегляд листа
 Icon=view-pim-mail
 Type=Service
 X-KDE-ServiceTypes=Plasma/Applet
