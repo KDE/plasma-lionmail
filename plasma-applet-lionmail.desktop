@@ -1,0 +1,17 @@
+[Desktop Entry]
+Name=LionMail
+Comment=Keep a sharp eye on your emails
+Type=Service
+Icon=akonadi
+X-KDE-ServiceTypes=Plasma/Applet
+
+X-KDE-Library=plasma_applet_lionmail
+X-KDE-PluginInfo-Author=Sebastian Kügler
+X-KDE-PluginInfo-Email=sebas@kde.org
+X-KDE-PluginInfo-Name=lionmail
+X-KDE-PluginInfo-Version=pre0.1
+X-KDE-PluginInfo-Website=http://akonadi.kde.org/
+X-KDE-PluginInfo-Category=
+X-KDE-PluginInfo-Depends=
+X-KDE-PluginInfo-License=GPL
+X-KDE-PluginInfo-EnabledByDefault=true
