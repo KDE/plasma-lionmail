@@ -24,6 +24,7 @@
 #include <QLabel>
 #include <QStringList>
 #include <QGraphicsLinearLayout>
+#include <QGraphicsGridLayout>
 
 // Plasma
 #include <Plasma/Label>
@@ -63,7 +64,7 @@ class MailExtender : public Plasma::ExtenderItem
         LionMail* m_applet;
 
         QGraphicsLinearLayout* m_messageLayout;
-
+        QGraphicsGridLayout* m_layout;
         Plasma::IconWidget* m_icon;
         QGraphicsWidget* m_widget;
         Plasma::Label* m_label;

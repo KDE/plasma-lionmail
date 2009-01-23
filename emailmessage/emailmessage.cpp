@@ -69,13 +69,10 @@ void EmailMessage::init()
     kDebug() << "init: email";
     KConfigGroup cg = config();
 
-    m_icon = new Plasma::IconWidget(this);
-    m_icon->setIcon("view-pim-mail");
 
     Plasma::ToolTipManager::self()->registerWidget(this);
 
-    setPopupIcon("view-pim-mail");
-
+    setPopupIcon(QIcon());
     // TODO ...
 
 

@@ -43,16 +43,16 @@
 
 MailExtender::MailExtender(LionMail * applet, Plasma::Extender *ext)
     : Plasma::ExtenderItem(ext),
-      m_widget(0),
       m_info(0),
-      m_label(0),
-      m_icon(0)
+      m_icon(0),
+      m_widget(0),
+      m_label(0)
 {
     m_applet = applet;
     setParent(applet);
     setIcon("akonadi");
-    setTitle("jaMailca");
-    setName("jaMailca Exenderitem");
+    setTitle("Lion Mail");
+    setName("Lion Mail ExenderItem");
     graphicsWidget();
     setMinimumHeight(600);
 }
@@ -82,11 +82,11 @@ QGraphicsWidget* MailExtender::graphicsWidget()
 
     m_widget = new QGraphicsWidget(this);
 
-    QGraphicsGridLayout* layout = new QGraphicsGridLayout(m_widget);
-    layout->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
-    layout->setColumnFixedWidth(0, iconsize);
-    layout->setColumnMinimumWidth(1, 200);
-    layout->setHorizontalSpacing(0);
+    m_layout = new QGraphicsGridLayout(m_widget);
+    m_layout->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
+    m_layout->setColumnFixedWidth(0, iconsize);
+    m_layout->setColumnMinimumWidth(1, 200);
+    m_layout->setHorizontalSpacing(0);
 
     // larger icon on the left
     m_icon = new Plasma::IconWidget(m_widget);
@@ -96,20 +96,20 @@ QGraphicsWidget* MailExtender::graphicsWidget()
     m_icon->setMinimumHeight(iconsize);
     m_icon->setMaximumHeight(iconsize);
     m_icon->setAcceptHoverEvents(false);
-    layout->addItem(m_icon, 0, 0, 2, 1);
+    m_layout->addItem(m_icon, 0, 0, 2, 1);
 
     // top label
     m_label = new Plasma::Label(m_widget);
-    layout->addItem(m_label, 0, 1);
+    m_layout->addItem(m_label, 0, 1);
 
     // smaller label
     m_infoLabel = new Plasma::Label(m_widget);
     m_infoLabel->setText("33 emails");
     m_infoLabel->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
     m_infoLabel->nativeWidget()->setWordWrap(false);
-    layout->addItem(m_infoLabel, 1, 1);
+    m_layout->addItem(m_infoLabel, 1, 1);
 
-    m_messageLayout = new QGraphicsLinearLayout(layout);
+    m_messageLayout = new QGraphicsLinearLayout(m_layout);
     m_messageLayout->setSpacing(0);
     m_messageLayout->setOrientation(Qt::Vertical);
 /*
@@ -126,9 +126,10 @@ QGraphicsWidget* MailExtender::graphicsWidget()
         addEmail(email);
     }
 */
-    layout->addItem(m_messageLayout, 3, 0, 1, 3);
-
-    m_widget->setLayout(layout);
+    m_layout->addItem(m_messageLayout, 3, 0, 1, 3);
+    m_messageLayout->addStretch();
+    m_messageLayout->addStretch();
+    m_widget->setLayout(m_layout);
 
     setWidget(m_widget);
 
@@ -146,6 +147,12 @@ void MailExtender::addEmail(EmailMessage* email)
     email->updateConstraints(Plasma::StartupCompletedConstraint);
 
     m_messageLayout->addItem(email->graphicsWidget());
+    //m_messageLayout->invalidate();
+    //m_layout->invalidate();
+    kDebug() << "m_messageLayout:" << m_messageLayout->sizeHint(Qt::MinimumSize) << m_messageLayout->sizeHint(Qt::PreferredSize);
+    kDebug() << "m_layout:" << m_layout->sizeHint(Qt::MinimumSize) << m_messageLayout->sizeHint(Qt::PreferredSize);
+    setMinimumSize(m_layout->sizeHint(Qt::MinimumSize));
+    setPreferredSize(m_layout->sizeHint(Qt::PreferredSize));
 
 }
 

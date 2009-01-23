@@ -66,16 +66,17 @@ void EmailDialog::buildDialog()
     int iconsize = 32;
 
     m_widget = new QGraphicsWidget();
+    m_widget->setParent(this);
 
     QGraphicsGridLayout *layout = new QGraphicsGridLayout(m_widget);
     layout->setColumnFixedWidth(0, iconsize);
-    layout->setColumnFixedWidth(2, 22);
     layout->setColumnMinimumWidth(1, 180);
+    layout->setColumnFixedWidth(2, 22);
     layout->setHorizontalSpacing(4);
 
 
     m_icon = new Plasma::IconWidget(m_widget);
-    //m_icon->setIcon("view-pim-mail");
+    m_icon->setIcon("view-pim-mail");
     m_icon->resize(iconsize, iconsize);
     m_icon->setMinimumHeight(iconsize);
     m_icon->setMaximumHeight(iconsize);
@@ -86,7 +87,6 @@ void EmailDialog::buildDialog()
     m_subjectLabel = new Plasma::Label(m_widget);
     m_subjectLabel->setText("<b>Re: sell me a beer, mon</b>");
     m_subjectLabel->setMaximumHeight(iconsize/2);
-    //m_subjectLabel->setStyleSheet("text-weight: bold");
     layout->addItem(m_subjectLabel, 0, 1);
 
     m_toLabel = new Plasma::Label(m_widget);
@@ -105,7 +105,7 @@ void EmailDialog::buildDialog()
 
     m_expandIcon = new Plasma::IconWidget(m_widget);
     m_expandIcon->setIcon("arrow-down-double");
-    m_expandIcon->setMinimumSize(22, 22);
+    m_expandIcon->setMinimumSize(12, 12);
     connect(m_expandIcon, SIGNAL(clicked()), this, SLOT(toggleBody()));
     layout->addItem(m_expandIcon, 1, 2, Qt::AlignRight);
 
@@ -159,34 +159,42 @@ void EmailDialog::setSubject(const QString& subject)
     // TODO: update widgets...
 }
 
-void EmailDialog::setTo(const QStringList& toList)
+void EmailDialog::setTo(const QString& to)
 {
-    //m_to = toList;
-    m_toLabel->setText(toList.join(", "));
+    kDebug() << "Setting recipient" << to;
+    if (!to.isEmpty()) {
+        m_toLabel->setText(to);
+    }
 }
 
 void EmailDialog::setBody(const QString& body)
 {
+    // TODO
 }
 
 void EmailDialog::setAbstract(const QString& abstract)
 {
+    // TODO
 }
 
 void EmailDialog::setDate(const QDate& date)
 {
+    // TODO
 }
 
-void EmailDialog::setFrom(const QStringList& fromList)
+void EmailDialog::setFrom(const QString& fromList)
 {
+    // TODO
 }
 
-void EmailDialog::setCc(const QStringList& ccList)
+void EmailDialog::setCc(const QString& ccList)
 {
+    // TODO
 }
 
-void EmailDialog::setBcc(const QStringList& bccList)
+void EmailDialog::setBcc(const QString& bccList)
 {
+    // TODO
 }
 
 
