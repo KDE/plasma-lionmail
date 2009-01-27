@@ -52,7 +52,7 @@ class EmailDialog : public QObject
         Plasma::IconWidget* m_icon;
         Plasma::Label* m_subjectLabel;
         Plasma::Label* m_toLabel;
-        Plasma::WebView* m_body;
+        Plasma::WebView* m_bodyView;
 
         long id;
 

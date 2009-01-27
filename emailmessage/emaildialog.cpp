@@ -94,11 +94,11 @@ void EmailDialog::buildDialog()
 
     m_layout->addItem(m_toLabel, 1, 1);
 
-    m_body = new Plasma::WebView(m_widget);
+    m_bodyView = new Plasma::WebView(m_widget);
     QString html("<font color=white>Hi everybody<br /><br />I hope you're all having a great time on Jamaica, my home country (which you might have noticed after yesterday's bob-marley-on-repeat-for-the-whole-night. I wish I could be with you, but it wasn't meant to be. I'll go out with my friends Kurt and Elvis tonight instead and wish you a happy CampKDE.<br /><br />-- Bob</font>");
 
-    m_body->setHtml(html);
-    m_layout->addItem(m_body, 3, 0, 1, 3);
+    m_bodyView->setHtml(html);
+    m_layout->addItem(m_bodyView, 3, 0, 1, 3);
 
     m_expandIcon = new Plasma::IconWidget(m_widget);
     m_expandIcon->setIcon("arrow-down-double");
@@ -125,7 +125,7 @@ void EmailDialog::toggleBody()
 void EmailDialog::hideBody()
 {
     m_widget->setMinimumHeight(50);
-    m_body->hide();
+    m_bodyView->hide();
     m_expandIcon->setIcon("arrow-down-double");
     m_showBody = false;
     kDebug() << "hiding body";
@@ -135,7 +135,7 @@ void EmailDialog::hideBody()
 void EmailDialog::showBody()
 {
     m_widget->setMinimumHeight(250);
-    m_body->show();
+    m_bodyView->show();
     m_expandIcon->setIcon("arrow-up-double");
     m_showBody = true;
     kDebug() << "showing body";
@@ -151,7 +151,7 @@ void EmailDialog::updateColors()
 
 
     m_widget->setPalette(p);
-    m_body->page()->setPalette(p);
+    m_bodyView->page()->setPalette(p);
 }
 
 void EmailDialog::setSubject(const QString& subject)
@@ -173,7 +173,7 @@ void EmailDialog::setTo(const QString& to)
 void EmailDialog::setBody(const QString& body)
 {
     if (!body.isEmpty()) {
-        m_body->setHtml(body);
+        m_bodyView->setHtml(body);
     }
 }
 
