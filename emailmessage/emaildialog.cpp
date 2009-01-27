@@ -44,7 +44,7 @@ EmailDialog::EmailDialog(EmailMessage* emailmessage, QObject *parent)
     : QObject(parent),
       m_widget(0)
 {
-    m_showBody = true;
+    m_showBody = false;
     buildDialog();
 }
 
@@ -64,11 +64,12 @@ void EmailDialog::buildDialog()
     m_widget = new QGraphicsWidget();
     m_widget->setParent(this);
 
-    QGraphicsGridLayout *layout = new QGraphicsGridLayout(m_widget);
-    layout->setColumnFixedWidth(0, iconsize);
-    layout->setColumnMinimumWidth(1, 180);
-    layout->setColumnFixedWidth(2, 22);
-    layout->setHorizontalSpacing(4);
+    m_layout = new QGraphicsGridLayout(m_widget);
+    m_layout->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
+    m_layout->setColumnFixedWidth(0, iconsize);
+    m_layout->setColumnMinimumWidth(1, 180);
+    m_layout->setColumnFixedWidth(2, 22);
+    m_layout->setHorizontalSpacing(4);
 
 
     m_icon = new Plasma::IconWidget(m_widget);
@@ -78,12 +79,12 @@ void EmailDialog::buildDialog()
     m_icon->setMaximumHeight(iconsize);
     m_icon->setAcceptHoverEvents(false);
 
-    layout->addItem(m_icon, 0, 0, 2, 1);
+    m_layout->addItem(m_icon, 0, 0, 2, 1);
 
     m_subjectLabel = new Plasma::Label(m_widget);
     m_subjectLabel->setText("<b>Re: sell me a beer, mon</b>");
     m_subjectLabel->setMaximumHeight(iconsize/2);
-    layout->addItem(m_subjectLabel, 0, 1);
+    m_layout->addItem(m_subjectLabel, 0, 1);
 
     m_toLabel = new Plasma::Label(m_widget);
     m_toLabel->setText("<b>Recipient:</b> Bob Marley <bmarley@kde.org>");
@@ -91,24 +92,25 @@ void EmailDialog::buildDialog()
     m_toLabel->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
     m_toLabel->nativeWidget()->setWordWrap(false);
 
-    layout->addItem(m_toLabel, 1, 1);
+    m_layout->addItem(m_toLabel, 1, 1);
 
     m_body = new Plasma::WebView(m_widget);
     QString html("<font color=white>Hi everybody<br /><br />I hope you're all having a great time on Jamaica, my home country (which you might have noticed after yesterday's bob-marley-on-repeat-for-the-whole-night. I wish I could be with you, but it wasn't meant to be. I'll go out with my friends Kurt and Elvis tonight instead and wish you a happy CampKDE.<br /><br />-- Bob</font>");
 
     m_body->setHtml(html);
-    layout->addItem(m_body, 3, 0, 1, 3);
+    m_layout->addItem(m_body, 3, 0, 1, 3);
 
     m_expandIcon = new Plasma::IconWidget(m_widget);
     m_expandIcon->setIcon("arrow-down-double");
     m_expandIcon->setMinimumSize(12, 12);
     connect(m_expandIcon, SIGNAL(clicked()), this, SLOT(toggleBody()));
-    layout->addItem(m_expandIcon, 1, 2, Qt::AlignRight);
+    m_layout->addItem(m_expandIcon, 1, 2, Qt::AlignRight);
 
-    m_widget->setLayout(layout);
+    m_widget->setLayout(m_layout);
 
     connect(Plasma::Theme::defaultTheme(), SIGNAL(themeChanged()), this, SLOT(updateColors()));
     updateColors();
+    kDebug() << "EmailDialog built";
 }
 
 void EmailDialog::toggleBody()
@@ -126,14 +128,17 @@ void EmailDialog::hideBody()
     m_expandIcon->setIcon("arrow-down-double");
     m_showBody = false;
     kDebug() << "hiding body";
+    m_layout->invalidate();
 }
 
 void EmailDialog::showBody()
 {
+    m_widget->setMinimumHeight(250);
     m_body->show();
     m_expandIcon->setIcon("arrow-up-double");
     m_showBody = true;
     kDebug() << "showing body";
+    m_layout->invalidate();
 }
 
 void EmailDialog::updateColors()

@@ -47,8 +47,8 @@ class EmailDialog : public QObject
         virtual ~EmailDialog();
 
         QGraphicsWidget* dialog();
-        Plasma::IconWidget* m_expandIcon;
 
+        Plasma::IconWidget* m_expandIcon;
         Plasma::IconWidget* m_icon;
         Plasma::Label* m_subjectLabel;
         Plasma::Label* m_toLabel;
@@ -82,10 +82,11 @@ class EmailDialog : public QObject
         void buildDialog();
 
         // The widget which displays in the panel
-        QGraphicsWidget *m_widget;
+        QGraphicsWidget* m_widget;
+        QGraphicsGridLayout* m_layout;
 
         // The applet attached to this item
-        EmailMessage * m_emailmessage;
+        EmailMessage* m_emailmessage;
 
 };
 

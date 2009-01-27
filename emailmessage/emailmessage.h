@@ -44,7 +44,7 @@ class EmailMessage : public Plasma::PopupApplet
         QGraphicsWidget* graphicsWidget();
         void constraintsEvent(Plasma::Constraints constraints);
 
-        ///The dialog displaying matches
+        // The dialog displaying the email
         EmailDialog* m_dialog;
 
         void setTo(const QStringList& toList);

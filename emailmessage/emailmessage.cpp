@@ -40,8 +40,8 @@ using namespace Plasma;
 
 EmailMessage::EmailMessage(QObject *parent, const QVariantList &args)
     : Plasma::PopupApplet(parent, args),
-      m_icon(0),
-      m_dialog(0)
+      m_dialog(0),
+      m_icon(0)
 {
     KGlobal::locale()->insertCatalog("plasma_applet_lionmail");
     setBackgroundHints(StandardBackground);
@@ -49,10 +49,7 @@ EmailMessage::EmailMessage(QObject *parent, const QVariantList &args)
     setHasConfigurationInterface(true);
     setAcceptsHoverEvents(true);
 
-    // initialize the widget
     (void)graphicsWidget();
-    m_dialog->hideBody();
-    //resize(graphicsWidget()->sizeHint());
 }
 
 EmailMessage::~EmailMessage()
@@ -64,18 +61,16 @@ void EmailMessage::init()
     kDebug() << "init: email";
     KConfigGroup cg = config();
 
+    //m_dialog->hideBody();
 
     Plasma::ToolTipManager::self()->registerWidget(this);
-
-    setPopupIcon(QIcon());
+    setPopupIcon("view-pim-mail");
     // TODO ...
-
 
 }
 
 QGraphicsWidget* EmailMessage::graphicsWidget()
 {
-    kDebug() << "init: email";
     if (!m_dialog) {
         kDebug() << "new EmailDialog";
         m_dialog = new EmailDialog(this);
@@ -86,7 +81,9 @@ QGraphicsWidget* EmailMessage::graphicsWidget()
 void EmailMessage::popupEvent(bool show)
 {
     if (show) {
-
+        kDebug() << "Showing popup";
+    } else {
+        kDebug() << "Hiding popup";
     }
 }
 
