@@ -143,6 +143,7 @@ void MailExtender::addEmail(EmailMessage* email)
     email->setParentItem(m_widget);
     email->setBackgroundHints(Plasma::Applet::NoBackground);
     email->init();
+    email->setPopupIcon(QIcon());
     email->updateConstraints(Plasma::StartupCompletedConstraint);
 
     m_messageLayout->addItem(email->graphicsWidget());
