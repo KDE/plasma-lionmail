@@ -50,6 +50,7 @@ EmailMessage::EmailMessage(QObject *parent, const QVariantList &args)
     setAcceptsHoverEvents(true);
 
     (void)graphicsWidget();
+    setPopupIcon("view-pim-mail");
 }
 
 EmailMessage::~EmailMessage()
@@ -64,7 +65,6 @@ void EmailMessage::init()
     //m_dialog->hideBody();
 
     Plasma::ToolTipManager::self()->registerWidget(this);
-    setPopupIcon("view-pim-mail");
     // TODO ...
 
 }
