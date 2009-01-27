@@ -52,7 +52,12 @@ class EmailDialog : public QObject
         Plasma::IconWidget* m_icon;
         Plasma::Label* m_subjectLabel;
         Plasma::Label* m_toLabel;
+        Plasma::Label* m_fromLabel;
+        Plasma::Label* m_ccLabel;
+        Plasma::Label* m_bccLabel;
+        Plasma::Label* m_dateLabel;
         Plasma::WebView* m_bodyView;
+        Plasma::Label* m_abstractLabel;
 
         long id;
 
@@ -87,6 +92,19 @@ class EmailDialog : public QObject
 
         // The applet attached to this item
         EmailMessage* m_emailmessage;
+
+        // Email data
+        QString m_subject;
+        QDate m_date;
+
+        QString m_to;
+        QString m_from;
+        QString m_cc;
+        QString m_bcc;
+        QString m_flags;
+
+        QString m_body;
+        QString m_abstract;
 
 };
 

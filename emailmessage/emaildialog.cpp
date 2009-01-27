@@ -149,7 +149,6 @@ void EmailDialog::updateColors()
     //p.setColor(QPalette::WindowText, Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor));
     p.setColor(QPalette::Text, QColor("white"));
 
-
     m_widget->setPalette(p);
     m_bodyView->page()->setPalette(p);
 }
@@ -157,14 +156,16 @@ void EmailDialog::updateColors()
 void EmailDialog::setSubject(const QString& subject)
 {
     //m_subject = subject;
-    m_subjectLabel->setText(subject);
-    // TODO: update widgets...
+    if (m_subjectLabel && !subject.isEmpty()) {
+        m_subjectLabel->setText(subject);
+    }
+    m_subject = subject;
 }
 
 void EmailDialog::setTo(const QString& to)
 {
     kDebug() << "Setting recipient" << to;
-    if (!to.isEmpty()) {
+    if (m_toLabel && !to.isEmpty()) {
         kDebug() << "TO IS NONEMPTY!!!!!!!!!!!!!!!!!!!!!!!!!!";
         m_toLabel->setText(to);
     }
@@ -172,24 +173,34 @@ void EmailDialog::setTo(const QString& to)
 
 void EmailDialog::setBody(const QString& body)
 {
-    if (!body.isEmpty()) {
+    if (m_bodyView && !body.isEmpty()) {
         m_bodyView->setHtml(body);
     }
+    m_body = body;
 }
 
 void EmailDialog::setAbstract(const QString& abstract)
 {
-    // TODO
+    if (m_abstractLabel && abstract.isEmpty()) {
+        m_abstractLabel->setText(abstract);
+    }
+    m_abstract = abstract;
 }
 
 void EmailDialog::setDate(const QDate& date)
 {
-    // TODO
+    if (m_dateLabel && date.isValid()) {
+        m_dateLabel->setText(date.toString());
+    }
+    m_date = date;
 }
 
 void EmailDialog::setFrom(const QString& fromList)
 {
-    // TODO
+    if (m_fromLabel && !fromList.isEmpty()) {
+        m_fromLabel->setText(fromList);
+    }
+    m_from = fromList;
 }
 
 void EmailDialog::setCc(const QString& ccList)
@@ -199,7 +210,10 @@ void EmailDialog::setCc(const QString& ccList)
 
 void EmailDialog::setBcc(const QString& bccList)
 {
-    // TODO
+    if (m_bccLabel && bccList.isEmpty()) {
+        m_bccLabel->setText(bccList);
+    }
+    m_bcc = bccList;
 }
 
 

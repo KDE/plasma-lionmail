@@ -74,21 +74,6 @@ class EmailMessage : public Plasma::PopupApplet
         int m_appletSize;
         ///the icon used when the applet is in the taskbar
         Plasma::IconWidget *m_icon;
-
-
-
-        // Email data
-        QString m_subject;
-        QDate m_date;
-
-        QStringList m_to;
-        QStringList m_from;
-        QStringList m_cc;
-        QStringList m_bcc;
-        QStringList m_flags;
-
-        QString m_body;
-        QString m_abstract;
 };
 
 #endif

@@ -111,48 +111,42 @@ void EmailMessage::setSmall
 
 void EmailMessage::setSubject(const QString& subject)
 {
-    m_subject = subject;
-    m_dialog->m_subjectLabel->setText(subject);
-    // TODO: update widgets...
+    m_dialog->setSubject(subject);
 }
 
 void EmailMessage::setTo(const QStringList& toList)
 {
-    m_to = toList;
-    m_dialog->m_toLabel->setText(toList.join(", "));
+    m_dialog->setTo(toList.join(", "));
 }
 
 void EmailMessage::setBody(const QString& body)
 {
-    m_body = body;
     m_dialog->setBody(body);
 }
 
 void EmailMessage::setAbstract(const QString& abstract)
 {
-    m_abstract = abstract;
-    // TODO: update widgets...
+    m_dialog->setAbstract(abstract);
 }
 
 void EmailMessage::setDate(const QDate& date)
 {
-    m_date = date;
-    // TODO: update widgets...
+    m_dialog->setDate(date);
 }
 
 void EmailMessage::setFrom(const QStringList& fromList)
 {
-    m_from = fromList;
+    m_dialog->setFrom(fromList.join(", "));
 }
 
 void EmailMessage::setCc(const QStringList& ccList)
 {
-    m_cc = ccList;
+    m_dialog->setCc(ccList.join(", "));
 }
 
 void EmailMessage::setBcc(const QStringList& bccList)
 {
-    m_bcc = bccList;
+    m_dialog->setBcc(bccList.join(", "));
 }
 
 #include "emailmessage.moc"
