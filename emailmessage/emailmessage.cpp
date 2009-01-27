@@ -62,7 +62,7 @@ void EmailMessage::init()
     kDebug() << "init: email";
     KConfigGroup cg = config();
 
-    //m_dialog->hideBody();
+    m_dialog->hideBody();
 
     Plasma::ToolTipManager::self()->registerWidget(this);
     // TODO ...

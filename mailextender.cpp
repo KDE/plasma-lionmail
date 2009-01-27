@@ -162,7 +162,9 @@ void MailExtender::addEmail(EmailMessage* email)
     kDebug() << " ExtenderSize:" << extender()->size();
 
     extender()->resize(size());
+    m_messageLayout->updateGeometry();
     m_messageLayout->invalidate();
+    m_layout->updateGeometry();
     m_layout->invalidate();
 
     updateGeometry();

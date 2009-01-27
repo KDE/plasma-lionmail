@@ -132,13 +132,14 @@ void EmailDialog::toggleBody()
 
 void EmailDialog::hideBody()
 {
-    m_widget->setMinimumHeight(50);
+    m_widget->setMinimumHeight(0);
     m_bodyView->hide();
     m_expandIcon->setIcon("arrow-down-double");
     m_showBody = false;
     kDebug() << "hiding body";
-    m_layout->invalidate();
+    m_layout->updateGeometry();
 }
+
 
 void EmailDialog::showBody()
 {
@@ -147,7 +148,7 @@ void EmailDialog::showBody()
     m_expandIcon->setIcon("arrow-up-double");
     m_showBody = true;
     kDebug() << "showing body";
-    m_layout->invalidate();
+    m_layout->updateGeometry();
 }
 
 void EmailDialog::updateColors()
