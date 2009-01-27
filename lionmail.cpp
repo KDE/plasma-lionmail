@@ -189,7 +189,7 @@ void LionMail::initData()
     kDebug() << "Source" << sources;
     foreach (const QString &source, sources) {
         //kDebug() << "BatterySource:" << battery_source;
-        dataUpdated(source, dataEngine("akonadi")->query(source));
+        //dataUpdated(source, dataEngine("akonadi")->query(source));
     }
 
 }
@@ -198,21 +198,34 @@ void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data
 {
     Q_UNUSED( source );
     //  EmailMessage *email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
-
+    kDebug() << data;
     //kDebug() << "Source" << source;
+    EmailMessage* email = 0;
     if (emails.count() < m_maxEmails && !emails.contains(source)) {
-        EmailMessage *email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
-
-        // Only set email-specific properties here, layouttweaks and the like should go into MailExtender
-        email->m_dialog->setSubject(data["Subject"].toString());
-        email->m_dialog->setFrom(data["From"].toString());
-        email->m_dialog->setTo(data["To"].toString());
-        email->m_dialog->setCc(data["Cc"].toString());
-        email->m_dialog->setBcc(data["Bcc"].toString());
+        kDebug() << "new ...";
+        email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
 
         m_extenders[0]->addEmail(email); // FIXME: hardcoded, we need to find a way to select the right extender
         emails[source] = email;
     }
+    if (emails.contains(source)) {
+        email = emails[source];
+    }
+
+    if (email == 0) {
+        return;
+    }
+    // Only set email-specific properties here, layouttweaks and the like should go into MailExtender
+    email->m_dialog->setSubject(data["Subject"].toString());
+    email->m_dialog->setFrom(data["From"].toString());
+    email->m_dialog->setTo(data["To"].toString());
+    email->m_dialog->setCc(data["Cc"].toString());
+    email->m_dialog->setBcc(data["Bcc"].toString());
+
+    kDebug() << "FROM:" << data["From"].toString() << data["From"];
+    kDebug() << "SUBJ:" << data["Subject"].toString() << data["Subject"];
+    kDebug() << "  TO:" << data["To"].toString() << data["To"];
+
     //mailView->addEmail(email);
 
     m_fromList[0] = data["From"].toString();
@@ -223,7 +236,7 @@ void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data
 
 void LionMail::newSource(const QString & source)
 {
-    //kDebug() << "------------- New:" << source;
+    kDebug() << "------------- New:" << source;
     engine->connectSource(source, this);
     // We could create MailExtenders here ...
 

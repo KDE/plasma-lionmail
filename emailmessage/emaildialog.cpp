@@ -164,6 +164,7 @@ void EmailDialog::setTo(const QString& to)
 {
     kDebug() << "Setting recipient" << to;
     if (!to.isEmpty()) {
+        kDebug() << "TO IS NONEMPTY!!!!!!!!!!!!!!!!!!!!!!!!!!";
         m_toLabel->setText(to);
     }
 }
