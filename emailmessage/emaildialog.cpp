@@ -124,6 +124,7 @@ void EmailDialog::toggleBody()
 
 void EmailDialog::hideBody()
 {
+    m_widget->setMinimumHeight(50);
     m_body->hide();
     m_expandIcon->setIcon("arrow-down-double");
     m_showBody = false;
@@ -171,7 +172,9 @@ void EmailDialog::setTo(const QString& to)
 
 void EmailDialog::setBody(const QString& body)
 {
-    // TODO
+    if (!body.isEmpty()) {
+        m_body->setHtml(body);
+    }
 }
 
 void EmailDialog::setAbstract(const QString& abstract)

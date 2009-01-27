@@ -125,7 +125,7 @@ void EmailMessage::setTo(const QStringList& toList)
 void EmailMessage::setBody(const QString& body)
 {
     m_body = body;
-    // TODO: update widgets...
+    m_dialog->setBody(body);
 }
 
 void EmailMessage::setAbstract(const QString& abstract)
