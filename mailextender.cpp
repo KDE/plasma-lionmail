@@ -31,7 +31,7 @@
 #include <Plasma/Dialog>
 #include <Plasma/Theme>
 #include <Plasma/IconWidget>
-
+#include <Plasma/Extender>
 //own
 #include "mailextender.h"
 #include "lionmail.h"
@@ -50,7 +50,7 @@ MailExtender::MailExtender(LionMail * applet, Plasma::Extender *ext)
     setIcon("akonadi");
     setTitle("Lion Mail");
     setName("Lion Mail ExenderItem");
-    graphicsWidget();
+    (void)graphicsWidget();
     setMinimumHeight(600);
 }
 
@@ -109,6 +109,7 @@ QGraphicsWidget* MailExtender::graphicsWidget()
     m_messageLayout = new QGraphicsLinearLayout(m_layout);
     m_messageLayout->setSpacing(0);
     m_messageLayout->setOrientation(Qt::Vertical);
+    m_messageLayout->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 /*
     {
         EmailMessage *email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
@@ -132,6 +133,7 @@ QGraphicsWidget* MailExtender::graphicsWidget()
 
     connect(Plasma::Theme::defaultTheme(), SIGNAL(themeChanged()), this, SLOT(updateColors()));
     updateColors();
+    resize(200, 400);
     return m_widget;
 }
 
@@ -144,13 +146,25 @@ void MailExtender::addEmail(EmailMessage* email)
     email->updateConstraints(Plasma::StartupCompletedConstraint);
 
     m_messageLayout->addItem(email->graphicsWidget());
-    //m_messageLayout->invalidate();
-    //m_layout->invalidate();
-    kDebug() << "m_messageLayout:" << m_messageLayout->sizeHint(Qt::MinimumSize) << m_messageLayout->sizeHint(Qt::PreferredSize);
-    kDebug() << "m_layout:" << m_layout->sizeHint(Qt::MinimumSize) << m_messageLayout->sizeHint(Qt::PreferredSize);
+    m_layout->setMinimumSize(m_messageLayout->sizeHint(Qt::MinimumSize));
+    m_layout->setPreferredSize(m_messageLayout->sizeHint(Qt::PreferredSize));
+    extender()->setMinimumSize(m_layout->sizeHint(Qt::PreferredSize));
+
     setMinimumSize(m_layout->sizeHint(Qt::MinimumSize));
     setPreferredSize(m_layout->sizeHint(Qt::PreferredSize));
+    m_widget->resize(m_layout->sizeHint(Qt::MinimumSize));
 
+    kDebug() << "--------------------------------------------------";
+    kDebug() << "MessageLayout:" << m_messageLayout->sizeHint(Qt::MinimumSize)  << m_messageLayout->sizeHint(Qt::PreferredSize);
+    kDebug() << "       Layout:" << m_layout->sizeHint(Qt::MinimumSize)         << m_layout->sizeHint(Qt::PreferredSize);
+    kDebug() << "         Size:" << size();
+    kDebug() << " ExtenderSize:" << extender()->size();
+
+    extender()->resize(size());
+    m_messageLayout->invalidate();
+    m_layout->invalidate();
+
+    updateGeometry();
 }
 
 void MailExtender::setDescription(const QString& desc)

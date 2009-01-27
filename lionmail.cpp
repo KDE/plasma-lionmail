@@ -57,9 +57,9 @@ void LionMail::init()
     engine = dataEngine("akonadi");
     engine->connectAllSources(this);
     connect(engine, SIGNAL(sourceAdded(QString)), SLOT(newSource(QString)));
-    setMinimumSize(600, 300);
-    m_theme->resize(600, 300);
-    resize(600, 300); // move to constraintsevent
+    setMinimumSize(300, 400);
+    m_theme->resize(300, 400);
+    resize(300, 400); // move to constraintsevent
     extender()->setEmptyExtenderMessage(i18n("empty..."));
     initExtenderItem();
     initData();
@@ -72,6 +72,7 @@ LionMail::~LionMail()
 
 void LionMail::createConfigurationInterface(KConfigDialog *parent)
 {
+    Q_UNUSED(parent);
     QWidget *widget = new QWidget();
     ui.setupUi(widget);
 
@@ -99,7 +100,8 @@ void LionMail::initExtenderItem()
 
 void LionMail::updateToolTip(const QString query, const int matches)
 {
-
+    Q_UNUSED(query);
+    Q_UNUSED(matches);
     m_toolTip = Plasma::ToolTipContent(i18nc("No search has been done yet", "Crystal Desktop Search"),
             i18nc("Tooltip sub text", "Click on the icon to monitor your emails"),
                     KIcon("akonadi").pixmap(IconSize(KIconLoader::Desktop))
@@ -197,7 +199,7 @@ void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data
     Q_UNUSED( source );
     //  EmailMessage *email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
 
-    kDebug() << "Source" << source;
+    //kDebug() << "Source" << source;
     if (emails.count() < m_maxEmails && !emails.contains(source)) {
         EmailMessage *email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
 
@@ -221,7 +223,7 @@ void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data
 
 void LionMail::newSource(const QString & source)
 {
-    kDebug() << "------------- New:" << source;
+    //kDebug() << "------------- New:" << source;
     engine->connectSource(source, this);
     // We could create MailExtenders here ...
 
