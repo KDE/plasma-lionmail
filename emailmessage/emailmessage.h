@@ -48,7 +48,7 @@ class EmailMessage : public Plasma::PopupApplet
         EmailDialog* m_dialog;
 
         void setTo(const QStringList& toList);
-        void setFrom(const QStringList& fromList);
+        void setFrom(const QString& fromList);
         void setCc(const QStringList& ccList);
         void setBcc(const QStringList& bccList);
         void setFlags(const QStringList& flagList);

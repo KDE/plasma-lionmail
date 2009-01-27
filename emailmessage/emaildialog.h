@@ -48,24 +48,13 @@ class EmailDialog : public QObject
 
         QGraphicsWidget* dialog();
 
-        Plasma::IconWidget* m_expandIcon;
-        Plasma::IconWidget* m_icon;
-        Plasma::Label* m_subjectLabel;
-        Plasma::Label* m_toLabel;
-        Plasma::Label* m_fromLabel;
-        Plasma::Label* m_ccLabel;
-        Plasma::Label* m_bccLabel;
-        Plasma::Label* m_dateLabel;
-        Plasma::WebView* m_bodyView;
-        Plasma::Label* m_abstractLabel;
-
         long id;
 
-        void setTo(const QString& to);
-        void setFrom(const QString& fromList);
-        void setCc(const QString& ccList);
-        void setBcc(const QString& bccList);
-        void setFlags(const QString& flagList);
+        void setFrom(const QString& from);
+        void setTo(const QStringList& to);
+        void setCc(const QStringList& ccList);
+        void setBcc(const QStringList& bccList);
+        void setFlags(const QStringList& flagList);
 
         void setSubject(const QString& subject);
         void setBody(const QString& body);
@@ -91,20 +80,31 @@ class EmailDialog : public QObject
         QGraphicsGridLayout* m_layout;
 
         // The applet attached to this item
-        EmailMessage* m_emailmessage;
+        EmailMessage* m_emailMessage;
 
         // Email data
         QString m_subject;
         QDate m_date;
 
-        QString m_to;
+        QStringList m_to;
         QString m_from;
-        QString m_cc;
-        QString m_bcc;
-        QString m_flags;
+        QStringList m_cc;
+        QStringList m_bcc;
+        QStringList m_flags;
 
         QString m_body;
         QString m_abstract;
+
+        Plasma::IconWidget* m_expandIcon;
+        Plasma::IconWidget* m_icon;
+        Plasma::Label* m_subjectLabel;
+        Plasma::Label* m_toLabel;
+        Plasma::Label* m_fromLabel;
+        Plasma::Label* m_ccLabel;
+        Plasma::Label* m_bccLabel;
+        Plasma::Label* m_dateLabel;
+        Plasma::WebView* m_bodyView;
+        Plasma::Label* m_abstractLabel;
 
 };
 

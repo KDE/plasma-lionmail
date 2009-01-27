@@ -116,7 +116,7 @@ void EmailMessage::setSubject(const QString& subject)
 
 void EmailMessage::setTo(const QStringList& toList)
 {
-    m_dialog->setTo(toList.join(", "));
+    m_dialog->setTo(toList);
 }
 
 void EmailMessage::setBody(const QString& body)
@@ -134,19 +134,19 @@ void EmailMessage::setDate(const QDate& date)
     m_dialog->setDate(date);
 }
 
-void EmailMessage::setFrom(const QStringList& fromList)
+void EmailMessage::setFrom(const QString& from)
 {
-    m_dialog->setFrom(fromList.join(", "));
+    m_dialog->setFrom(from);
 }
 
 void EmailMessage::setCc(const QStringList& ccList)
 {
-    m_dialog->setCc(ccList.join(", "));
+    m_dialog->setCc(ccList);
 }
 
 void EmailMessage::setBcc(const QStringList& bccList)
 {
-    m_dialog->setBcc(bccList.join(", "));
+    m_dialog->setBcc(bccList);
 }
 
 #include "emailmessage.moc"

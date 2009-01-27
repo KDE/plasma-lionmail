@@ -50,7 +50,7 @@ class LionMail : public Plasma::PopupApplet
         void initExtenderItem();
         void updateToolTip(const QString query, const int matches);
 
-        void initData();
+        //void initData();
 
 
     public slots:

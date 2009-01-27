@@ -42,8 +42,16 @@ using namespace Plasma;
 
 EmailDialog::EmailDialog(EmailMessage* emailmessage, QObject *parent)
     : QObject(parent),
-      m_widget(0)
+      m_widget(0),
+      m_toLabel(0),
+      m_fromLabel(0),
+      m_ccLabel(0),
+      m_bccLabel(0),
+      m_dateLabel(0),
+      m_bodyView(0),
+      m_abstractLabel(0)
 {
+    m_emailMessage = emailmessage;
     m_showBody = false;
     buildDialog();
 }
@@ -162,12 +170,11 @@ void EmailDialog::setSubject(const QString& subject)
     m_subject = subject;
 }
 
-void EmailDialog::setTo(const QString& to)
+void EmailDialog::setTo(const QStringList& toList)
 {
-    kDebug() << "Setting recipient" << to;
-    if (m_toLabel && !to.isEmpty()) {
-        kDebug() << "TO IS NONEMPTY!!!!!!!!!!!!!!!!!!!!!!!!!!";
-        m_toLabel->setText(to);
+    kDebug() << "Setting recipient" << toList;
+    if (m_toLabel && toList.count()) {
+        m_toLabel->setText(toList.join(", "));
     }
 }
 
@@ -195,23 +202,26 @@ void EmailDialog::setDate(const QDate& date)
     m_date = date;
 }
 
-void EmailDialog::setFrom(const QString& fromList)
+void EmailDialog::setFrom(const QString& from)
 {
-    if (m_fromLabel && !fromList.isEmpty()) {
-        m_fromLabel->setText(fromList);
+    if (m_fromLabel && !from.isEmpty()) {
+        m_fromLabel->setText(from);
     }
-    m_from = fromList;
+    m_from = from;
 }
 
-void EmailDialog::setCc(const QString& ccList)
+void EmailDialog::setCc(const QStringList& ccList)
 {
-    // TODO
+    if (m_ccLabel && ccList.count()) {
+        m_ccLabel->setText(ccList.join(", "));
+    }
+    m_cc = ccList;
 }
 
-void EmailDialog::setBcc(const QString& bccList)
+void EmailDialog::setBcc(const QStringList& bccList)
 {
-    if (m_bccLabel && bccList.isEmpty()) {
-        m_bccLabel->setText(bccList);
+    if (m_bccLabel && bccList.count()) {
+        m_bccLabel->setText(bccList.join(", "));
     }
     m_bcc = bccList;
 }

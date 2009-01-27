@@ -62,7 +62,7 @@ void LionMail::init()
     resize(300, 400); // move to constraintsevent
     extender()->setEmptyExtenderMessage(i18n("empty..."));
     initExtenderItem();
-    initData();
+    //initData();
     updateToolTip("", 0);
 }
 
@@ -182,7 +182,6 @@ void LionMail::drawEmail(int index, const QRectF& rect, QPainter* painter)
     painter->setPen(_pen);
 
 }
-*/
 void LionMail::initData()
 {
     const QStringList& sources = dataEngine("akonadi")->query("Subject")["sources"].toStringList();
@@ -193,13 +192,11 @@ void LionMail::initData()
     }
 
 }
+*/
 
 void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
-    Q_UNUSED( source );
-    //  EmailMessage *email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
     kDebug() << data;
-    //kDebug() << "Source" << source;
     EmailMessage* email = 0;
     if (emails.count() < m_maxEmails && !emails.contains(source)) {
         kDebug() << "new ...";
@@ -218,9 +215,9 @@ void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data
     // Only set email-specific properties here, layouttweaks and the like should go into MailExtender
     email->m_dialog->setSubject(data["Subject"].toString());
     email->m_dialog->setFrom(data["From"].toString());
-    email->m_dialog->setTo(data["To"].toString());
-    email->m_dialog->setCc(data["Cc"].toString());
-    email->m_dialog->setBcc(data["Bcc"].toString());
+    email->m_dialog->setTo(data["To"].toStringList());
+    email->m_dialog->setCc(data["Cc"].toStringList());
+    email->m_dialog->setBcc(data["Bcc"].toStringList());
 
     kDebug() << "FROM:" << data["From"].toString() << data["From"];
     kDebug() << "SUBJ:" << data["Subject"].toString() << data["Subject"];
