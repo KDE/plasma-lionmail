@@ -5,7 +5,7 @@ add_subdirectory(emailmessage)
 set(lionmail_SRCS
     lionmail.cpp
     mailextender.cpp
-    emailmessage/emaildialog.cpp
+    emailmessage/emailwidget.cpp
     )
 
 kde4_add_ui_files(lionmail_SRCS lionmailConfig.ui )

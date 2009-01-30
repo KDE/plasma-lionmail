@@ -25,7 +25,7 @@
 #include <Plasma/ToolTipManager>
 
 
-#include "emaildialog.h"
+#include "emailwidget.h"
 
 //desktop view
 namespace Plasma
@@ -45,7 +45,7 @@ class EmailMessage : public Plasma::PopupApplet
         void constraintsEvent(Plasma::Constraints constraints);
 
         // The dialog displaying the email
-        EmailDialog* m_dialog;
+        EmailWidget* m_emailWidget;
 
         void setTo(const QStringList& toList);
         void setFrom(const QString& fromList);

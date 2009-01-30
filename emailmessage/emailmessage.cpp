@@ -19,7 +19,7 @@
 
 //own
 #include "emailmessage.h"
-#include "emaildialog.h"
+#include "emailwidget.h"
 
 //Qt
 
@@ -40,7 +40,7 @@ using namespace Plasma;
 
 EmailMessage::EmailMessage(QObject *parent, const QVariantList &args)
     : Plasma::PopupApplet(parent, args),
-      m_dialog(0),
+      m_emailWidget(0),
       m_icon(0)
 {
     KGlobal::locale()->insertCatalog("plasma_applet_lionmail");
@@ -62,7 +62,7 @@ void EmailMessage::init()
     kDebug() << "init: email";
     KConfigGroup cg = config();
 
-    m_dialog->hideBody();
+    m_emailWidget->hideBody();
 
     Plasma::ToolTipManager::self()->registerWidget(this);
     // TODO ...
@@ -71,11 +71,11 @@ void EmailMessage::init()
 
 QGraphicsWidget* EmailMessage::graphicsWidget()
 {
-    if (!m_dialog) {
-        kDebug() << "new EmailDialog";
-        m_dialog = new EmailDialog(this);
+    if (!m_emailWidget) {
+        kDebug() << "new EmailWidget";
+        m_emailWidget = new EmailWidget(this);
     }
-    return m_dialog;
+    return m_emailWidget;
 }
 
 void EmailMessage::popupEvent(bool show)
@@ -94,59 +94,60 @@ void EmailMessage::constraintsEvent(Plasma::Constraints constraints)
         // TODO: better logic for height and width constraints
 
         if (contentsRect().width() < 75) { // not wide enough, only show the icon
-            m_dialog->setIcon();
+            m_emailWidget->setIcon();
         }
         if (contentsRect().height() < 36) { // roughly one line plus a bit of space
-            m_dialog->setTiny();
+            m_emailWidget->setTiny();
         } else if (contentsRect().height() < 100) { // We can fit date, recipient, attachment and such in
-            m_dialog->setSmall();
+            m_emailWidget->setSmall();
         } else if (contentsRect().height() < 140) { // $even_more_info
-            m_dialog->setMedium();
+            m_emailWidget->setMedium();
         } else {  // Enough space to include the body
-            m_dialog->setLarge();
+            m_emailWidget->setLarge();
         }
+        m_emailWidget->resize(contentsRect().size());
         update();
     }
 }
 
 void EmailMessage::setSubject(const QString& subject)
 {
-    m_dialog->setSubject(subject);
+    m_emailWidget->setSubject(subject);
 }
 
 void EmailMessage::setTo(const QStringList& toList)
 {
-    m_dialog->setTo(toList);
+    m_emailWidget->setTo(toList);
 }
 
 void EmailMessage::setBody(const QString& body)
 {
-    m_dialog->setBody(body);
+    m_emailWidget->setBody(body);
 }
 
 void EmailMessage::setAbstract(const QString& abstract)
 {
-    m_dialog->setAbstract(abstract);
+    m_emailWidget->setAbstract(abstract);
 }
 
 void EmailMessage::setDate(const QDate& date)
 {
-    m_dialog->setDate(date);
+    m_emailWidget->setDate(date);
 }
 
 void EmailMessage::setFrom(const QString& from)
 {
-    m_dialog->setFrom(from);
+    m_emailWidget->setFrom(from);
 }
 
 void EmailMessage::setCc(const QStringList& ccList)
 {
-    m_dialog->setCc(ccList);
+    m_emailWidget->setCc(ccList);
 }
 
 void EmailMessage::setBcc(const QStringList& bccList)
 {
-    m_dialog->setBcc(bccList);
+    m_emailWidget->setBcc(bccList);
 }
 
 #include "emailmessage.moc"

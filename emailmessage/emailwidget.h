@@ -17,8 +17,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
 
-#ifndef EMAILDIALOG_H
-#define EMAILDIALOG_H
+#ifndef EMAILWIDGET_H
+#define EMAILWIDGET_H
 
 //Qt
 #include <QGraphicsGridLayout>
@@ -39,13 +39,13 @@ namespace Plasma
     class WebView;
 }
 
-class EmailDialog : public QGraphicsWidget
+class EmailWidget : public QGraphicsWidget
 {
     Q_OBJECT
 
     public:
-        EmailDialog(EmailMessage* emailmessage, QGraphicsWidget *parent = 0);
-        virtual ~EmailDialog();
+        EmailWidget(EmailMessage* emailmessage, QGraphicsWidget *parent = 0);
+        virtual ~EmailWidget();
 
         QGraphicsWidget* dialog();
 

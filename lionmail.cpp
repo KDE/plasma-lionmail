@@ -213,11 +213,11 @@ void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data
         return;
     }
     // Only set email-specific properties here, layouttweaks and the like should go into MailExtender
-    email->m_dialog->setSubject(data["Subject"].toString());
-    email->m_dialog->setFrom(data["From"].toString());
-    email->m_dialog->setTo(data["To"].toStringList());
-    email->m_dialog->setCc(data["Cc"].toStringList());
-    email->m_dialog->setBcc(data["Bcc"].toStringList());
+    email->m_emailWidget->setSubject(data["Subject"].toString());
+    email->m_emailWidget->setFrom(data["From"].toString());
+    email->m_emailWidget->setTo(data["To"].toStringList());
+    email->m_emailWidget->setCc(data["Cc"].toStringList());
+    email->m_emailWidget->setBcc(data["Bcc"].toStringList());
 
     kDebug() << "FROM:" << data["From"].toString() << data["From"];
     kDebug() << "SUBJ:" << data["Subject"].toString() << data["Subject"];

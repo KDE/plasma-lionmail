@@ -3,7 +3,7 @@ project(plasma-emailmessage)
 
 set(emailmessage_SRCS
     emailmessage.cpp
-    emaildialog.cpp
+    emailwidget.cpp
     )
 
 kde4_add_plugin(plasma_applet_emailmessage ${emailmessage_SRCS})

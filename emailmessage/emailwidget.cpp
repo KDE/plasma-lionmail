@@ -36,11 +36,11 @@
 
 // own
 #include "emailmessage.h"
-#include "emaildialog.h"
+#include "emailwidget.h"
 
 using namespace Plasma;
 
-EmailDialog::EmailDialog(EmailMessage* emailmessage, QGraphicsWidget *parent)
+EmailWidget::EmailWidget(EmailMessage* emailmessage, QGraphicsWidget *parent)
     : QGraphicsWidget(parent),
       m_toLabel(0),
       m_fromLabel(0),
@@ -55,36 +55,36 @@ EmailDialog::EmailDialog(EmailMessage* emailmessage, QGraphicsWidget *parent)
     buildDialog();
 }
 
-EmailDialog::~EmailDialog()
+EmailWidget::~EmailWidget()
 {
 }
 
-void EmailDialog::setIcon()
-{
-    setSmall(); // TODO
-}
-
-void EmailDialog::setTiny()
+void EmailWidget::setIcon()
 {
     setSmall(); // TODO
 }
 
-void EmailDialog::setSmall()
+void EmailWidget::setTiny()
+{
+    setSmall(); // TODO
+}
+
+void EmailWidget::setSmall()
 {
     hideBody();
 }
 
-void EmailDialog::setMedium()
+void EmailWidget::setMedium()
 {
     setSmall(); // TODO
 }
 
-void EmailDialog::setLarge()
+void EmailWidget::setLarge()
 {
     showBody();
 }
 
-void EmailDialog::buildDialog()
+void EmailWidget::buildDialog()
 {
     int iconsize = 32;
 
@@ -135,10 +135,10 @@ void EmailDialog::buildDialog()
 
     connect(Plasma::Theme::defaultTheme(), SIGNAL(themeChanged()), this, SLOT(updateColors()));
     updateColors();
-    kDebug() << "EmailDialog built";
+    kDebug() << "EmailWidget built";
 }
 
-void EmailDialog::toggleBody()
+void EmailWidget::toggleBody()
 {
     if (!m_showBody) {
         showBody();
@@ -147,7 +147,7 @@ void EmailDialog::toggleBody()
     }
 }
 
-void EmailDialog::hideBody()
+void EmailWidget::hideBody()
 {
     setMinimumHeight(0);
     m_bodyView->hide();
@@ -158,7 +158,7 @@ void EmailDialog::hideBody()
 }
 
 
-void EmailDialog::showBody()
+void EmailWidget::showBody()
 {
     setMinimumHeight(250);
     m_bodyView->show();
@@ -168,7 +168,7 @@ void EmailDialog::showBody()
     m_layout->updateGeometry();
 }
 
-void EmailDialog::updateColors()
+void EmailWidget::updateColors()
 {
     QPalette p = palette();
     p.setColor(QPalette::Window, Plasma::Theme::defaultTheme()->color(Plasma::Theme::BackgroundColor));
@@ -179,7 +179,7 @@ void EmailDialog::updateColors()
     m_bodyView->page()->setPalette(p);
 }
 
-void EmailDialog::setSubject(const QString& subject)
+void EmailWidget::setSubject(const QString& subject)
 {
     //m_subject = subject;
     if (m_subjectLabel && !subject.isEmpty()) {
@@ -188,7 +188,7 @@ void EmailDialog::setSubject(const QString& subject)
     m_subject = subject;
 }
 
-void EmailDialog::setTo(const QStringList& toList)
+void EmailWidget::setTo(const QStringList& toList)
 {
     kDebug() << "Setting recipient" << toList;
     if (m_toLabel && toList.count()) {
@@ -196,7 +196,7 @@ void EmailDialog::setTo(const QStringList& toList)
     }
 }
 
-void EmailDialog::setBody(const QString& body)
+void EmailWidget::setBody(const QString& body)
 {
     if (m_bodyView && !body.isEmpty()) {
         m_bodyView->setHtml(body);
@@ -204,7 +204,7 @@ void EmailDialog::setBody(const QString& body)
     m_body = body;
 }
 
-void EmailDialog::setAbstract(const QString& abstract)
+void EmailWidget::setAbstract(const QString& abstract)
 {
     if (m_abstractLabel && abstract.isEmpty()) {
         m_abstractLabel->setText(abstract);
@@ -212,7 +212,7 @@ void EmailDialog::setAbstract(const QString& abstract)
     m_abstract = abstract;
 }
 
-void EmailDialog::setDate(const QDate& date)
+void EmailWidget::setDate(const QDate& date)
 {
     if (m_dateLabel && date.isValid()) {
         m_dateLabel->setText(date.toString());
@@ -220,7 +220,7 @@ void EmailDialog::setDate(const QDate& date)
     m_date = date;
 }
 
-void EmailDialog::setFrom(const QString& from)
+void EmailWidget::setFrom(const QString& from)
 {
     if (m_fromLabel && !from.isEmpty()) {
         m_fromLabel->setText(from);
@@ -228,7 +228,7 @@ void EmailDialog::setFrom(const QString& from)
     m_from = from;
 }
 
-void EmailDialog::setCc(const QStringList& ccList)
+void EmailWidget::setCc(const QStringList& ccList)
 {
     if (m_ccLabel && ccList.count()) {
         m_ccLabel->setText(ccList.join(", "));
@@ -236,7 +236,7 @@ void EmailDialog::setCc(const QStringList& ccList)
     m_cc = ccList;
 }
 
-void EmailDialog::setBcc(const QStringList& bccList)
+void EmailWidget::setBcc(const QStringList& bccList)
 {
     if (m_bccLabel && bccList.count()) {
         m_bccLabel->setText(bccList.join(", "));
@@ -245,4 +245,4 @@ void EmailDialog::setBcc(const QStringList& bccList)
 }
 
 
-#include "emaildialog.moc"
+#include "emailwidget.moc"
