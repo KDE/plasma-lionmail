@@ -40,9 +40,8 @@
 
 using namespace Plasma;
 
-EmailDialog::EmailDialog(EmailMessage* emailmessage, QObject *parent)
-    : QObject(parent),
-      m_widget(0),
+EmailDialog::EmailDialog(EmailMessage* emailmessage, QGraphicsWidget *parent)
+    : QGraphicsWidget(parent),
       m_toLabel(0),
       m_fromLabel(0),
       m_ccLabel(0),
@@ -58,11 +57,6 @@ EmailDialog::EmailDialog(EmailMessage* emailmessage, QObject *parent)
 
 EmailDialog::~EmailDialog()
 {
-}
-
-QGraphicsWidget* EmailDialog::dialog()
-{
-    return m_widget;
 }
 
 void EmailDialog::setIcon()
@@ -94,10 +88,7 @@ void EmailDialog::buildDialog()
 {
     int iconsize = 32;
 
-    m_widget = new QGraphicsWidget();
-    m_widget->setParent(this);
-
-    m_layout = new QGraphicsGridLayout(m_widget);
+    m_layout = new QGraphicsGridLayout(this);
     m_layout->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
     m_layout->setColumnFixedWidth(0, iconsize);
     m_layout->setColumnMinimumWidth(1, 180);
@@ -105,7 +96,7 @@ void EmailDialog::buildDialog()
     m_layout->setHorizontalSpacing(4);
 
 
-    m_icon = new Plasma::IconWidget(m_widget);
+    m_icon = new Plasma::IconWidget(this);
     m_icon->setIcon("view-pim-mail");
     m_icon->resize(iconsize, iconsize);
     m_icon->setMinimumHeight(iconsize);
@@ -114,12 +105,12 @@ void EmailDialog::buildDialog()
 
     m_layout->addItem(m_icon, 0, 0, 2, 1);
 
-    m_subjectLabel = new Plasma::Label(m_widget);
+    m_subjectLabel = new Plasma::Label(this);
     m_subjectLabel->setText("<b>Re: sell me a beer, mon</b>");
     m_subjectLabel->setMaximumHeight(iconsize/2);
     m_layout->addItem(m_subjectLabel, 0, 1);
 
-    m_toLabel = new Plasma::Label(m_widget);
+    m_toLabel = new Plasma::Label(this);
     m_toLabel->setText("<b>Recipient:</b> Bob Marley <bmarley@kde.org>");
     m_toLabel->setMaximumHeight(iconsize/2);
     m_toLabel->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
@@ -127,20 +118,20 @@ void EmailDialog::buildDialog()
 
     m_layout->addItem(m_toLabel, 1, 1);
 
-    m_bodyView = new Plasma::WebView(m_widget);
+    m_bodyView = new Plasma::WebView(this);
     m_bodyView->setMinimumSize(60, 30);
     QString html("<font color=white>Hi everybody<br /><br />I hope you're all having a great time on Jamaica, my home country (which you might have noticed after yesterday's bob-marley-on-repeat-for-the-whole-night. I wish I could be with you, but it wasn't meant to be. I'll go out with my friends Kurt and Elvis tonight instead and wish you a happy CampKDE.<br /><br />-- Bob</font>");
 
     m_bodyView->setHtml(html);
     m_layout->addItem(m_bodyView, 3, 0, 1, 3);
 
-    m_expandIcon = new Plasma::IconWidget(m_widget);
+    m_expandIcon = new Plasma::IconWidget(this);
     m_expandIcon->setIcon("arrow-down-double");
     m_expandIcon->setMinimumSize(12, 12);
     connect(m_expandIcon, SIGNAL(clicked()), this, SLOT(toggleBody()));
     m_layout->addItem(m_expandIcon, 1, 2, Qt::AlignRight);
 
-    m_widget->setLayout(m_layout);
+    setLayout(m_layout);
 
     connect(Plasma::Theme::defaultTheme(), SIGNAL(themeChanged()), this, SLOT(updateColors()));
     updateColors();
@@ -158,7 +149,7 @@ void EmailDialog::toggleBody()
 
 void EmailDialog::hideBody()
 {
-    m_widget->setMinimumHeight(0);
+    setMinimumHeight(0);
     m_bodyView->hide();
     m_expandIcon->setIcon("arrow-down-double");
     m_showBody = false;
@@ -169,7 +160,7 @@ void EmailDialog::hideBody()
 
 void EmailDialog::showBody()
 {
-    m_widget->setMinimumHeight(250);
+    setMinimumHeight(250);
     m_bodyView->show();
     m_expandIcon->setIcon("arrow-up-double");
     m_showBody = true;
@@ -179,12 +170,12 @@ void EmailDialog::showBody()
 
 void EmailDialog::updateColors()
 {
-    QPalette p = m_widget->palette();
+    QPalette p = palette();
     p.setColor(QPalette::Window, Plasma::Theme::defaultTheme()->color(Plasma::Theme::BackgroundColor));
     //p.setColor(QPalette::WindowText, Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor));
     p.setColor(QPalette::Text, QColor("white"));
 
-    m_widget->setPalette(p);
+    setPalette(p);
     m_bodyView->page()->setPalette(p);
 }
 

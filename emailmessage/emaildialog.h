@@ -22,6 +22,7 @@
 
 //Qt
 #include <QGraphicsGridLayout>
+#include <QGraphicsWidget>
 
 // KDE
 #include <KPushButton>
@@ -38,12 +39,12 @@ namespace Plasma
     class WebView;
 }
 
-class EmailDialog : public QObject
+class EmailDialog : public QGraphicsWidget
 {
     Q_OBJECT
 
     public:
-        EmailDialog(EmailMessage* emailmessage, QObject *parent = 0);
+        EmailDialog(EmailMessage* emailmessage, QGraphicsWidget *parent = 0);
         virtual ~EmailDialog();
 
         QGraphicsWidget* dialog();
@@ -89,7 +90,7 @@ class EmailDialog : public QObject
         void buildDialog();
 
         // The widget which displays in the panel
-        QGraphicsWidget* m_widget;
+        //QGraphicsWidget* m_widget;
         QGraphicsGridLayout* m_layout;
 
         // The applet attached to this item

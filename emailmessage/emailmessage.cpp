@@ -75,7 +75,7 @@ QGraphicsWidget* EmailMessage::graphicsWidget()
         kDebug() << "new EmailDialog";
         m_dialog = new EmailDialog(this);
     }
-    return m_dialog->dialog();
+    return m_dialog;
 }
 
 void EmailMessage::popupEvent(bool show)
