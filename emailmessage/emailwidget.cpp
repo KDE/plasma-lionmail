@@ -28,7 +28,6 @@
 #include <KGlobalSettings>
 
 //plasma
-#include <Plasma/Dialog>
 #include <Plasma/Theme>
 #include <Plasma/IconWidget>
 #include <Plasma/Label>

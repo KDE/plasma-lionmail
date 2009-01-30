@@ -26,10 +26,8 @@
 //KDE
 
 //plasma
-#include <Plasma/Dialog>
 #include <Plasma/Label>
 #include <Plasma/IconWidget>
-#include <Plasma/Theme>
 #include <Plasma/ToolTipManager>
 
 
@@ -48,7 +46,7 @@ EmailMessage::EmailMessage(QObject *parent, const QVariantList &args)
     setAspectRatioMode(IgnoreAspectRatio);
     setHasConfigurationInterface(true);
     setAcceptsHoverEvents(true);
-
+    setMinimumSize(80, 24);
     (void)graphicsWidget();
     setPopupIcon("view-pim-mail");
 }

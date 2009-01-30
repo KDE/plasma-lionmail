@@ -21,8 +21,6 @@
 #include "lionmail.h"
 
 #include <QPainter>
-#include <QWidget>
-#include <QGraphicsItem>
 
 #include <KConfigDialog>
 
