@@ -120,9 +120,9 @@ void EmailWidget::buildDialog()
 
     m_bodyView = new Plasma::WebView(this);
     m_bodyView->setMinimumSize(60, 30);
-    QString html("<font color=white>Hi everybody<br /><br />I hope you're all having a great time on Jamaica, my home country (which you might have noticed after yesterday's bob-marley-on-repeat-for-the-whole-night. I wish I could be with you, but it wasn't meant to be. I'll go out with my friends Kurt and Elvis tonight instead and wish you a happy CampKDE.<br /><br />-- Bob</font>");
+    QString html("<h3>Hi everybody</h3>I hope you're all having a great time on Jamaica, my home country (which you might have noticed after yesterday's bob-marley-on-repeat-for-the-whole-night. I wish I could be with you, but it wasn't meant to be. I'll go out with my friends Kurt and Elvis tonight instead and wish you a happy CampKDE.<br /><br /><em>-- Bob</em>");
 
-    m_bodyView->setHtml(html);
+    setBody(html);
     m_layout->addItem(m_bodyView, 3, 0, 1, 3);
 
     m_expandIcon = new Plasma::IconWidget(this);
@@ -169,9 +169,13 @@ void EmailWidget::showBody()
 void EmailWidget::updateColors()
 {
     QPalette p = palette();
-    p.setColor(QPalette::Window, Plasma::Theme::defaultTheme()->color(Plasma::Theme::BackgroundColor));
-    //p.setColor(QPalette::WindowText, Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor));
-    p.setColor(QPalette::Text, QColor("white"));
+    //p.setColor(QPalette::Window, Plasma::Theme::defaultTheme()->color(Plasma::Theme::BackgroundColor));
+    p.setColor(QPalette::Window, Qt::transparent);
+
+    // FIXME: setting foreground color apparently doesn't work?
+    p.setColor(QPalette::Text, Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor));
+    //p.setColor(QPalette::WindowText, Qt::green);
+    //kDebug() << "Textcolor:" << Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor);
 
     setPalette(p);
     m_bodyView->page()->setPalette(p);
@@ -197,7 +201,8 @@ void EmailWidget::setTo(const QStringList& toList)
 void EmailWidget::setBody(const QString& body)
 {
     if (m_bodyView && !body.isEmpty()) {
-        m_bodyView->setHtml(body);
+        QString c = Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor).name(); // FIXME: nasty color hack
+        m_bodyView->setHtml("<font color=\"" + c + "\">" + body + "</font>"); // FIXME: Urks. :(
     }
     m_body = body;
 }

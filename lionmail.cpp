@@ -201,9 +201,10 @@ void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data
     if (emails.count() < m_maxEmails && !emails.contains(source)) {
         kDebug() << "new ...";
         email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
-
-        m_extenders[0]->addEmail(email); // FIXME: hardcoded, we need to find a way to select the right extender
-        emails[source] = email;
+        if (m_extenders.count()) {
+            m_extenders[0]->addEmail(email); // FIXME: hardcoded, we need to find a way to select the right extender
+            emails[source] = email;
+        }
     }
     if (emails.contains(source)) {
         email = emails[source];
