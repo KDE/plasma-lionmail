@@ -196,7 +196,7 @@ void LionMail::initData()
 
 void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
-    kDebug() << data;
+    //kDebug() << data;
     EmailMessage* email = 0;
     if (emails.count() < m_maxEmails && !emails.contains(source)) {
         kDebug() << "new ...";
@@ -233,7 +233,7 @@ void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data
 
 void LionMail::newSource(const QString & source)
 {
-    kDebug() << "------------- New:" << source;
+    //kDebug() << "------------- New:" << source;
     engine->connectSource(source, this);
     // We could create MailExtenders here ...
 

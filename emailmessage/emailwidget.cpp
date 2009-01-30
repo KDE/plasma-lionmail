@@ -149,7 +149,6 @@ void EmailWidget::toggleBody()
 
 void EmailWidget::hideBody()
 {
-    setMinimumHeight(0);
     m_bodyView->hide();
     m_expandIcon->setIcon("arrow-down-double");
     m_showBody = false;
@@ -160,7 +159,6 @@ void EmailWidget::hideBody()
 
 void EmailWidget::showBody()
 {
-    setMinimumHeight(250);
     m_bodyView->show();
     m_expandIcon->setIcon("arrow-up-double");
     m_showBody = true;

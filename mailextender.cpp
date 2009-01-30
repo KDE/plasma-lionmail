@@ -162,7 +162,7 @@ void MailExtender::addEmail(EmailMessage* email)
     kDebug() << " ExtenderSize:" << extender()->size();
 
     // Layouting magic, reassess when we depend on Qt 4.5
-    extender()->resize(size());
+    //extender()->resize(m_layout->sizeHint(Qt::PreferredSize));
     m_messageLayout->updateGeometry();
     m_layout->updateGeometry();
     updateGeometry();
