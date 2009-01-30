@@ -62,8 +62,21 @@ class EmailDialog : public QObject
 
         void setDate(const QDate& date);
 
+        enum AppletSize {
+            Icon = 0,
+            Tiny = 1,
+            Small = 2,
+            Medium = 4,
+            Large = 8
+        };
+        Q_DECLARE_FLAGS(AppletSizes, AppletSize)
 
     public Q_SLOTS:
+        void setIcon();
+        void setTiny();
+        void setSmall();
+        void setMedium();
+        void setLarge();
 
         void toggleBody();
         void showBody();

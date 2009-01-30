@@ -56,16 +56,7 @@ class EmailMessage : public Plasma::PopupApplet
         void setSubject(const QString& subject);
         void setBody(const QString& body);
         void setAbstract(const QString& abstract);
-
         void setDate(const QDate& date);
-
-        enum AppletSize {
-            Tiny = 0,
-            Small = 1,
-            Medium = 2,
-            Large = 4
-        };
-        Q_DECLARE_FLAGS(AppletSizes, AppletSize)
 
     protected:
         void popupEvent(bool show);

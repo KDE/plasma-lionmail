@@ -91,23 +91,23 @@ void EmailMessage::constraintsEvent(Plasma::Constraints constraints)
 {
     if (constraints & (Plasma::FormFactorConstraint | Plasma::SizeConstraint)) {
 
-        if (contentsRect().height() > 100) {
-            m_dialog->showBody();
-        } else {
-            m_dialog->hideBody();
+        // TODO: better logic for height and width constraints
+
+        if (contentsRect().width() < 75) { // not wide enough, only show the icon
+            m_dialog->setIcon();
+        }
+        if (contentsRect().height() < 36) { // roughly one line plus a bit of space
+            m_dialog->setTiny();
+        } else if (contentsRect().height() < 100) { // We can fit date, recipient, attachment and such in
+            m_dialog->setSmall();
+        } else if (contentsRect().height() < 140) { // $even_more_info
+            m_dialog->setMedium();
+        } else {  // Enough space to include the body
+            m_dialog->setLarge();
         }
         update();
     }
 }
-/*
-void EmailMessage::setSmall
-        if (contentsRect().height() > 100) {
-            m_dialog->hideBody();
-        } else {
-            m_dialog->showBody();
-        }
-
-*/
 
 void EmailMessage::setSubject(const QString& subject)
 {

@@ -65,6 +65,31 @@ QGraphicsWidget* EmailDialog::dialog()
     return m_widget;
 }
 
+void EmailDialog::setIcon()
+{
+    setSmall(); // TODO
+}
+
+void EmailDialog::setTiny()
+{
+    setSmall(); // TODO
+}
+
+void EmailDialog::setSmall()
+{
+    hideBody();
+}
+
+void EmailDialog::setMedium()
+{
+    setSmall(); // TODO
+}
+
+void EmailDialog::setLarge()
+{
+    showBody();
+}
+
 void EmailDialog::buildDialog()
 {
     int iconsize = 32;
@@ -103,6 +128,7 @@ void EmailDialog::buildDialog()
     m_layout->addItem(m_toLabel, 1, 1);
 
     m_bodyView = new Plasma::WebView(m_widget);
+    m_bodyView->setMinimumSize(60, 30);
     QString html("<font color=white>Hi everybody<br /><br />I hope you're all having a great time on Jamaica, my home country (which you might have noticed after yesterday's bob-marley-on-repeat-for-the-whole-night. I wish I could be with you, but it wasn't meant to be. I'll go out with my friends Kurt and Elvis tonight instead and wish you a happy CampKDE.<br /><br />-- Bob</font>");
 
     m_bodyView->setHtml(html);
