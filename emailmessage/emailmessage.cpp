@@ -60,7 +60,7 @@ void EmailMessage::init()
     kDebug() << "init: email";
     KConfigGroup cg = config();
 
-    m_emailWidget->collapse();
+    //m_emailWidget->collapse();
     Plasma::ToolTipManager::self()->registerWidget(this);
     // TODO ...
 

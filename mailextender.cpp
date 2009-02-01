@@ -51,7 +51,9 @@ MailExtender::MailExtender(LionMail * applet, Plasma::Extender *ext)
     setTitle("Lion Mail");
     setName("Lion Mail ExenderItem");
     (void)graphicsWidget();
-    setMinimumHeight(600);
+    setMinimumHeight(200);
+    //setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
 }
 
 MailExtender::~MailExtender()
@@ -80,9 +82,9 @@ QGraphicsWidget* MailExtender::graphicsWidget()
     m_widget = new QGraphicsWidget(this);
 
     m_layout = new QGraphicsGridLayout(m_widget);
-    m_layout->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
+    m_layout->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     m_layout->setColumnFixedWidth(0, iconsize);
-    m_layout->setColumnMinimumWidth(1, 200);
+    m_layout->setColumnMinimumWidth(1, 100);
     m_layout->setHorizontalSpacing(0);
 
     // larger icon on the left
@@ -133,7 +135,7 @@ QGraphicsWidget* MailExtender::graphicsWidget()
 
     connect(Plasma::Theme::defaultTheme(), SIGNAL(themeChanged()), this, SLOT(updateColors()));
     updateColors();
-    resize(200, 400);
+    //resize(200, 400);
     return m_widget;
 }
 
@@ -144,6 +146,7 @@ void MailExtender::addEmail(EmailMessage* email)
     email->setBackgroundHints(Plasma::Applet::NoBackground);
     email->init();
     email->setPopupIcon(QIcon());
+    email->m_emailWidget->setSmall();
     email->updateConstraints(Plasma::StartupCompletedConstraint);
 
     m_messageLayout->addItem(email->graphicsWidget());
@@ -160,6 +163,7 @@ void MailExtender::addEmail(EmailMessage* email)
     kDebug() << "       Layout:" << m_layout->sizeHint(Qt::MinimumSize)         << m_layout->sizeHint(Qt::PreferredSize);
     kDebug() << "         Size:" << size();
     kDebug() << " ExtenderSize:" << extender()->size();
+    kDebug() << "EmailWidgSize:" << email->m_emailWidget->geometry() << email->m_emailWidget->minimumSize();
 
     // Layouting magic, reassess when we depend on Qt 4.5
     //extender()->resize(m_layout->sizeHint(Qt::PreferredSize));

@@ -21,6 +21,7 @@
 #include "lionmail.h"
 
 #include <QPainter>
+#include <QLayout>
 
 #include <KConfigDialog>
 
@@ -55,9 +56,10 @@ void LionMail::init()
     engine = dataEngine("akonadi");
     engine->connectAllSources(this);
     connect(engine, SIGNAL(sourceAdded(QString)), SLOT(newSource(QString)));
-    setMinimumSize(300, 400);
-    m_theme->resize(300, 400);
-    resize(300, 400); // move to constraintsevent
+    setMinimumSize(48, 96);
+    setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    //m_theme->resize(300, 400);
+    //resize(300, 400); // move to constraintsevent
     extender()->setEmptyExtenderMessage(i18n("empty..."));
     initExtenderItem();
     //initData();
