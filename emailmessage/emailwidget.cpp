@@ -50,7 +50,7 @@ EmailWidget::EmailWidget(EmailMessage* emailmessage, QGraphicsWidget *parent)
       m_abstractLabel(0)
 {
     m_emailMessage = emailmessage;
-    m_showBody = false;
+    m_expanded = false;
     buildDialog();
 }
 
@@ -60,65 +60,100 @@ EmailWidget::~EmailWidget()
 
 void EmailWidget::setIcon()
 {
-    setSmall(); // TODO
+    kDebug() << "Icon ...";
+    /*
+    m_toLabel->hide();
+    m_bodyView->hide();
+    //setSmall(); // TODO
+    */
 }
 
 void EmailWidget::setTiny()
 {
-    setSmall(); // TODO
+    m_toLabel->hide();
+    m_bodyView->hide();
+    m_layout->setRowFixedHeight(1, 0);
+    m_layout->setRowFixedHeight(2, 0);
+    kDebug() << "Tiny ...";
+    resizeIcon(16);
+    m_appletSize = Tiny;
+    m_layout->invalidate();
+    m_layout->updateGeometry();
 }
 
 void EmailWidget::setSmall()
 {
-    hideBody();
+    m_toLabel->show();
+    kDebug() << "Small ...";
+    resizeIcon(22);
+
+    m_appletSize = Small;
+    m_layout->invalidate();
+    m_layout->updateGeometry();
 }
 
 void EmailWidget::setMedium()
 {
-    setSmall(); // TODO
+    m_toLabel->show();
+    m_bodyView->hide();
+    kDebug() << "Medium ...";
+    resizeIcon(32);
+    m_appletSize = Medium;
+    m_layout->invalidate();
+    m_layout->updateGeometry();
 }
 
-void EmailWidget::setLarge()
+void EmailWidget::setLarge(bool expanded)
 {
-    showBody();
+    m_toLabel->show();
+    m_bodyView->setMinimumHeight(50);
+    m_bodyView->show();
+    m_expandIcon->setIcon("arrow-up-double");
+    kDebug() << "Large ...";
+    resizeIcon(48);
+    if (!expanded) {
+        m_appletSize = Large;
+    }
+    m_layout->invalidate();
+    m_layout->updateGeometry();
 }
 
 void EmailWidget::buildDialog()
 {
-    int iconsize = 32;
 
     m_layout = new QGraphicsGridLayout(this);
     m_layout->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
-    m_layout->setColumnFixedWidth(0, iconsize);
-    m_layout->setColumnMinimumWidth(1, 180);
+    m_layout->setColumnMinimumWidth(1, 100);
     m_layout->setColumnFixedWidth(2, 22);
     m_layout->setHorizontalSpacing(4);
 
+    m_layout->setRowStretchFactor(0, 0);
+    m_layout->setRowStretchFactor(1, 0);
+    m_layout->setRowStretchFactor(3, 5); // body
+    m_layout->setRowFixedHeight(0, 14); // FIXME: hardcoded, this height should be based on the label's height
+    m_layout->setRowFixedHeight(1, 14); // FIXME: hardcoded
 
     m_icon = new Plasma::IconWidget(this);
     m_icon->setIcon("view-pim-mail");
-    m_icon->resize(iconsize, iconsize);
-    m_icon->setMinimumHeight(iconsize);
-    m_icon->setMaximumHeight(iconsize);
     m_icon->setAcceptHoverEvents(false);
-
-    m_layout->addItem(m_icon, 0, 0, 2, 1);
+    resizeIcon(32);
+    m_layout->addItem(m_icon, 0, 0, 1, 1, Qt::AlignTop);
 
     m_subjectLabel = new Plasma::Label(this);
     m_subjectLabel->setText("<b>Re: sell me a beer, mon</b>");
-    m_subjectLabel->setMaximumHeight(iconsize/2);
-    m_layout->addItem(m_subjectLabel, 0, 1);
+    //m_subjectLabel->setMaximumHeight(iconsize/2);
+    m_layout->addItem(m_subjectLabel, 0, 1, 1, 1, Qt::AlignTop);
 
     m_toLabel = new Plasma::Label(this);
     m_toLabel->setText("<b>Recipient:</b> Bob Marley <bmarley@kde.org>");
-    m_toLabel->setMaximumHeight(iconsize/2);
+    //m_toLabel->setMaximumHeight(iconsize/2);
     m_toLabel->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
     m_toLabel->nativeWidget()->setWordWrap(false);
 
-    m_layout->addItem(m_toLabel, 1, 1);
+    m_layout->addItem(m_toLabel, 1, 1, 1, 2);
 
     m_bodyView = new Plasma::WebView(this);
-    m_bodyView->setMinimumSize(60, 30);
+    m_bodyView->setMinimumSize(60, 40);
     QString html("<h3>Hi everybody</h3>I hope you're all having a great time on Jamaica, my home country (which you might have noticed after yesterday's bob-marley-on-repeat-for-the-whole-night. I wish I could be with you, but it wasn't meant to be. I'll go out with my friends Kurt and Elvis tonight instead and wish you a happy CampKDE.<br /><br /><em>-- Bob</em>");
 
     setBody(html);
@@ -128,7 +163,7 @@ void EmailWidget::buildDialog()
     m_expandIcon->setIcon("arrow-down-double");
     m_expandIcon->setMinimumSize(12, 12);
     connect(m_expandIcon, SIGNAL(clicked()), this, SLOT(toggleBody()));
-    m_layout->addItem(m_expandIcon, 1, 2, Qt::AlignRight);
+    m_layout->addItem(m_expandIcon, 0, 2, 1, 1, Qt::AlignRight | Qt::AlignTop);
 
     setLayout(m_layout);
 
@@ -137,32 +172,38 @@ void EmailWidget::buildDialog()
     kDebug() << "EmailWidget built";
 }
 
+void EmailWidget::resizeIcon(int iconsize)
+{
+    m_layout->setColumnFixedWidth(0, iconsize);
+    m_icon->resize(iconsize, iconsize);
+    m_icon->setMinimumHeight(iconsize);
+    m_icon->setMaximumHeight(iconsize);
+}
+
 void EmailWidget::toggleBody()
 {
-    if (!m_showBody) {
-        showBody();
+    if (!m_expanded) {
+        expand();
     } else {
-        hideBody();
+        collapse();
     }
 }
 
-void EmailWidget::hideBody()
+void EmailWidget::collapse()
 {
-    m_bodyView->hide();
-    m_expandIcon->setIcon("arrow-down-double");
-    m_showBody = false;
     kDebug() << "hiding body";
-    m_layout->updateGeometry();
+    m_expandIcon->setIcon("arrow-down-double");
+    m_expanded = false;
+    setTiny();
+    //kDebug() << "after:" << m_layout->geometry();
 }
 
 
-void EmailWidget::showBody()
+void EmailWidget::expand()
 {
-    m_bodyView->show();
-    m_expandIcon->setIcon("arrow-up-double");
-    m_showBody = true;
+    setLarge(true);
+    m_expanded = true;
     kDebug() << "showing body";
-    m_layout->updateGeometry();
 }
 
 void EmailWidget::updateColors()

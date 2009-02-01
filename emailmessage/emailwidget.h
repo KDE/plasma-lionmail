@@ -77,17 +77,18 @@ class EmailWidget : public QGraphicsWidget
         void setTiny();
         void setSmall();
         void setMedium();
-        void setLarge();
+        void setLarge(bool expanded = false);
 
         void toggleBody();
-        void showBody();
-        void hideBody();
+        void expand();
+        void collapse();
         void updateColors();
 
     private :
-        bool m_showBody;
+        bool m_expanded;
 
         void buildDialog();
+        void resizeIcon(int iconsize);
 
         // The widget which displays in the panel
         //QGraphicsWidget* m_widget;
@@ -96,6 +97,7 @@ class EmailWidget : public QGraphicsWidget
         // The applet attached to this item
         EmailMessage* m_emailMessage;
 
+        int m_appletSize;
         // Email data
         QString m_subject;
         QDate m_date;
