@@ -82,7 +82,11 @@ class EmailWidget : public QGraphicsWidget
         void toggleBody();
         void expand();
         void collapse();
+        void sizeChanged();
         void updateColors();
+
+    Q_SIGNALS:
+        void geometryChanged(QSizeF newSize);
 
     private :
         bool m_expanded;

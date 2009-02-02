@@ -61,6 +61,9 @@ class EmailMessage : public Plasma::PopupApplet
     protected:
         void popupEvent(bool show);
 
+    private Q_SLOTS:
+        void updateSize(const QSizeF newSize);
+
     private:
         int m_appletSize;
         ///the icon used when the applet is in the taskbar

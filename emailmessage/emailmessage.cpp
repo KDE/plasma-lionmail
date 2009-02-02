@@ -71,6 +71,7 @@ QGraphicsWidget* EmailMessage::graphicsWidget()
     if (!m_emailWidget) {
         kDebug() << "new EmailWidget";
         m_emailWidget = new EmailWidget(this);
+        connect(m_emailWidget, SIGNAL(geometryChanged(QSizeF)), this, SLOT(updateSize(const QSizeF)));
     }
     return m_emailWidget;
 }
@@ -112,6 +113,17 @@ void EmailMessage::constraintsEvent(Plasma::Constraints constraints)
     }
 }
 
+void EmailMessage::updateSize(const QSizeF newSize)
+{
+    kDebug() << "Resizing applet from " << size() << " to:" << m_emailWidget->minimumSize() << newSize;
+    setMinimumSize(newSize);
+    resize(newSize);
+    //setGeometry(QRectF(contentsRect().topLeft(), newSize));
+    //emit sizeHintChanged();
+    emit geometryChanged();
+    updateGeometry();
+    update();
+}
 void EmailMessage::setSubject(const QString& subject)
 {
     m_emailWidget->setSubject(subject);

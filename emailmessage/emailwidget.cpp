@@ -70,6 +70,8 @@ void EmailWidget::setIcon()
 
 void EmailWidget::setTiny()
 {
+    m_expanded = false;
+    m_expandIcon->setIcon("arrow-down-double");
     m_toLabel->hide();
     m_bodyView->hide();
     kDebug() << "Tiny ...";
@@ -91,6 +93,9 @@ void EmailWidget::setSmall()
     kDebug() << "Small ...";
     resizeIcon(22);
 
+    m_expanded = false;
+    m_expandIcon->setIcon("arrow-down-double");
+
     m_layout->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
     m_appletSize = Small;
     m_layout->invalidate();
@@ -101,6 +106,8 @@ void EmailWidget::setSmall()
 
 void EmailWidget::setMedium()
 {
+    m_expanded = false;
+    m_expandIcon->setIcon("arrow-down-double");
     m_toLabel->show();
     m_bodyView->hide();
     kDebug() << "Medium ...";
@@ -114,12 +121,13 @@ void EmailWidget::setMedium()
 
 void EmailWidget::setLarge(bool expanded)
 {
+    kDebug() << "Before ......." << m_layout->geometry().size() << m_layout->minimumSize();
     m_layout->setRowMinimumHeight(3, 40);
     m_expanded = true;
+    m_expandIcon->setIcon("arrow-up-double");
     m_toLabel->show();
     m_bodyView->setMinimumHeight(50);
     m_bodyView->show();
-    m_expandIcon->setIcon("arrow-up-double");
     m_layout->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     kDebug() << "Large ...";
@@ -127,9 +135,10 @@ void EmailWidget::setLarge(bool expanded)
     if (!expanded) {
         m_appletSize = Large;
     }
+    sizeChanged();
     m_layout->invalidate();
     m_layout->updateGeometry();
-    kDebug() << m_layout->geometry().size();
+    kDebug() << "After ........." << m_layout->geometry().size() << m_layout->minimumSize();
 }
 
 void EmailWidget::buildDialog()
@@ -186,12 +195,26 @@ void EmailWidget::buildDialog()
     kDebug() << "EmailWidget built";
 }
 
+void EmailWidget::sizeChanged()
+{
+    qreal left, top, right, bottom; // TODO: Use them...
+    getContentsMargins(&left, &top, &right, &bottom);
+
+    setMinimumSize(m_layout->sizeHint(Qt::MinimumSize));
+    setPreferredSize(m_layout->sizeHint(Qt::PreferredSize));
+
+    setMinimumSize(m_layout->minimumSize()); // FIXME: borders? setSpacing(0)?
+    resize(m_layout->minimumSize()); // FIXME: borders? setSpacing(0)?
+    emit geometryChanged(m_layout->minimumSize());
+}
+
 void EmailWidget::resizeIcon(int iconsize)
 {
     m_layout->setColumnFixedWidth(0, iconsize);
     m_icon->resize(iconsize, iconsize);
     m_icon->setMinimumHeight(iconsize);
     m_icon->setMaximumHeight(iconsize);
+    m_layout->updateGeometry();
 }
 
 void EmailWidget::toggleBody()
