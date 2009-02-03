@@ -47,14 +47,21 @@ LionMail::LionMail(QObject *parent, const QVariantList &args)
     m_fontFrom = Plasma::Theme::defaultTheme()->font(Plasma::Theme::DefaultFont);
     m_fontSubject = Plasma::Theme::defaultTheme()->font(Plasma::Theme::DefaultFont);
     setPopupIcon("akonadi");
-
     m_maxEmails = 6;
+}
+
+LionMail::~LionMail()
+{
 }
 
 void LionMail::init()
 {
+    KConfigGroup cg = config();
+    m_activeCollection = cg.readEntry("activeCollection", 0);
+
     engine = dataEngine("akonadi");
     engine->connectAllSources(this);
+    connectCollection(m_activeCollection);
     connect(engine, SIGNAL(sourceAdded(QString)), SLOT(newSource(QString)));
     setMinimumSize(48, 96);
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -65,13 +72,21 @@ void LionMail::init()
     //initData();
     updateToolTip("", 0);
 
-    m_collections = dataEngine("akonadi")->query("Collections").keys();
+    m_collections = dataEngine("akonadi")->query("Collections");
     kDebug() << "A P P L E T Collections:" << m_collections;
 
 }
 
-LionMail::~LionMail()
+void LionMail::connectCollection(qlonglong cid)
 {
+    kDebug() << "connectSource" << QString("%1").arg(m_activeCollection);
+    engine->connectSource(QString("%1").arg(cid), this);
+}
+
+void LionMail::disconnectCollection(qlonglong cid)
+{
+    kDebug() << "disconnectSource" << QString("%1").arg(m_activeCollection);
+    engine->disconnectSource(QString("%1").arg(cid), this);
 }
 
 void LionMail::createConfigurationInterface(KConfigDialog *parent)
@@ -80,8 +95,14 @@ void LionMail::createConfigurationInterface(KConfigDialog *parent)
     QWidget *widget = new QWidget();
     ui.setupUi(widget);
     parent->addPage(widget, i18n("Collections"), Applet::icon());
-    kDebug() << "Adding collections to combo:" << m_collections;
-    ui.collectionCombo->addItems(m_collections);
+    kDebug() << "     Adding collections to combo:" << m_collections;
+
+    //QHash<QString, QVariant> collections = dataEngine("akonadi")->query("Collections");
+    foreach ( const QString c, m_collections.keys() ) {
+        kDebug() << "Inserting ... " << c << m_collections[c].toLongLong();
+        ui.collectionCombo->addItem(c, m_collections[c].toLongLong());
+    }
+    //ui.collectionCombo->addItems(m_collections);
     connect(parent, SIGNAL(applyClicked()), this, SLOT(configAccepted()));
     connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
 }
@@ -89,9 +110,24 @@ void LionMail::createConfigurationInterface(KConfigDialog *parent)
 void LionMail::configAccepted()
 {
     KConfigGroup cg = config();
-    m_activeCollection = ui.collectionCombo->currentText(); // FIXME: we might want to base this on id, so renaming a collection doesn't break here
-    cg.writeEntry("activeCollection", m_activeCollection);
+    //QString col_name = ui.collectionCombo->currentText();
+    //qlonglong cid = m_collections[col_name].toLongLong();
+    qlonglong cid = ui.collectionCombo->itemData(ui.collectionCombo->currentIndex()).toLongLong();
+
+    if (m_activeCollection != cid) {
+        //engine = dataEngine("akonadi");
+
+        disconnectCollection(m_activeCollection);
+
+        m_activeCollection = cid;
+
+        connectCollection(m_activeCollection);
+        //engine->connectSource(QString("%1").arg(m_activeCollection), this);
+
+        cg.writeEntry("activeCollection", m_activeCollection);
+    }
     kDebug() << "Active Collections changed:" << m_activeCollection;
+    emit configNeedsSaving();
 }
 
 void LionMail::initExtenderItem()
@@ -235,10 +271,11 @@ void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data
     email->m_emailWidget->setCc(data["Cc"].toStringList());
     email->m_emailWidget->setBcc(data["Bcc"].toStringList());
 
+    /*
     kDebug() << "FROM:" << data["From"].toString() << data["From"];
     kDebug() << "SUBJ:" << data["Subject"].toString() << data["Subject"];
     kDebug() << "  TO:" << data["To"].toString() << data["To"];
-
+    */
     //mailView->addEmail(email);
 
     m_fromList[0] = data["From"].toString();
@@ -249,7 +286,10 @@ void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data
 
 void LionMail::newSource(const QString & source)
 {
-    //kDebug() << "------------- New:" << source;
+    if (source == "Collections") {
+        //m_collections;
+    }
+    kDebug() << "------------- New:" << source;
     engine->connectSource(source, this);
     // We could create MailExtenders here ...
 

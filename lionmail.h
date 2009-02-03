@@ -69,8 +69,12 @@ class LionMail : public Plasma::PopupApplet
         void newSource( const QString &source );
 
     private:
-        QStringList m_collections;
-        QString m_activeCollection;
+        void connectCollection(qlonglong cid);
+        void disconnectCollection(qlonglong cid);
+
+
+        QHash<QString, QVariant> m_collections;
+        qlonglong m_activeCollection;
         QHash<QString, EmailMessage*> emails;
         int m_maxEmails;
         QList<MailExtender*> m_extenders;
