@@ -53,8 +53,11 @@ class LionMail : public Plasma::PopupApplet
         //void initData();
 
 
-    public slots:
+    public Q_SLOTS:
         void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);
+
+    protected Q_SLOTS:
+        void configAccepted();
 
     protected:
         void createConfigurationInterface(KConfigDialog *parent);
@@ -62,10 +65,12 @@ class LionMail : public Plasma::PopupApplet
     private:
         //void drawEmail(int index, const QRectF& rect, QPainter* painter) ;
 
-    private slots:
+    private Q_SLOTS:
         void newSource( const QString &source );
 
     private:
+        QStringList m_collections;
+        QString m_activeCollection;
         QHash<QString, EmailMessage*> emails;
         int m_maxEmails;
         QList<MailExtender*> m_extenders;

@@ -64,6 +64,10 @@ void LionMail::init()
     initExtenderItem();
     //initData();
     updateToolTip("", 0);
+
+    m_collections = dataEngine("akonadi")->query("Collections").keys();
+    kDebug() << "A P P L E T Collections:" << m_collections;
+
 }
 
 LionMail::~LionMail()
@@ -75,9 +79,19 @@ void LionMail::createConfigurationInterface(KConfigDialog *parent)
     Q_UNUSED(parent);
     QWidget *widget = new QWidget();
     ui.setupUi(widget);
+    parent->addPage(widget, i18n("Collections"), Applet::icon());
+    kDebug() << "Adding collections to combo:" << m_collections;
+    ui.collectionCombo->addItems(m_collections);
+    connect(parent, SIGNAL(applyClicked()), this, SLOT(configAccepted()));
+    connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
+}
 
-    //connect(parent, SIGNAL(applyClicked()), this, SLOT(configAccepted()));
-    //connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
+void LionMail::configAccepted()
+{
+    KConfigGroup cg = config();
+    m_activeCollection = ui.collectionCombo->currentText(); // FIXME: we might want to base this on id, so renaming a collection doesn't break here
+    cg.writeEntry("activeCollection", m_activeCollection);
+    kDebug() << "Active Collections changed:" << m_activeCollection;
 }
 
 void LionMail::initExtenderItem()
