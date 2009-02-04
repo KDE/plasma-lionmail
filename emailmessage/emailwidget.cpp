@@ -28,6 +28,7 @@
 #include <KGlobalSettings>
 
 // Akonadi
+#include <akonadi/item.h>
 #include <akonadi/itemfetchscope.h>
 #include <akonadi/collection.h>
 #include <akonadi/itemfetchjob.h>

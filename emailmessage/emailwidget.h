@@ -29,6 +29,7 @@
 
 //own
 class EmailMessage;
+class KJob;
 
 namespace Plasma
 {
