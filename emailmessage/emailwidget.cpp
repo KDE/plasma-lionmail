@@ -52,7 +52,7 @@ using namespace Plasma;
 EmailWidget::EmailWidget(EmailMessage* emailmessage, QGraphicsWidget *parent)
     : QGraphicsWidget(parent),
       id(0),
-      m_fetchJob(0),
+      m_fetching(false),
       m_toLabel(0),
       m_fromLabel(0),
       m_ccLabel(0),
@@ -253,7 +253,7 @@ void EmailWidget::expand()
     setLarge(true);
     m_expanded = true;
     kDebug() << "showing body";
-    if (!m_fetchJob) {
+    if (!m_fetching) {
         fetchPayload();
     } else {
         kDebug() << "not fetching payload";
@@ -307,10 +307,11 @@ void EmailWidget::fetchPayload()
         kDebug() << "id is 0";
         return;
     }
+    m_fetching = true;
     kDebug() << "Fetching payload for " << id;
-    m_fetchJob = new Akonadi::ItemFetchJob( Akonadi::Item( id ), this );
-    m_fetchJob->fetchScope().fetchFullPayload();
-    connect( m_fetchJob, SIGNAL(result(KJob*)), SLOT(fetchDone(KJob*)) );
+    Akonadi::ItemFetchJob* fetchJob = new Akonadi::ItemFetchJob( Akonadi::Item( id ), this );
+    fetchJob->fetchScope().fetchFullPayload();
+    connect( fetchJob, SIGNAL(result(KJob*)), SLOT(fetchDone(KJob*)) );
 
 }
 

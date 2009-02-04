@@ -27,7 +27,6 @@
 // KDE
 #include <KPushButton>
 
-#include <akonadi/itemfetchjob.h>
 //own
 class EmailMessage;
 
@@ -91,7 +90,7 @@ class EmailWidget : public QGraphicsWidget
         void geometryChanged(QSizeF newSize);
 
     private :
-        Akonadi::ItemFetchJob* m_fetchJob;
+        bool m_fetching;
         void fetchPayload();
         bool m_expanded;
 
@@ -129,7 +128,6 @@ class EmailWidget : public QGraphicsWidget
         Plasma::Label* m_dateLabel;
         Plasma::WebView* m_bodyView;
         Plasma::Label* m_abstractLabel;
-
 };
 
 #endif
