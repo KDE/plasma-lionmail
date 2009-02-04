@@ -265,6 +265,7 @@ void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data
         return;
     }
     // Only set email-specific properties here, layouttweaks and the like should go into MailExtender
+    email->m_emailWidget->id = data["Id"].toLongLong();
     email->m_emailWidget->setSubject(data["Subject"].toString());
     email->m_emailWidget->setFrom(data["From"].toString());
     email->m_emailWidget->setTo(data["To"].toStringList());

@@ -116,8 +116,8 @@ void EmailMessage::constraintsEvent(Plasma::Constraints constraints)
 void EmailMessage::updateSize(const QSizeF newSize)
 {
     kDebug() << "Resizing applet from " << size() << " to:" << m_emailWidget->minimumSize() << newSize;
-    setMinimumSize(newSize);
-    resize(newSize);
+    //setMinimumSize(newSize);
+    //resize(newSize);
     //setGeometry(QRectF(contentsRect().topLeft(), newSize));
     //emit sizeHintChanged();
     emit geometryChanged();

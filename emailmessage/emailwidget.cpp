@@ -27,7 +27,17 @@
 #include <KIcon>
 #include <KGlobalSettings>
 
-//plasma
+// Akonadi
+#include <akonadi/itemfetchscope.h>
+#include <akonadi/collection.h>
+#include <akonadi/itemfetchjob.h>
+
+#include <kmime/kmime_message.h>
+
+#include <boost/shared_ptr.hpp>
+typedef boost::shared_ptr<KMime::Message> MessagePtr;
+
+// Plasma
 #include <Plasma/Theme>
 #include <Plasma/IconWidget>
 #include <Plasma/Label>
@@ -41,6 +51,8 @@ using namespace Plasma;
 
 EmailWidget::EmailWidget(EmailMessage* emailmessage, QGraphicsWidget *parent)
     : QGraphicsWidget(parent),
+      id(0),
+      m_fetchJob(0),
       m_toLabel(0),
       m_fromLabel(0),
       m_ccLabel(0),
@@ -241,6 +253,11 @@ void EmailWidget::expand()
     setLarge(true);
     m_expanded = true;
     kDebug() << "showing body";
+    if (!m_fetchJob) {
+        fetchPayload();
+    } else {
+        kDebug() << "not fetching payload";
+    }
 }
 
 void EmailWidget::updateColors()
@@ -282,6 +299,48 @@ void EmailWidget::setBody(const QString& body)
         m_bodyView->setHtml("<font color=\"" + c + "\">" + body + "</font>"); // FIXME: Urks. :(
     }
     m_body = body;
+}
+
+void EmailWidget::fetchPayload()
+{
+    if (id == 0) {
+        kDebug() << "id is 0";
+        return;
+    }
+    kDebug() << "Fetching payload for " << id;
+    m_fetchJob = new Akonadi::ItemFetchJob( Akonadi::Item( id ), this );
+    m_fetchJob->fetchScope().fetchFullPayload();
+    connect( m_fetchJob, SIGNAL(result(KJob*)), SLOT(fetchDone(KJob*)) );
+
+}
+
+void EmailWidget::fetchDone(KJob* job)
+{
+
+    if ( job->error() ) {
+        kDebug() << "Error fetching item" << id << ": " << job->errorString();
+        return;
+    }
+    Akonadi::Item::List items = static_cast<Akonadi::ItemFetchJob*>( job )->items();
+
+    //Akonadi::Item::List items = job->items();
+    kDebug() << "Fetched" << items.count() << "Items.";
+    foreach( const Akonadi::Item &item, items ) {
+
+        MessagePtr msg = item.payload<MessagePtr>();
+
+        /*
+        Id", item.id()
+        Subject", msg->subject()->asUnicodeString()
+        From", msg->from()->asUnicodeString()
+        DateTime", msg->date()->dateTime().date()
+        To", msg->to()->asUnicodeString()
+        Cc", msg->cc()->asUnicodeString()
+        Bcc", msg->bcc()->asUnicodeString()
+        */
+        kDebug() << item.id() << msg->mainBodyPart()->body();
+        setBody(msg->mainBodyPart()->body());
+    }
 }
 
 void EmailWidget::setAbstract(const QString& abstract)

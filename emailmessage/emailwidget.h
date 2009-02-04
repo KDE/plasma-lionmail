@@ -27,10 +27,10 @@
 // KDE
 #include <KPushButton>
 
+#include <akonadi/itemfetchjob.h>
 //own
 class EmailMessage;
 
-//desktop view
 namespace Plasma
 {
     class IconWidget;
@@ -49,7 +49,7 @@ class EmailWidget : public QGraphicsWidget
 
         QGraphicsWidget* dialog();
 
-        long id;
+        qlonglong id;
 
         void setFrom(const QString& from);
         void setTo(const QStringList& to);
@@ -85,10 +85,14 @@ class EmailWidget : public QGraphicsWidget
         void sizeChanged();
         void updateColors();
 
+        void fetchDone(KJob* job);
+
     Q_SIGNALS:
         void geometryChanged(QSizeF newSize);
 
     private :
+        Akonadi::ItemFetchJob* m_fetchJob;
+        void fetchPayload();
         bool m_expanded;
 
         void buildDialog();

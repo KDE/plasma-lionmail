@@ -12,6 +12,9 @@ target_link_libraries(
     plasma_applet_emailmessage
     ${KDE4_PLASMA_LIBS}
     ${QT_QTWEBKIT_LIBRARY}
+    ${KDE4_AKONADI_LIBS}
+    ${KDE4_KMIME_LIBS}
+    ${KDE4_AKONADI_KMIME_LIBS}
 )
 
 install(TARGETS plasma_applet_emailmessage DESTINATION ${PLUGIN_INSTALL_DIR})
