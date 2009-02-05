@@ -40,6 +40,7 @@ LionMail::LionMail(QObject *parent, const QVariantList &args)
     m_theme->setImagePath("widgets/akonadi");
     m_theme->setContainsMultipleImages(false);
     setHasConfigurationInterface(true);
+    //setConfigurationRequired(true, i18n("Please select an Email Folder")); // Doesn't go away?
 
     m_subjectList[0] = QString("Hello CampKDE, hallo Jamaica!"); // ;-)
     setBackgroundHints(StandardBackground);
@@ -57,36 +58,40 @@ LionMail::~LionMail()
 void LionMail::init()
 {
     KConfigGroup cg = config();
-    m_activeCollection = cg.readEntry("activeCollection", 0);
+    m_activeCollection = cg.readEntry("activeCollection", "");
+    kDebug() << "ACTIVE COLLECTION: ++++++++++++++++++++++++++++++" << m_activeCollection;
 
     engine = dataEngine("akonadi");
     engine->connectAllSources(this);
     connectCollection(m_activeCollection);
+    setBusy(true);
     connect(engine, SIGNAL(sourceAdded(QString)), SLOT(newSource(QString)));
     setMinimumSize(48, 96);
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     //m_theme->resize(300, 400);
     //resize(300, 400); // move to constraintsevent
     extender()->setEmptyExtenderMessage(i18n("empty..."));
-    initExtenderItem();
+    //initExtenderItem();
+    //MailExtender* mailView = new MailExtender(this, extender());
+    initMailExtender();
     //initData();
     updateToolTip("", 0);
-
     m_collections = dataEngine("akonadi")->query("Collections");
-    kDebug() << "A P P L E T Collections:" << m_collections;
-
 }
 
-void LionMail::connectCollection(qlonglong cid)
+void LionMail::connectCollection(QString cid)
 {
-    kDebug() << "connectSource" << QString("%1").arg(m_activeCollection);
-    engine->connectSource(QString("%1").arg(cid), this); // pass collection ID as string
+    if (cid.isEmpty()) {
+        return;
+    }
+    kDebug() << "connectSource" << m_activeCollection;
+    engine->connectSource(cid, this); // pass collection ID as string
 }
 
-void LionMail::disconnectCollection(qlonglong cid)
+void LionMail::disconnectCollection(QString cid)
 {
-    kDebug() << "disconnectSource" << QString("%1").arg(m_activeCollection);
-    engine->disconnectSource(QString("%1").arg(cid), this); // pass collection ID as string
+    kDebug() << "disconnectSource" << cid;
+    engine->disconnectSource(cid, this); // pass collection ID as string
 }
 
 void LionMail::createConfigurationInterface(KConfigDialog *parent)
@@ -99,8 +104,8 @@ void LionMail::createConfigurationInterface(KConfigDialog *parent)
 
     //QHash<QString, QVariant> collections = dataEngine("akonadi")->query("Collections");
     foreach ( QString c, m_collections.keys() ) {
-        kDebug() << "Inserting ... " << c << m_collections[c].toLongLong();
-        ui.collectionCombo->addItem(m_collections[c], c.toLongLong());
+        kDebug() << "Inserting ... " << c << m_collections[c];
+        ui.collectionCombo->addItem(m_collections[c].toString(), c);
     }
     //ui.collectionCombo->addItems(m_collections);
     connect(parent, SIGNAL(applyClicked()), this, SLOT(configAccepted()));
@@ -112,7 +117,7 @@ void LionMail::configAccepted()
     KConfigGroup cg = config();
     //QString col_name = ui.collectionCombo->currentText();
     //qlonglong cid = m_collections[col_name].toLongLong();
-    qlonglong cid = ui.collectionCombo->itemData(ui.collectionCombo->currentIndex()).toLongLong();
+    QString cid = ui.collectionCombo->itemData(ui.collectionCombo->currentIndex()).toString();
 
     if (m_activeCollection != cid) {
         QString name = ui.collectionCombo->currentText();
@@ -132,10 +137,19 @@ void LionMail::configAccepted()
     emit configNeedsSaving();
 }
 
-void LionMail::initExtenderItem()
+/*
+void LionMail::initExtenderItem(Plasma::ExtenderItem* item)
+{
+    if (item != 0) {
+        return;
+    }
+}
+*/
+void LionMail::initMailExtender()
 {
     MailExtender* mailView = new MailExtender(this, extender());
     //mailView->setIcon("view-pim-mail");
+    //MailExtender* mailView = static_cast<MailExtender*>(item);
     mailView->setDescription("Private Emails"); // FIXME: sample text
     mailView->setInfo("2 unread");
 
@@ -249,6 +263,7 @@ void LionMail::initData()
 void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
     //kDebug() << data;
+    setBusy(false);
     if (source == "Collections") {
         m_collections = data;
         return;

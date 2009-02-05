@@ -47,7 +47,7 @@ class LionMail : public Plasma::PopupApplet
         void init();
         //void paintInterface(QPainter *painter, const QStyleOptionGraphicsItem *option, const QRect &contentsRect );
 
-        void initExtenderItem();
+        //void initExtenderItem(Plasma::ExtenderItem* item);
         void updateToolTip(const QString query, const int matches);
 
         //void initData();
@@ -69,12 +69,13 @@ class LionMail : public Plasma::PopupApplet
         void newSource( const QString &source );
 
     private:
-        void connectCollection(qlonglong cid);
-        void disconnectCollection(qlonglong cid);
+        void initMailExtender();
+        void connectCollection(QString cid);
+        void disconnectCollection(QString cid);
 
 
         QHash<QString, QVariant> m_collections;
-        qlonglong m_activeCollection;
+        QString m_activeCollection;
         QHash<QString, EmailMessage*> emails;
         int m_maxEmails;
         QList<MailExtender*> m_extenders;

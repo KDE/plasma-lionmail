@@ -52,7 +52,7 @@ using namespace Plasma;
 
 EmailWidget::EmailWidget(EmailMessage* emailmessage, QGraphicsWidget *parent)
     : QGraphicsWidget(parent),
-      id(0),
+      id(61771),
       m_fetching(false),
       m_toLabel(0),
       m_fromLabel(0),
@@ -134,6 +134,11 @@ void EmailWidget::setMedium()
 
 void EmailWidget::setLarge(bool expanded)
 {
+    if (!m_fetching) {
+        fetchPayload();
+    } else {
+        kDebug() << "not fetching payload";
+    }
     kDebug() << "Before ......." << m_layout->geometry().size() << m_layout->minimumSize();
     m_layout->setRowMinimumHeight(3, 40);
     m_expanded = true;
@@ -254,11 +259,6 @@ void EmailWidget::expand()
     setLarge(true);
     m_expanded = true;
     kDebug() << "showing body";
-    if (!m_fetching) {
-        fetchPayload();
-    } else {
-        kDebug() << "not fetching payload";
-    }
 }
 
 void EmailWidget::updateColors()
@@ -296,8 +296,13 @@ void EmailWidget::setTo(const QStringList& toList)
 void EmailWidget::setBody(const QString& body)
 {
     if (m_bodyView && !body.isEmpty()) {
+        QString html = body;
+        html.replace("\n", "<br />\n");
+        html.replace("\r", "<br />\n");
+        html.replace("\r\n", "<br />\n");
+
         QString c = Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor).name(); // FIXME: nasty color hack
-        m_bodyView->setHtml("<font color=\"" + c + "\">" + body + "</font>"); // FIXME: Urks. :(
+        m_bodyView->setHtml("<font color=\"" + c + "\">" + html + "</font>"); // FIXME: Urks. :(
     }
     m_body = body;
 }
