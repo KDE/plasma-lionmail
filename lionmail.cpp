@@ -80,13 +80,13 @@ void LionMail::init()
 void LionMail::connectCollection(qlonglong cid)
 {
     kDebug() << "connectSource" << QString("%1").arg(m_activeCollection);
-    engine->connectSource(QString("%1").arg(cid), this);
+    engine->connectSource(QString("%1").arg(cid), this); // pass collection ID as string
 }
 
 void LionMail::disconnectCollection(qlonglong cid)
 {
     kDebug() << "disconnectSource" << QString("%1").arg(m_activeCollection);
-    engine->disconnectSource(QString("%1").arg(cid), this);
+    engine->disconnectSource(QString("%1").arg(cid), this); // pass collection ID as string
 }
 
 void LionMail::createConfigurationInterface(KConfigDialog *parent)
@@ -98,9 +98,9 @@ void LionMail::createConfigurationInterface(KConfigDialog *parent)
     kDebug() << "     Adding collections to combo:" << m_collections;
 
     //QHash<QString, QVariant> collections = dataEngine("akonadi")->query("Collections");
-    foreach ( const QString c, m_collections.keys() ) {
+    foreach ( QString c, m_collections.keys() ) {
         kDebug() << "Inserting ... " << c << m_collections[c].toLongLong();
-        ui.collectionCombo->addItem(c, m_collections[c].toLongLong());
+        ui.collectionCombo->addItem(m_collections[c], c.toLongLong());
     }
     //ui.collectionCombo->addItems(m_collections);
     connect(parent, SIGNAL(applyClicked()), this, SLOT(configAccepted()));
@@ -115,7 +115,9 @@ void LionMail::configAccepted()
     qlonglong cid = ui.collectionCombo->itemData(ui.collectionCombo->currentIndex()).toLongLong();
 
     if (m_activeCollection != cid) {
+        QString name = ui.collectionCombo->currentText();
         //engine = dataEngine("akonadi");
+        m_extenders[0]->setTitle(name);
 
         disconnectCollection(m_activeCollection);
 
@@ -247,6 +249,10 @@ void LionMail::initData()
 void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
     //kDebug() << data;
+    if (source == "Collections") {
+        m_collections = data;
+        return;
+    }
     EmailMessage* email = 0;
     if (emails.count() < m_maxEmails && !emails.contains(source)) {
         kDebug() << "new ...";
@@ -287,13 +293,9 @@ void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data
 
 void LionMail::newSource(const QString & source)
 {
-    if (source == "Collections") {
-        //m_collections;
-    }
     kDebug() << "------------- New:" << source;
     engine->connectSource(source, this);
     // We could create MailExtenders here ...
-
 }
 
 K_EXPORT_PLASMA_APPLET(lionmail, LionMail)
