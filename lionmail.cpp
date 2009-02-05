@@ -168,7 +168,7 @@ void LionMail::updateToolTip(const QString query, const int matches)
 {
     Q_UNUSED(query);
     Q_UNUSED(matches);
-    m_toolTip = Plasma::ToolTipContent(i18nc("No search has been done yet", "Crystal Desktop Search"),
+    m_toolTip = Plasma::ToolTipContent(i18nc("No search has been done yet", "Lion Mail"),
             i18nc("Tooltip sub text", "Click on the icon to monitor your emails"),
                     KIcon("akonadi").pixmap(IconSize(KIconLoader::Desktop))
                 );
