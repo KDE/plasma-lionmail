@@ -1,6 +1,7 @@
 [Desktop Entry]
 Name=LionMail
 Name[sv]=Lionmail
+Name[x-test]=xxLionMailxx
 Comment=Keep a sharp eye on your emails
 Comment[et]=Silma peal hoidmine oma e-kirjadel
 Comment[fr]=Gardez un oeil sur vous courriers électroniques
@@ -10,6 +11,7 @@ Comment[pt]=Dar uma vista de olhos nos seus e-mails
 Comment[pt_BR]=Dar uma vista de olhos nos seus e-mails
 Comment[sv]=Håll ögonen på din e-post
 Comment[uk]=Наглядайте за вашими листами електронної пошти
+Comment[x-test]=xxKeep a sharp eye on your emailsxx
 Type=Service
 Icon=akonadi
 X-KDE-ServiceTypes=Plasma/Applet
