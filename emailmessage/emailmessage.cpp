@@ -90,9 +90,11 @@ void EmailMessage::constraintsEvent(Plasma::Constraints constraints)
     if (constraints & (Plasma::FormFactorConstraint | Plasma::SizeConstraint)) {
 
         // TODO: better logic for height and width constraints
-        kDebug() << m_emailWidget->minimumSize().height() << m_emailWidget->geometry().height() << contentsRect().height();
+        kDebug() << "--------------";
+        kDebug() << "Widget:" << m_emailWidget->geometry();
+        kDebug() << "Applet:" << contentsRect();
         int proximity = 4; // How close can we get to the minimumSize before we change appearance?
-
+        /*
         if (m_emailWidget->minimumSize().width()+proximity > m_emailWidget->geometry().width() ) {
         //if (contentsRect().width() < 75) { // not wide enough, only show the icon
             m_emailWidget->setIcon();
@@ -108,7 +110,10 @@ void EmailMessage::constraintsEvent(Plasma::Constraints constraints)
         } else {  // Enough space to include the body
             m_emailWidget->setLarge();
         }
-        m_emailWidget->resize(contentsRect().size());
+        */
+        //m_emailWidget->resize(contentsRect().size());
+        updateGeometry();
+        adjustSize();
         update();
     }
 }
@@ -116,8 +121,8 @@ void EmailMessage::constraintsEvent(Plasma::Constraints constraints)
 void EmailMessage::updateSize(const QSizeF newSize)
 {
     kDebug() << "Resizing applet from " << size() << " to:" << m_emailWidget->minimumSize() << newSize;
-    //setMinimumSize(newSize);
-    //resize(newSize);
+    setMinimumSize(newSize);
+    resize(newSize);
     //setGeometry(QRectF(contentsRect().topLeft(), newSize));
     //emit sizeHintChanged();
     emit geometryChanged();

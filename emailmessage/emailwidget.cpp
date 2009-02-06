@@ -144,7 +144,7 @@ void EmailWidget::setLarge(bool expanded)
     m_expanded = true;
     m_expandIcon->setIcon("arrow-up-double");
     m_toLabel->show();
-    m_bodyView->setMinimumHeight(50);
+    m_bodyView->setMinimumHeight(100);
     m_bodyView->show();
     m_layout->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -154,8 +154,6 @@ void EmailWidget::setLarge(bool expanded)
         m_appletSize = Large;
     }
     sizeChanged();
-    m_layout->invalidate();
-    m_layout->updateGeometry();
     kDebug() << "After ........." << m_layout->geometry().size() << m_layout->minimumSize();
 }
 
@@ -215,15 +213,28 @@ void EmailWidget::buildDialog()
 
 void EmailWidget::sizeChanged()
 {
+    kDebug() << "size changed";
     qreal left, top, right, bottom; // TODO: Use them...
-    getContentsMargins(&left, &top, &right, &bottom);
+    m_emailMessage->getContentsMargins(&left, &top, &right, &bottom);
+
+    m_layout->invalidate();
+    m_layout->updateGeometry();
+    adjustSize();
 
     setMinimumSize(m_layout->sizeHint(Qt::MinimumSize));
     setPreferredSize(m_layout->sizeHint(Qt::PreferredSize));
 
     setMinimumSize(m_layout->minimumSize()); // FIXME: borders? setSpacing(0)?
-    resize(m_layout->minimumSize()); // FIXME: borders? setSpacing(0)?
-    emit geometryChanged(m_layout->minimumSize());
+    kDebug() << "Size changed:" << m_layout->geometry().size() << m_layout->minimumSize() << m_layout->minimumSize();
+
+    kDebug() << left << right << top << bottom;
+    QSizeF realSize = QSizeF(m_layout->minimumWidth() + left + right, m_layout->minimumHeight() + top + bottom);
+
+    m_emailMessage->setMinimumSize(realSize);
+    m_emailMessage->adjustSize();
+    //m_emailMessage->geometryChanged();
+    //resize(m_layout->geometry().size()); // FIXME: borders? setSpacing(0)?
+    //emit geometryChanged(m_layout->minimumSize()); // triggers constraintsEvent in applet
 }
 
 void EmailWidget::resizeIcon(int iconsize)
@@ -264,7 +275,7 @@ void EmailWidget::expand()
 void EmailWidget::updateColors()
 {
     QPalette p = palette();
-    //p.setColor(QPalette::Window, Plasma::Theme::defaultTheme()->color(Plasma::Theme::BackgroundColor));
+    //p.setColor(QPalette::Window, Plasma::Thme::defaultTheme()->color(Plasma::Theme::BackgroundColor));
     p.setColor(QPalette::Window, Qt::transparent);
 
     // FIXME: setting foreground color apparently doesn't work?
