@@ -274,7 +274,7 @@ void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data
         email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
         if (m_extenders.count()) {
             m_extenders[0]->addEmail(email); // FIXME: hardcoded, we need to find a way to select the right extender
-            email->setParent(m_extenders[0]);
+            //email->setParent(m_extenders[0]);
             emails[source] = email;
         }
     }

@@ -46,7 +46,7 @@ MailExtender::MailExtender(LionMail * applet, Plasma::Extender *ext)
       m_label(0)
 {
     m_applet = applet;
-    setParent(applet);
+    //setParent(applet);
     setIcon("akonadi");
     setTitle("Lion Mail");
     setName("Lion Mail ExenderItem");
