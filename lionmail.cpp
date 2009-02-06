@@ -59,7 +59,7 @@ void LionMail::init()
 {
     KConfigGroup cg = config();
     m_activeCollection = cg.readEntry("activeCollection", "");
-    kDebug() << "ACTIVE COLLECTION: ++++++++++++++++++++++++++++++" << m_activeCollection;
+    kDebug() << "Active Collection" << m_activeCollection;
 
     engine = dataEngine("akonadi");
     engine->connectAllSources(this);

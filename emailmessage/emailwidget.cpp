@@ -83,7 +83,7 @@ void EmailWidget::setIcon()
 
 void EmailWidget::setTiny()
 {
-    m_expanded = false;
+    //m_expanded = false;
     m_expandIcon->setIcon("arrow-down-double");
     m_toLabel->hide();
     m_bodyView->hide();
@@ -92,8 +92,12 @@ void EmailWidget::setTiny()
     //m_layout->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
     m_bodyView->setMinimumHeight(0);
     m_layout->setRowFixedHeight(1,0);
-    //m_layout->setRowFixedHeight(2, 0);
-    //m_layout->setRowFixedHeight(3, 0);
+
+    m_layout->setRowMinimumHeight(3, 100);
+    m_bodyView->setMinimumHeight(100);
+
+    setMinimumSize(22,22);
+
     m_appletSize = Tiny;
     m_layout->invalidate();
     m_layout->updateGeometry();
@@ -109,7 +113,7 @@ void EmailWidget::setSmall()
     kDebug() << "Small ...";
     resizeIcon(22);
 
-    m_expanded = false;
+    //m_expanded = false;
     m_expandIcon->setIcon("arrow-down-double");
 
     m_layout->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
@@ -122,7 +126,7 @@ void EmailWidget::setSmall()
 
 void EmailWidget::setMedium()
 {
-    m_expanded = false;
+    //m_expanded = false;
     m_expandIcon->setIcon("arrow-down-double");
     m_toLabel->show();
     m_bodyView->hide();
@@ -137,13 +141,14 @@ void EmailWidget::setMedium()
 
 void EmailWidget::setLarge(bool expanded)
 {
+    kDebug() << "Expanding" << m_expanded;
     if (!m_fetching) {
         fetchPayload();
     } else {
         kDebug() << "not fetching payload";
     }
     kDebug() << "Before ......." << m_layout->geometry().size() << m_layout->minimumSize();
-    m_expanded = true;
+    //m_expanded = true;
     m_expandIcon->setIcon("arrow-up-double");
     m_toLabel->show();
     m_bodyView->show();
@@ -229,37 +234,42 @@ void EmailWidget::sizeChanged()
     //setMinimumSize(m_layout->sizeHint(Qt::MinimumSize));
     //setPreferredSize(m_layout->sizeHint(Qt::PreferredSize));
 
-    setMinimumSize(m_layout->minimumSize()); // FIXME: borders? setSpacing(0)?
-    kDebug() << "Size changed:" << m_layout->geometry().size() << m_layout->minimumSize() << m_layout->minimumSize();
+    //setMinimumSize(m_layout->minimumSize()); // FIXME: borders? setSpacing(0)?
 
     kDebug() << left << right << top << bottom;
-    QSizeF realSize = QSizeF(m_layout->minimumWidth() + left + right, m_layout->minimumHeight() + top + bottom);
 
     m_layout->invalidate();
     m_layout->updateGeometry();
     adjustSize();
 
-    m_emailMessage->setMinimumSize(realSize);
+    QSizeF realSize = QSizeF(m_layout->minimumWidth() + left + right, m_layout->minimumHeight() + top + bottom);
+
+    m_emailMessage->setPreferredSize(realSize);
     m_emailMessage->adjustSize();
+
+    kDebug() << "Size changed:" << m_layout->geometry().size() << m_layout->minimumSize() << m_layout->minimumSize() << m_emailMessage->geometry();
     //m_emailMessage->geometryChanged();
     //resize(m_layout->geometry().size()); // FIXME: borders? setSpacing(0)?
-    //emit geometryChanged(m_layout->minimumSize()); // triggers constraintsEvent in applet
+    emit geometryChanged(realSize); // triggers constraintsEvent in applet
 }
 
 void EmailWidget::resizeIcon(int iconsize)
 {
     m_layout->setColumnFixedWidth(0, iconsize);
     m_icon->resize(iconsize, iconsize);
-    m_icon->setMinimumHeight(iconsize);
-    m_icon->setMaximumHeight(iconsize);
+    //m_icon->setMinimumHeight(iconsize);
+    //m_icon->setMaximumHeight(iconsize);
+    m_icon->setPreferredHeight(iconsize);
     m_layout->updateGeometry();
 }
 
 void EmailWidget::toggleBody()
 {
     if (!m_expanded) {
+        kDebug() << "expanding";
         expand();
     } else {
+        kDebug() << "collapsing";
         collapse();
     }
 }
@@ -270,16 +280,18 @@ void EmailWidget::collapse()
     m_expandIcon->setIcon("arrow-down-double");
     m_expanded = false;
     setTiny();
+    sizeChanged();
     //kDebug() << "after:" << m_layout->geometry();
 }
 
 
 void EmailWidget::expand()
 {
-    setLarge(true);
-    sizeChanged();
-    m_expanded = true;
     kDebug() << "showing body";
+    m_expanded = true;
+    setLarge(true);
+    //sizeChanged();
+    sizeChanged();
 }
 
 void EmailWidget::updateColors()
@@ -352,7 +364,7 @@ void EmailWidget::fetchDone(KJob* job)
     Akonadi::Item::List items = static_cast<Akonadi::ItemFetchJob*>( job )->items();
 
     //Akonadi::Item::List items = job->items();
-    kDebug() << "Fetched" << items.count() << "Items.";
+    kDebug() << "Fetched" << items.count() << " body Items.";
     foreach( const Akonadi::Item &item, items ) {
 
         MessagePtr msg = item.payload<MessagePtr>();
@@ -366,7 +378,7 @@ void EmailWidget::fetchDone(KJob* job)
         Cc", msg->cc()->asUnicodeString()
         Bcc", msg->bcc()->asUnicodeString()
         */
-        kDebug() << item.id() << msg->mainBodyPart()->body();
+        //kDebug() << item.id() << msg->mainBodyPart()->body();
         setBody(msg->mainBodyPart()->body());
     }
 }
