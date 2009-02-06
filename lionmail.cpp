@@ -66,7 +66,7 @@ void LionMail::init()
     connectCollection(m_activeCollection);
     setBusy(true);
     connect(engine, SIGNAL(sourceAdded(QString)), SLOT(newSource(QString)));
-    setMinimumSize(48, 96);
+    //setMinimumSize(48, 96);
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     //m_theme->resize(300, 400);
     //resize(300, 400); // move to constraintsevent

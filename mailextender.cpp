@@ -150,9 +150,9 @@ void MailExtender::addEmail(EmailMessage* email)
     email->updateConstraints(Plasma::StartupCompletedConstraint);
 
     m_messageLayout->addItem(email->graphicsWidget());
-    m_layout->setMinimumSize(m_messageLayout->sizeHint(Qt::MinimumSize));
+    //m_layout->setMinimumSize(m_messageLayout->sizeHint(Qt::MinimumSize));
     m_layout->setPreferredSize(m_messageLayout->sizeHint(Qt::PreferredSize));
-    extender()->setMinimumSize(m_layout->sizeHint(Qt::PreferredSize));
+    //extender()->setMinimumSize(m_layout->sizeHint(Qt::PreferredSize));
 
     setMinimumSize(m_layout->sizeHint(Qt::MinimumSize));
     setPreferredSize(m_layout->sizeHint(Qt::PreferredSize));

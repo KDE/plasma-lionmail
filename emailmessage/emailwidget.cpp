@@ -74,6 +74,7 @@ EmailWidget::~EmailWidget()
 void EmailWidget::setIcon()
 {
     kDebug() << "Icon ...";
+    setSmall();
     /*
     m_toLabel->hide();
     m_bodyView->hide();
@@ -92,17 +93,20 @@ void EmailWidget::setTiny()
     //m_layout->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
     m_bodyView->setMinimumHeight(0);
     m_layout->setRowFixedHeight(1,0);
+    m_layout->setRowFixedHeight(2,0);
 
-    m_layout->setRowMinimumHeight(3, 100);
-    m_bodyView->setMinimumHeight(100);
+    //m_layout->setRowMinimumHeight(3, 100);
+    //m_bodyView->setMinimumHeight(100);
 
-    setMinimumSize(22,22);
+    setMinimumSize(42, 42);
+    setPreferredSize(m_layout->geometry().size());
 
     m_appletSize = Tiny;
     m_layout->invalidate();
     m_layout->updateGeometry();
+    //setPreferredHeight(minimumSize().height());
+
     kDebug() << m_layout->geometry().size() << preferredSize() << minimumSize();
-    setPreferredHeight(minimumSize().height());
 }
 
 void EmailWidget::setSmall()
@@ -115,13 +119,15 @@ void EmailWidget::setSmall()
 
     //m_expanded = false;
     m_expandIcon->setIcon("arrow-down-double");
+    m_appletSize = Small;
 
     m_layout->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
     m_appletSize = Small;
     m_layout->invalidate();
     m_layout->updateGeometry();
-    kDebug() << m_layout->geometry().size();
     setPreferredHeight(minimumSize().height());
+
+    kDebug() << m_layout->geometry().size() << preferredSize() << m_layout->minimumSize();
 }
 
 void EmailWidget::setMedium()
@@ -136,12 +142,12 @@ void EmailWidget::setMedium()
     m_appletSize = Medium;
     m_layout->invalidate();
     m_layout->updateGeometry();
-    kDebug() << m_layout->geometry().size();
+
+    kDebug() << m_layout->geometry().size() << preferredSize() << minimumSize();
 }
 
 void EmailWidget::setLarge(bool expanded)
 {
-    kDebug() << "Expanding" << m_expanded;
     if (!m_fetching) {
         fetchPayload();
     } else {
@@ -182,8 +188,8 @@ void EmailWidget::buildDialog()
     m_layout->setRowStretchFactor(0, 0);
     m_layout->setRowStretchFactor(1, 0);
     m_layout->setRowStretchFactor(3, 5); // body
-    m_layout->setRowFixedHeight(0, 14); // FIXME: hardcoded, this height should be based on the label's height
-    m_layout->setRowFixedHeight(1, 14); // FIXME: hardcoded
+    m_layout->setRowMaximumHeight(0, 14); // FIXME: hardcoded, this height should be based on the label's height
+    m_layout->setRowMaximumHeight(1, 14); // FIXME: hardcoded
 
     m_icon = new Plasma::IconWidget(this);
     m_icon->setIcon("view-pim-mail");
@@ -201,6 +207,8 @@ void EmailWidget::buildDialog()
     //m_toLabel->setMaximumHeight(iconsize/2);
     m_toLabel->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
     m_toLabel->nativeWidget()->setWordWrap(false);
+
+    //m_ccLabel = new Plasma::Label(this);
 
     m_layout->addItem(m_toLabel, 1, 1, 1, 2);
 

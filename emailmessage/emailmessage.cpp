@@ -93,12 +93,13 @@ void EmailMessage::constraintsEvent(Plasma::Constraints constraints)
         kDebug() << "--------------";
         kDebug() << "Widget g, m:" << m_emailWidget->geometry() << m_emailWidget->minimumSize();
         kDebug() << "Applet c, m:" << contentsRect() << minimumSize();
-        int proximity = 4; // How close can we get to the minimumSize before we change appearance?
+        int proximity = 8; // How close can we get to the minimumSize before we change appearance?
 
         if (m_emailWidget->minimumSize().width()+proximity > m_emailWidget->geometry().width() ) {
             // not wide enough, only show the icon
             m_emailWidget->setIcon();
         } else {
+            kDebug() << "Basing on height" << m_emailWidget->minimumSize().height()+proximity << contentsRect().height();
             if (m_emailWidget->minimumSize().height()+proximity > contentsRect().height()) {
                 m_emailWidget->setTiny();
             } else if (contentsRect().height() < 100) { // We can fit date, recipient, attachment and such in
