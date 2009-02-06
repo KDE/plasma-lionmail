@@ -90,7 +90,10 @@ void EmailWidget::setTiny()
     kDebug() << "Tiny ...";
     resizeIcon(16);
     //m_layout->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    m_bodyView->setMinimumHeight(0);
     m_layout->setRowFixedHeight(1,0);
+    //m_layout->setRowFixedHeight(2, 0);
+    //m_layout->setRowFixedHeight(3, 0);
     m_appletSize = Tiny;
     m_layout->invalidate();
     m_layout->updateGeometry();
@@ -140,20 +143,25 @@ void EmailWidget::setLarge(bool expanded)
         kDebug() << "not fetching payload";
     }
     kDebug() << "Before ......." << m_layout->geometry().size() << m_layout->minimumSize();
-    m_layout->setRowMinimumHeight(3, 40);
     m_expanded = true;
     m_expandIcon->setIcon("arrow-up-double");
     m_toLabel->show();
-    m_bodyView->setMinimumHeight(100);
     m_bodyView->show();
+
+    m_layout->setRowMinimumHeight(3, 100);
+    m_bodyView->setMinimumHeight(100);
+
     m_layout->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+
+    //m_layout->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    //setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     kDebug() << "Large ...";
-    resizeIcon(48);
+    //resizeIcon(48);
     if (!expanded) {
         m_appletSize = Large;
     }
-    sizeChanged();
     kDebug() << "After ........." << m_layout->geometry().size() << m_layout->minimumSize();
 }
 
@@ -217,18 +225,19 @@ void EmailWidget::sizeChanged()
     qreal left, top, right, bottom; // TODO: Use them...
     m_emailMessage->getContentsMargins(&left, &top, &right, &bottom);
 
-    m_layout->invalidate();
-    m_layout->updateGeometry();
-    adjustSize();
 
-    setMinimumSize(m_layout->sizeHint(Qt::MinimumSize));
-    setPreferredSize(m_layout->sizeHint(Qt::PreferredSize));
+    //setMinimumSize(m_layout->sizeHint(Qt::MinimumSize));
+    //setPreferredSize(m_layout->sizeHint(Qt::PreferredSize));
 
     setMinimumSize(m_layout->minimumSize()); // FIXME: borders? setSpacing(0)?
     kDebug() << "Size changed:" << m_layout->geometry().size() << m_layout->minimumSize() << m_layout->minimumSize();
 
     kDebug() << left << right << top << bottom;
     QSizeF realSize = QSizeF(m_layout->minimumWidth() + left + right, m_layout->minimumHeight() + top + bottom);
+
+    m_layout->invalidate();
+    m_layout->updateGeometry();
+    adjustSize();
 
     m_emailMessage->setMinimumSize(realSize);
     m_emailMessage->adjustSize();
@@ -268,6 +277,7 @@ void EmailWidget::collapse()
 void EmailWidget::expand()
 {
     setLarge(true);
+    sizeChanged();
     m_expanded = true;
     kDebug() << "showing body";
 }

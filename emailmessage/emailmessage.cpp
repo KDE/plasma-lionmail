@@ -94,7 +94,7 @@ void EmailMessage::constraintsEvent(Plasma::Constraints constraints)
         kDebug() << "Widget:" << m_emailWidget->geometry();
         kDebug() << "Applet:" << contentsRect();
         int proximity = 4; // How close can we get to the minimumSize before we change appearance?
-        /*
+
         if (m_emailWidget->minimumSize().width()+proximity > m_emailWidget->geometry().width() ) {
         //if (contentsRect().width() < 75) { // not wide enough, only show the icon
             m_emailWidget->setIcon();
@@ -108,12 +108,12 @@ void EmailMessage::constraintsEvent(Plasma::Constraints constraints)
         } else if (contentsRect().height() < 140) { // $even_more_info
             m_emailWidget->setMedium();
         } else {  // Enough space to include the body
+            kDebug() << "set large";
             m_emailWidget->setLarge();
         }
-        */
         //m_emailWidget->resize(contentsRect().size());
-        updateGeometry();
-        adjustSize();
+        //updateGeometry();
+        //adjustSize();
         update();
     }
 }
