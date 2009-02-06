@@ -91,6 +91,7 @@ class EmailWidget : public QGraphicsWidget
         void geometryChanged(QSizeF newSize);
 
     private :
+        void layoutHack();
         bool m_fetching;
         void fetchPayload();
         bool m_expanded;
