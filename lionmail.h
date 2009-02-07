@@ -45,13 +45,7 @@ class LionMail : public Plasma::PopupApplet
         ~LionMail();
 
         void init();
-        //void paintInterface(QPainter *painter, const QStyleOptionGraphicsItem *option, const QRect &contentsRect );
-
-        //void initExtenderItem(Plasma::ExtenderItem* item);
         void updateToolTip(const QString query, const int matches);
-
-        //void initData();
-
 
     public Q_SLOTS:
         void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);
@@ -61,9 +55,6 @@ class LionMail : public Plasma::PopupApplet
 
     protected:
         void createConfigurationInterface(KConfigDialog *parent);
-
-    private:
-        //void drawEmail(int index, const QRectF& rect, QPainter* painter) ;
 
     private Q_SLOTS:
         void newSource( const QString &source );

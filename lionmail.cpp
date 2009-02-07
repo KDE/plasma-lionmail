@@ -40,7 +40,6 @@ LionMail::LionMail(QObject *parent, const QVariantList &args)
     m_theme->setImagePath("widgets/akonadi");
     m_theme->setContainsMultipleImages(false);
     setHasConfigurationInterface(true);
-    setConfigurationRequired(true, i18n("Please select an Email Folder"));
 
     m_subjectList[0] = QString("Hello CampKDE, hallo Jamaica!"); // ;-)
     setBackgroundHints(StandardBackground);
@@ -59,6 +58,10 @@ void LionMail::init()
 {
     KConfigGroup cg = config();
     m_activeCollection = cg.readEntry("activeCollection", "");
+
+    if (m_activeCollection.isEmpty()) {
+        setConfigurationRequired(true, i18n("Please select an Email Folder"));
+    }
     kDebug() << "Active Collection" << m_activeCollection;
 
     engine = dataEngine("akonadi");
@@ -66,15 +69,12 @@ void LionMail::init()
     connectCollection(m_activeCollection);
     setBusy(true);
     connect(engine, SIGNAL(sourceAdded(QString)), SLOT(newSource(QString)));
-    //setMinimumSize(48, 96);
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    //m_theme->resize(300, 400);
     //resize(300, 400); // move to constraintsevent
     extender()->setEmptyExtenderMessage(i18n("empty..."));
-    //initExtenderItem();
-    //MailExtender* mailView = new MailExtender(this, extender());
+
     initMailExtender();
-    //initData();
+
     updateToolTip("", 0);
     m_collections = dataEngine("akonadi")->query("Collections");
 }
@@ -97,17 +97,14 @@ void LionMail::disconnectCollection(QString cid)
 void LionMail::createConfigurationInterface(KConfigDialog *parent)
 {
     Q_UNUSED(parent);
+
     QWidget *widget = new QWidget();
     ui.setupUi(widget);
     parent->addPage(widget, i18n("Collections"), Applet::icon());
-    kDebug() << "     Adding collections to combo:" << m_collections;
 
-    //QHash<QString, QVariant> collections = dataEngine("akonadi")->query("Collections");
     foreach ( QString c, m_collections.keys() ) {
-        kDebug() << "Inserting ... " << c << m_collections[c];
         ui.collectionCombo->addItem(m_collections[c].toString(), c);
     }
-    //ui.collectionCombo->addItems(m_collections);
     connect(parent, SIGNAL(applyClicked()), this, SLOT(configAccepted()));
     connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
 }
@@ -115,8 +112,6 @@ void LionMail::createConfigurationInterface(KConfigDialog *parent)
 void LionMail::configAccepted()
 {
     KConfigGroup cg = config();
-    //QString col_name = ui.collectionCombo->currentText();
-    //qlonglong cid = m_collections[col_name].toLongLong();
     QString cid = ui.collectionCombo->itemData(ui.collectionCombo->currentIndex()).toString();
 
     if (m_activeCollection != cid) {
@@ -130,7 +125,6 @@ void LionMail::configAccepted()
         setConfigurationRequired(false);
 
         connectCollection(m_activeCollection);
-        //engine->connectSource(QString("%1").arg(m_activeCollection), this);
 
         cg.writeEntry("activeCollection", m_activeCollection);
         kDebug() << "Active Collections changed:" << m_activeCollection;
@@ -138,32 +132,13 @@ void LionMail::configAccepted()
     }
 }
 
-/*
-void LionMail::initExtenderItem(Plasma::ExtenderItem* item)
-{
-    if (item != 0) {
-        return;
-    }
-}
-*/
 void LionMail::initMailExtender()
 {
     MailExtender* mailView = new MailExtender(this, extender());
-    //mailView->setIcon("view-pim-mail");
-    //MailExtender* mailView = static_cast<MailExtender*>(item);
-
     mailView->setName("foobar"); // also make sure we don't recreate this one ...
     mailView->setDescription("Private Emails"); // FIXME: sample text
     mailView->setInfo("2 unread");
 
-/*
-    MailExtender* mailView2 = new MailExtender(this, extender());
-    mailView2->setIcon("mail-send");
-    mailView2->setDescription("Received Today"); // FIXME: sample text
-    mailView2->setInfo("14 emails, 3 unread");
-
-    m_extenders << mailView2 << mailView;
-*/
     m_extenders << mailView;
 }
 
@@ -178,94 +153,8 @@ void LionMail::updateToolTip(const QString query, const int matches)
     Plasma::ToolTipManager::self()->setContent(this, m_toolTip);
 }
 
-
-/*
-// TODO: Maybe reimplement it, showing some number
-void LionMail::paintInterface(QPainter * painter, const QStyleOptionGraphicsItem * option, const QRect &contentsRect)
-{
-    Q_UNUSED( option )
-    Q_UNUSED( contentsRect )
-
-    painter->setRenderHint(QPainter::SmoothPixmapTransform);
-    // draw the main background stuff
-    m_theme->paint(painter, boundingRect(), "email_frame");
-
-    // Use layouts?
-    QRectF bRect = boundingRect();
-    bRect.setX(bRect.x()+93);
-
-    // draw the 4 channels
-    bRect.setY(bRect.y()+102);
-    drawEmail(0, bRect, painter);
-
-    bRect.setY(bRect.y()-88);
-    drawEmail(1, bRect, painter);
-
-    bRect.setY(bRect.y()-88);
-    drawEmail(2, bRect, painter);
-
-    bRect.setY(bRect.y()-88);
-    drawEmail(3, bRect, painter);
-}
-
-
-void LionMail::drawEmail(int index, const QRectF& rect, QPainter* painter)
-{
-
-    QPen _pen = painter->pen();
-    QFont _font = painter->font();
-
-    painter->setPen(Qt::white);
-
-    QString from = m_fromList[index];
-    // cut if too long
-    if(from.size() > 33) {
-        from.resize(30);
-        from.append("...");
-    }
-    //  qDebug() << m_fontFrom.family() << m_fontFrom.pixelSize() << m_fontFrom.pointSize();
-
-    QFontMetrics fmFrom(m_fontFrom);
-    QFontMetrics fmSubject(m_fontFrom);
-
-    painter->setFont(m_fontFrom);
-    painter->drawText((int)(rect.width()/2 - fmFrom.width(from) / 2),
-                (int)((rect.height()/2) - fmFrom.xHeight()*3),
-                from);
-
-    QString subject = m_subjectList[index];
-    // cut
-    // how about KSqueezedLabel?
-    if (subject.size() > 33) {
-        subject.resize(30);
-        subject.append("...");
-    }
-
-    painter->setFont(m_fontSubject);
-    painter->drawText((int)(rect.width()/2 - fmSubject.width(subject) / 2),
-                (int)((rect.height()/2) - fmSubject.xHeight()*3 + 15),
-                subject);
-
-    // restore
-    painter->setFont(_font);
-    painter->setPen(_pen);
-
-}
-void LionMail::initData()
-{
-    const QStringList& sources = dataEngine("akonadi")->query("Subject")["sources"].toStringList();
-    kDebug() << "Source" << sources;
-    foreach (const QString &source, sources) {
-        //kDebug() << "BatterySource:" << battery_source;
-        //dataUpdated(source, dataEngine("akonadi")->query(source));
-    }
-
-}
-*/
-
 void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
-    //kDebug() << data;
     setBusy(false);
     if (source == "Collections") {
         m_collections = data;
@@ -277,7 +166,6 @@ void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data
         email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
         if (m_extenders.count()) {
             m_extenders[0]->addEmail(email); // FIXME: hardcoded, we need to find a way to select the right extender
-            //email->setParent(m_extenders[0]);
             emails[source] = email;
         }
     }
@@ -295,13 +183,6 @@ void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data
     email->m_emailWidget->setTo(data["To"].toStringList());
     email->m_emailWidget->setCc(data["Cc"].toStringList());
     email->m_emailWidget->setBcc(data["Bcc"].toStringList());
-
-    /*
-    kDebug() << "FROM:" << data["From"].toString() << data["From"];
-    kDebug() << "SUBJ:" << data["Subject"].toString() << data["Subject"];
-    kDebug() << "  TO:" << data["To"].toString() << data["To"];
-    */
-    //mailView->addEmail(email);
 
     m_fromList[0] = data["From"].toString();
     m_subjectList[0] = data["Subject"].toString();

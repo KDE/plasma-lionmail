@@ -96,29 +96,8 @@ void EmailWidget::setTiny()
     m_bodyView->hide();
     kDebug() << "Tiny ...";
     resizeIcon(16);
-    //m_layout->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    //m_bodyView->setMinimumHeight(0);
-    //m_layout->setRowFixedHeight(1,0);
-    //m_layout->setRowFixedHeight(2,0);
-
-    //m_layout->setRowMinimumHeight(3, 100);
-    //m_bodyView->setMinimumHeight(100);
-
-    //setMinimumSize(42, 42);
-    //setPreferredSize(m_layout->geometry().size());
 
     m_appletSize = Tiny;
-    //m_layout->invalidate();
-    //m_layout->updateGeometry();
-    //setPreferredHeight(minimumSize().height());
-/*
-    kDebug() << m_layout->geometry().size() << preferredSize() << minimumSize();
-    kDebug() << m_layout->rowMinimumHeight(0);
-    kDebug() << m_layout->rowMinimumHeight(1);
-    kDebug() << m_layout->rowMinimumHeight(2);
-    kDebug() << m_layout->rowMinimumHeight(3);
-*/
-    //layoutHack();
 }
 
 void EmailWidget::setSmall()
@@ -135,20 +114,7 @@ void EmailWidget::setSmall()
 
     m_expandIcon->setIcon("arrow-down-double");
 
-    //m_layout->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
     m_appletSize = Small;
-    //m_layout->invalidate();
-    //m_layout->updateGeometry();
-/*
-    setPreferredHeight(minimumSize().height());
-
-    kDebug() << m_layout->geometry().size() << preferredSize() << m_layout->minimumSize();
-    kDebug() << m_layout->rowMinimumHeight(0) << m_layout->rowPreferredHeight(0);
-    kDebug() << m_layout->rowMinimumHeight(1) << m_layout->rowPreferredHeight(1);
-    kDebug() << m_layout->rowMinimumHeight(2) << m_layout->rowPreferredHeight(0);
-    kDebug() << m_layout->rowMinimumHeight(3);
-    */
-    //layoutHack();
 }
 
 void EmailWidget::setMedium()
@@ -156,16 +122,12 @@ void EmailWidget::setMedium()
     if (m_expanded) {
         return;
     }
-    //m_expanded = false;
     m_expandIcon->setIcon("arrow-down-double");
     m_toLabel->show();
     m_bodyView->hide();
     kDebug() << "Medium ...";
     resizeIcon(32);
-    //m_layout->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
     m_appletSize = Medium;
-
-    //layoutHack();
     kDebug() << m_layout->geometry().size() << preferredSize() << minimumSize();
 }
 
@@ -177,17 +139,12 @@ void EmailWidget::setLarge(bool expanded)
         kDebug() << "not fetching payload";
     }
     kDebug() << "Before ......." << m_layout->geometry().size() << m_layout->minimumSize();
-    //m_expanded = true;
     m_expandIcon->setIcon("arrow-up-double");
     m_toLabel->show();
     m_bodyView->show();
 
     m_layout->setRowMinimumHeight(3, 120);
     m_bodyView->setMinimumHeight(120);
-
-    //m_layout->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    //setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
 
     m_layout->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -196,42 +153,19 @@ void EmailWidget::setLarge(bool expanded)
     if (!expanded) {
         m_appletSize = Large;
     }
-    //layoutHack();
     kDebug() << "After ........." << m_layout->geometry().size() << m_layout->minimumSize();
 }
-/*
-void EmailWidget::layoutHack()
-{
-    return;
-    m_layout->invalidate();
-    m_layout->updateGeometry();
-    setPreferredSize(m_layout->preferredSize());
-    setMinimumSize(m_layout->minimumSize());
 
-    kDebug() << "--------";
-    kDebug() << "1Label: min, pref, max:" << m_subjectLabel->minimumHeight() << m_subjectLabel->preferredHeight() << m_subjectLabel->maximumHeight();
-    kDebug() << "2Label: min, pref, max:" << m_toLabel->minimumHeight() << m_toLabel->preferredHeight() << m_toLabel->maximumHeight();
-    kDebug() << "Widget: min, pref, max:" << minimumHeight() << preferredHeight() << maximumHeight();
-    kDebug() << "Applet: min, pref, max:" << m_emailMessage->minimumHeight() << m_emailMessage->preferredHeight() << m_emailMessage->maximumHeight();
-
-}
-*/
 void EmailWidget::buildDialog()
 {
 
     m_layout = new QGraphicsGridLayout(this);
     m_layout->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    m_layout->setColumnFixedWidth(0, 40); // This should be dynamic, we'll also want to decrease the second column if the first one expands
     m_layout->setColumnPreferredWidth(1, 140);
     m_layout->setColumnFixedWidth(2, 22);
     m_layout->setHorizontalSpacing(4);
 
-/*
-    m_layout->setRowStretchFactor(0, 0);
-    m_layout->setRowStretchFactor(1, 0);
-    m_layout->setRowStretchFactor(3, 5); // body
-    m_layout->setRowMaximumHeight(0, 14); // FIXME: hardcoded, this height should be based on the label's height
-    m_layout->setRowMaximumHeight(1, 14); // FIXME: hardcoded
-*/
     m_icon = new Plasma::IconWidget(this);
     m_icon->setIcon("view-pim-mail");
     m_icon->setAcceptHoverEvents(false);
@@ -244,17 +178,14 @@ void EmailWidget::buildDialog()
     m_subjectLabel->setText("<b>Re: sell me a beer, mon</b>");
     m_subjectLabel->nativeWidget()->setWordWrap(false);
     m_subjectLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    //m_subjectLabel->setMaximumHeight(iconsize/2);
+    m_subjectLabel->setMaximumWidth(240);
     m_layout->addItem(m_subjectLabel, 0, 1, 1, 1, Qt::AlignTop);
 
     m_toLabel = new Plasma::Label(this);
     m_toLabel->setText("<b>Recipient:</b> Bob Marley <bmarley@kde.org>");
     m_toLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    //m_toLabel->setMaximumHeight(iconsize/2);
     m_toLabel->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
     m_toLabel->nativeWidget()->setWordWrap(false);
-
-    //m_ccLabel = new Plasma::Label(this);
 
     m_layout->addItem(m_toLabel, 1, 1, 1, 2);
 
@@ -281,36 +212,6 @@ void EmailWidget::buildDialog()
     kDebug() << "EmailWidget built";
 }
 
-/*
-void EmailWidget::sizeChanged()
-{
-    kDebug() << "size changed";
-    qreal left, top, right, bottom; // TODO: Use them...
-    m_emailMessage->getContentsMargins(&left, &top, &right, &bottom);
-
-
-    //setMinimumSize(m_layout->sizeHint(Qt::MinimumSize));
-    //setPreferredSize(m_layout->sizeHint(Qt::PreferredSize));
-
-    //setMinimumSize(m_layout->minimumSize()); // FIXME: borders? setSpacing(0)?
-
-    kDebug() << left << right << top << bottom;
-
-    m_layout->invalidate();
-    m_layout->updateGeometry();
-    adjustSize();
-
-    QSizeF realSize = QSizeF(m_layout->minimumWidth() + left + right, m_layout->minimumHeight() + top + bottom);
-
-    m_emailMessage->setPreferredSize(realSize);
-    m_emailMessage->adjustSize();
-
-    kDebug() << "Size changed:" << m_layout->geometry().size() << m_layout->minimumSize() << m_layout->minimumSize() << m_emailMessage->geometry();
-    //m_emailMessage->geometryChanged();
-    //resize(m_layout->geometry().size()); // FIXME: borders? setSpacing(0)?
-    emit geometryChanged(realSize); // triggers constraintsEvent in applet
-}
-*/
 void EmailWidget::resizeIcon(int iconsize)
 {
     m_layout->setColumnFixedWidth(0, iconsize);
@@ -338,7 +239,6 @@ void EmailWidget::collapse()
     m_expandIcon->setIcon("arrow-down-double");
     m_expanded = false;
     setTiny();
-    //sizeChanged();
 }
 
 
@@ -348,8 +248,6 @@ void EmailWidget::expand()
     m_expanded = true;
     setLarge(true);
     //m_bodyView->setMinimumSize(200, 200);
-    //sizeChanged();
-    //m_expanded = false;
 }
 
 void EmailWidget::updateColors()
@@ -369,7 +267,6 @@ void EmailWidget::updateColors()
 
 void EmailWidget::setSubject(const QString& subject)
 {
-    //m_subject = subject;
     if (m_subjectLabel && !subject.isEmpty()) {
         m_subjectLabel->setText(subject);
     }
