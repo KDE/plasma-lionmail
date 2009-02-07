@@ -192,7 +192,7 @@ void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data
 
 void LionMail::newSource(const QString & source)
 {
-    kDebug() << "------------- New:" << source;
+    //kDebug() << "------------- New:" << source;
     engine->connectSource(source, this);
     // We could create MailExtenders here ...
 }

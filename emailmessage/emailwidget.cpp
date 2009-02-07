@@ -160,7 +160,7 @@ void EmailWidget::buildDialog()
 {
 
     m_layout = new QGraphicsGridLayout(this);
-    m_layout->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    m_layout->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     m_layout->setColumnFixedWidth(0, 40); // This should be dynamic, we'll also want to decrease the second column if the first one expands
     m_layout->setColumnPreferredWidth(1, 140);
     m_layout->setColumnFixedWidth(2, 22);
@@ -224,6 +224,7 @@ void EmailWidget::resizeIcon(int iconsize)
 
 void EmailWidget::toggleBody()
 {
+    kDebug() << preferredSize() << minimumSize();
     if (!m_expanded) {
         kDebug() << "expanding";
         expand();
@@ -231,6 +232,7 @@ void EmailWidget::toggleBody()
         kDebug() << "collapsing";
         collapse();
     }
+    kDebug() << preferredSize() << minimumSize();
 }
 
 void EmailWidget::collapse()
