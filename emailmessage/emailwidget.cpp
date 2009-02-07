@@ -28,10 +28,10 @@
 #include <KGlobalSettings>
 
 // Akonadi
-#include <akonadi/item.h>
-#include <akonadi/itemfetchscope.h>
-#include <akonadi/collection.h>
-#include <akonadi/itemfetchjob.h>
+#include <Akonadi/Item>
+#include <Akonadi/ItemFetchScope>
+#include <Akonadi/Collection>
+#include <Akonadi/ItemFetchJob>
 
 #include <kmime/kmime_message.h>
 
