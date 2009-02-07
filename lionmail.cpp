@@ -40,7 +40,7 @@ LionMail::LionMail(QObject *parent, const QVariantList &args)
     m_theme->setImagePath("widgets/akonadi");
     m_theme->setContainsMultipleImages(false);
     setHasConfigurationInterface(true);
-    //setConfigurationRequired(true, i18n("Please select an Email Folder")); // Doesn't go away?
+    setConfigurationRequired(true, i18n("Please select an Email Folder"));
 
     m_subjectList[0] = QString("Hello CampKDE, hallo Jamaica!"); // ;-)
     setBackgroundHints(StandardBackground);
@@ -127,14 +127,15 @@ void LionMail::configAccepted()
         disconnectCollection(m_activeCollection);
 
         m_activeCollection = cid;
+        setConfigurationRequired(false);
 
         connectCollection(m_activeCollection);
         //engine->connectSource(QString("%1").arg(m_activeCollection), this);
 
         cg.writeEntry("activeCollection", m_activeCollection);
+        kDebug() << "Active Collections changed:" << m_activeCollection;
+        emit configNeedsSaving();
     }
-    kDebug() << "Active Collections changed:" << m_activeCollection;
-    emit configNeedsSaving();
 }
 
 /*
@@ -150,6 +151,8 @@ void LionMail::initMailExtender()
     MailExtender* mailView = new MailExtender(this, extender());
     //mailView->setIcon("view-pim-mail");
     //MailExtender* mailView = static_cast<MailExtender*>(item);
+
+    mailView->setName("foobar"); // also make sure we don't recreate this one ...
     mailView->setDescription("Private Emails"); // FIXME: sample text
     mailView->setInfo("2 unread");
 

@@ -116,7 +116,7 @@ void EmailMessage::constraintsEvent(Plasma::Constraints constraints)
         update();
     }
 }
-
+/*
 void EmailMessage::updateSize(const QSizeF newSize)
 {
     kDebug() << "Resizing applet from " << size() << " to:" << m_emailWidget->minimumSize() << newSize;
@@ -128,6 +128,7 @@ void EmailMessage::updateSize(const QSizeF newSize)
     updateGeometry();
     update();
 }
+*/
 void EmailMessage::setSubject(const QString& subject)
 {
     m_emailWidget->setSubject(subject);

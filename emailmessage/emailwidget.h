@@ -82,7 +82,7 @@ class EmailWidget : public QGraphicsWidget
         void toggleBody();
         void expand();
         void collapse();
-        void sizeChanged();
+        //void sizeChanged();
         void updateColors();
 
         void fetchDone(KJob* job);
@@ -91,7 +91,7 @@ class EmailWidget : public QGraphicsWidget
         void geometryChanged(QSizeF newSize);
 
     private :
-        void layoutHack();
+        //void layoutHack();
         bool m_fetching;
         void fetchPayload();
         bool m_expanded;

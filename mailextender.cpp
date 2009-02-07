@@ -51,7 +51,7 @@ MailExtender::MailExtender(LionMail * applet, Plasma::Extender *ext)
     setTitle("Lion Mail");
     setName("Lion Mail ExenderItem");
     (void)graphicsWidget();
-    setMinimumHeight(200);
+    //setMinimumHeight(200);
     //setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
 }
@@ -154,10 +154,10 @@ void MailExtender::addEmail(EmailMessage* email)
     m_layout->setPreferredSize(m_messageLayout->sizeHint(Qt::PreferredSize));
     //extender()->setMinimumSize(m_layout->sizeHint(Qt::PreferredSize));
 
-    setMinimumSize(m_layout->sizeHint(Qt::MinimumSize));
-    setPreferredSize(m_layout->sizeHint(Qt::PreferredSize));
-    m_widget->resize(m_layout->sizeHint(Qt::MinimumSize));
-
+    //setMinimumSize(m_layout->sizeHint(Qt::MinimumSize));
+    //setPreferredSize(m_layout->sizeHint(Qt::PreferredSize));
+    //m_widget->resize(m_layout->sizeHint(Qt::MinimumSize));
+/*
     kDebug() << "--------------------------------------------------";
     kDebug() << "MessageLayout:" << m_messageLayout->sizeHint(Qt::MinimumSize)  << m_messageLayout->sizeHint(Qt::PreferredSize);
     kDebug() << "       Layout:" << m_layout->sizeHint(Qt::MinimumSize)         << m_layout->sizeHint(Qt::PreferredSize);
@@ -170,6 +170,7 @@ void MailExtender::addEmail(EmailMessage* email)
     m_messageLayout->updateGeometry();
     m_layout->updateGeometry();
     updateGeometry();
+*/
 }
 
 void MailExtender::setDescription(const QString& desc)
