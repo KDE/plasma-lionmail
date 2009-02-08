@@ -18,6 +18,11 @@ target_link_libraries(plasma_applet_lionmail
     ${KDE4_AKONADI_LIBS}
     ${KDE4_KMIME_LIBS}
     ${KDE4_AKONADI_KMIME_LIBS}
+    ${KDE4_KABC_LIBS}
+    akonadi-kabccommon
+    ${KDE4_KCAL_LIBS}
+
+
 )
 
 install(TARGETS plasma_applet_lionmail DESTINATION ${PLUGIN_INSTALL_DIR})
