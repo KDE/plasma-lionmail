@@ -76,7 +76,7 @@ void LionMail::init()
     initMailExtender();
 
     updateToolTip("", 0);
-    m_collections = dataEngine("akonadi")->query("Collections");
+    m_collections = dataEngine("akonadi")->query("EmailCollections");
 }
 
 void LionMail::connectCollection(QString cid)
