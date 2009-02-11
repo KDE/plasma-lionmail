@@ -27,6 +27,11 @@
 // KDE
 #include <KPushButton>
 
+
+#include <Akonadi/Item>
+#include <Akonadi/Monitor>
+
+
 //own
 class EmailMessage;
 class KJob;
@@ -86,11 +91,14 @@ class EmailWidget : public QGraphicsWidget
         void updateColors();
 
         void fetchDone(KJob* job);
+        void itemChanged(const Akonadi::Item* item);
 
     Q_SIGNALS:
         void geometryChanged(QSizeF newSize);
 
     private :
+        Akonadi::Monitor* m_monitor;
+
         bool m_fetching;
         void fetchPayload();
         bool m_expanded;

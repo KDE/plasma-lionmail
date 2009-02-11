@@ -32,6 +32,7 @@
 #include <Akonadi/ItemFetchScope>
 #include <Akonadi/Collection>
 #include <Akonadi/ItemFetchJob>
+#include <Akonadi/Monitor>
 
 #include <kmime/kmime_message.h>
 
@@ -62,6 +63,7 @@ EmailWidget::EmailWidget(EmailMessage* emailmessage, QGraphicsWidget *parent)
       m_bodyView(0),
       m_abstractLabel(0)
 {
+    m_monitor = 0;
     m_emailMessage = emailmessage;
     m_expanded = false;
     buildDialog();
@@ -324,6 +326,14 @@ void EmailWidget::fetchDone(KJob* job)
     kDebug() << "Fetched" << items.count() << " body Items.";
     foreach( const Akonadi::Item &item, items ) {
 
+        // Start monitoring this item
+        if (m_monitor ==0) {
+            m_monitor = new Akonadi::Monitor(this);
+        }
+        m_monitor->setItemMonitored(item);
+        connect( m_monitor, SIGNAL(itemChanged(Akonadi::Item, QSet<QByteArray>)),
+            SLOT(itemChanged(Akonadi::Item)) );
+
         MessagePtr msg = item.payload<MessagePtr>();
 
         /*
@@ -338,6 +348,25 @@ void EmailWidget::fetchDone(KJob* job)
         //kDebug() << item.id() << msg->mainBodyPart()->body();
         setBody(msg->mainBodyPart()->body());
     }
+}
+
+void EmailWidget::itemChanged(const Akonadi::Item* item)
+{
+    MessagePtr msg = item->payload<MessagePtr>();
+
+    id = item->id(); // This shouldn't change ... right?
+    setSubject(msg->subject()->asUnicodeString());
+    setFrom(msg->from()->asUnicodeString());
+    setDate(msg->date()->dateTime().date());
+    setTo(QStringList(msg->to()->asUnicodeString()));
+    setCc(QStringList(msg->cc()->asUnicodeString()));
+    setBcc(QStringList(msg->bcc()->asUnicodeString()));
+    setBody(msg->mainBodyPart()->body());
+}
+
+void setDate(KDateTime* date)
+{
+    // TODO
 }
 
 void EmailWidget::setAbstract(const QString& abstract)
