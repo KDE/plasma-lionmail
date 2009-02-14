@@ -217,6 +217,7 @@ void EmailWidget::buildDialog()
 void EmailWidget::resizeIcon(int iconsize)
 {
     m_layout->setColumnFixedWidth(0, iconsize);
+    m_layout->setColumnPreferredWidth(1, 180-iconsize);
     m_icon->resize(iconsize, iconsize);
     m_icon->setMinimumHeight(iconsize);
     m_icon->setMaximumHeight(iconsize);
