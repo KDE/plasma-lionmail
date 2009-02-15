@@ -151,7 +151,7 @@ void EmailWidget::setLarge(bool expanded)
     m_layout->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     kDebug() << "Large ...";
-    resizeIcon(64);
+    resizeIcon(32);
     if (!expanded) {
         m_appletSize = Large;
     }
@@ -177,26 +177,29 @@ void EmailWidget::buildDialog()
 
 
     m_subjectLabel = new Plasma::Label(this);
-    m_subjectLabel->setText("<b>Re: sell me a beer, mon</b>");
     m_subjectLabel->nativeWidget()->setWordWrap(false);
     m_subjectLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    m_subjectLabel->setMaximumWidth(240);
+    //m_subjectLabel->setMaximumWidth(240);
     m_layout->addItem(m_subjectLabel, 0, 1, 1, 1, Qt::AlignTop);
+    setSubject("Re: sell me a beer, mon");
+
 
     m_toLabel = new Plasma::Label(this);
-    m_toLabel->setText("<b>Recipient:</b> Bob Marley <bmarley@kde.org>");
     m_toLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     m_toLabel->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
     m_toLabel->nativeWidget()->setWordWrap(false);
+    setTo(QStringList("Bob Marley <marley@kde.org>"));
 
     m_layout->addItem(m_toLabel, 1, 1, 1, 2);
 
     m_bodyView = new Plasma::WebView(this);
     //m_bodyView->setMinimumSize(20, 40);
+    //m_bodyView->page()->setAutoFillBackground(false);
+
     m_bodyView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     QString html("<h3>Hi everybody</h3>I hope you're all having a great time on Jamaica, my home country (which you might have noticed after yesterday's bob-marley-on-repeat-for-the-whole-night. I wish I could be with you, but it wasn't meant to be. I'll go out with my friends Kurt and Elvis tonight instead and wish you a happy CampKDE.<br /><br /><em>-- Bob</em>");
-
     setBody(html);
+
     m_layout->addItem(m_bodyView, 3, 0, 1, 3);
 
     m_expandIcon = new Plasma::IconWidget(this);
@@ -282,7 +285,7 @@ void EmailWidget::setTo(const QStringList& toList)
 {
     kDebug() << "Setting recipient" << toList;
     if (m_toLabel && toList.count()) {
-        m_toLabel->setText(toList.join(", "));
+        m_toLabel->setText(i18n("<b>To:</b> %1", toList.join(", ")));
     }
 }
 
@@ -335,34 +338,26 @@ void EmailWidget::fetchDone(KJob* job)
         connect( m_monitor, SIGNAL(itemChanged(Akonadi::Item, QSet<QByteArray>)),
             SLOT(itemChanged(Akonadi::Item)) );
 
-        MessagePtr msg = item.payload<MessagePtr>();
-
-        /*
-        Id", item.id()
-        Subject", msg->subject()->asUnicodeString()
-        From", msg->from()->asUnicodeString()
-        DateTime", msg->date()->dateTime().date()
-        To", msg->to()->asUnicodeString()
-        Cc", msg->cc()->asUnicodeString()
-        Bcc", msg->bcc()->asUnicodeString()
-        */
-        //kDebug() << item.id() << msg->mainBodyPart()->body();
-        setBody(msg->mainBodyPart()->body());
+        itemChanged(&item);
     }
 }
 
 void EmailWidget::itemChanged(const Akonadi::Item* item)
 {
-    MessagePtr msg = item->payload<MessagePtr>();
+    if (item->hasPayload<MessagePtr>()) {
+        MessagePtr msg = item->payload<MessagePtr>();
 
-    id = item->id(); // This shouldn't change ... right?
-    setSubject(msg->subject()->asUnicodeString());
-    setFrom(msg->from()->asUnicodeString());
-    setDate(msg->date()->dateTime().date());
-    setTo(QStringList(msg->to()->asUnicodeString()));
-    setCc(QStringList(msg->cc()->asUnicodeString()));
-    setBcc(QStringList(msg->bcc()->asUnicodeString()));
-    setBody(msg->mainBodyPart()->body());
+        id = item->id(); // This shouldn't change ... right?
+        setSubject(msg->subject()->asUnicodeString());
+        setFrom(msg->from()->asUnicodeString());
+        setDate(msg->date()->dateTime().date());
+        setTo(QStringList(msg->to()->asUnicodeString()));
+        setCc(QStringList(msg->cc()->asUnicodeString()));
+        setBcc(QStringList(msg->bcc()->asUnicodeString()));
+        setBody(msg->mainBodyPart()->body());
+    } else {
+        setSubject(i18n("Couldn't fetch email payload"));
+    }
 }
 
 void setDate(KDateTime* date)
