@@ -155,6 +155,7 @@ void EmailWidget::setLarge(bool expanded)
     if (!expanded) {
         m_appletSize = Large;
     }
+    updateGeometry();
     kDebug() << "After ........." << m_layout->geometry().size() << m_layout->minimumSize();
 }
 
@@ -194,7 +195,7 @@ void EmailWidget::buildDialog()
 
     m_bodyView = new Plasma::WebView(this);
     //m_bodyView->setMinimumSize(20, 40);
-    //m_bodyView->page()->setAutoFillBackground(false);
+    //m_bodyView->page()->view()->setAutoFillBackground(false);
 
     m_bodyView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     QString html("<h3>Hi everybody</h3>I hope you're all having a great time on Jamaica, my home country (which you might have noticed after yesterday's bob-marley-on-repeat-for-the-whole-night. I wish I could be with you, but it wasn't meant to be. I'll go out with my friends Kurt and Elvis tonight instead and wish you a happy CampKDE.<br /><br /><em>-- Bob</em>");
@@ -298,12 +299,13 @@ void EmailWidget::setBody(const QString& body)
         html.replace("\r", "<br />\n");
         html.replace("\r\n", "<br />\n");
         html.replace("=20<br />", "<br />");
-        //kDebug() << html;
+        kDebug() << html;
 
         QString c = Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor).name(); // FIXME: nasty color
         QString b = Plasma::Theme::defaultTheme()->color(Plasma::Theme::BackgroundColor).name(); // FIXME: nasty color hack
+        //b = "transparent";
 
-        m_bodyView->setHtml(QString("<body style=\"color: %1; background: %2\">%3</body>").arg(c, b, html)); // FIXME: Urks. :(
+        m_bodyView->setHtml(QString("<body style=\"color: %1; background-color: %2\">%3</body>").arg(c, b, html)); // FIXME: Urks. :(
     }
     m_body = body;
 }
