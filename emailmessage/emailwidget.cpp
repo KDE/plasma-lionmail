@@ -260,14 +260,15 @@ void EmailWidget::expand()
 
 void EmailWidget::updateColors()
 {
+
     QPalette p = palette();
     //p.setColor(QPalette::Window, Plasma::Thme::defaultTheme()->color(Plasma::Theme::BackgroundColor));
     p.setColor(QPalette::Window, Qt::transparent);
 
     // FIXME: setting foreground color apparently doesn't work?
     p.setColor(QPalette::Text, Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor));
-    //p.setColor(QPalette::WindowText, Qt::green);
-    //kDebug() << "Textcolor:" << Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor);
+    p.setColor(QPalette::WindowText, Qt::green);
+    kDebug() << "Textcolor:" << Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor);
 
     setPalette(p);
     m_bodyView->page()->setPalette(p);
@@ -296,9 +297,13 @@ void EmailWidget::setBody(const QString& body)
         html.replace("\n", "<br />\n");
         html.replace("\r", "<br />\n");
         html.replace("\r\n", "<br />\n");
+        html.replace("=20<br />", "<br />");
+        //kDebug() << html;
 
-        QString c = Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor).name(); // FIXME: nasty color hack
-        m_bodyView->setHtml("<font color=\"" + c + "\">" + html + "</font>"); // FIXME: Urks. :(
+        QString c = Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor).name(); // FIXME: nasty color
+        QString b = Plasma::Theme::defaultTheme()->color(Plasma::Theme::BackgroundColor).name(); // FIXME: nasty color hack
+
+        m_bodyView->setHtml(QString("<body style=\"color: %1; background: %2\">%3</body>").arg(c, b, html)); // FIXME: Urks. :(
     }
     m_body = body;
 }
