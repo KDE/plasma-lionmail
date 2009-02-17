@@ -87,21 +87,21 @@ void EmailMessage::popupEvent(bool show)
 void EmailMessage::constraintsEvent(Plasma::Constraints constraints)
 {
     if (constraints & (Plasma::FormFactorConstraint | Plasma::SizeConstraint)) {
+        int tiny = m_emailWidget->widgetHeight(EmailWidget::Small);
+        setMinimumSize(tiny, tiny);
 
         int proximity = 8; // How close can we get to the minimumSize before we change appearance?
         if (m_emailWidget->minimumSize().width()+proximity > m_emailWidget->geometry().width() ) {
             // not wide enough, only show the icon
             m_emailWidget->setIcon();
         } else {
-            kDebug() << "Basing on height" << m_emailWidget->minimumSize().height()+proximity << contentsRect().height();
-            if (m_emailWidget->minimumSize().height()+proximity > contentsRect().height()) {
+            if (contentsRect().height() < m_emailWidget->widgetHeight(EmailWidget::Small)+proximity) {
                 m_emailWidget->setTiny();
-            } else if (contentsRect().height() < 100) { // We can fit date, recipient, attachment and such in
+            } else if (contentsRect().height() < m_emailWidget->widgetHeight(EmailWidget::Medium)+proximity) { // We can fit date, recipient, attachment and such in
                 m_emailWidget->setSmall();
-            } else if (contentsRect().height() < 140) { // $even_more_info
+            } else if (contentsRect().height() < m_emailWidget->widgetHeight(EmailWidget::Large)+proximity) { // $even_more_info
                 m_emailWidget->setMedium();
             } else {  // Enough space to include the body
-                kDebug() << "set large";
                 m_emailWidget->setLarge();
             }
         }

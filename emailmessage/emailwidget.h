@@ -68,6 +68,7 @@ class EmailWidget : public QGraphicsWidget
 
         void setDate(const QDate& date);
 
+        int widgetHeight(int size);
         enum AppletSize {
             Icon = 0,
             Tiny = 1,
@@ -99,7 +100,6 @@ class EmailWidget : public QGraphicsWidget
     private :
         Akonadi::Monitor* m_monitor;
 
-        int widgetHeight(int size);
         void updateSize(int h);
 
         bool m_fetching;

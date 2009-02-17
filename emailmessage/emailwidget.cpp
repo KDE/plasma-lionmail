@@ -75,19 +75,20 @@ EmailWidget::~EmailWidget()
 
 int EmailWidget::widgetHeight(int size)
 {
+    int h;
     switch (size) {
         case Icon:
-            return 16;
         case Tiny:
-            return 16;
+            h = qMax(16, (int)m_subjectLabel->minimumHeight());
+            break;
         case Small:
-            return 22;
+            return 32;
         case Medium:
-            return 48;
+            return 64;
         case Large:
-            return 256;
+            return 200;
     }
-    return 16;
+    return h;
 }
 
 void EmailWidget::setIcon()
@@ -100,7 +101,6 @@ void EmailWidget::setIcon()
     /*
     m_toLabel->hide();
     m_bodyView->hide();
-    //setSmall(); // TODO
     */
 }
 
@@ -114,7 +114,7 @@ void EmailWidget::setTiny()
     m_expandIcon->setIcon("arrow-down-double");
     m_toLabel->hide();
     m_bodyView->hide();
-    kDebug() << "Tiny ...";
+    kDebug() << "Tiny ... labelheight:" << m_subjectLabel->minimumHeight();
     int h = widgetHeight(m_appletSize);
     updateSize(h);
     resizeIcon(h);
@@ -166,12 +166,12 @@ void EmailWidget::setMedium()
 
 void EmailWidget::setLarge(bool expanded)
 {
+    if (m_appletSize == Large) {
+        return;
+    }
     if (!m_fetching) {
         fetchPayload();
-    } else {
-        kDebug() << "not fetching payload";
     }
-    kDebug() << "Before ......." << m_layout->geometry().size() << m_layout->minimumSize();
     m_expandIcon->setIcon("arrow-up-double");
     m_toLabel->show();
     m_bodyView->show();
@@ -188,8 +188,6 @@ void EmailWidget::setLarge(bool expanded)
         m_appletSize = Large;
     }
     updateSize(widgetHeight(Large));
-    updateGeometry();
-    kDebug() << "After ........." << m_layout->geometry().size() << m_layout->minimumSize();
 }
 
 void EmailWidget::buildDialog()
