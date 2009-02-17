@@ -75,9 +75,12 @@ EmailWidget::~EmailWidget()
 
 int EmailWidget::widgetHeight(int size)
 {
+    //kDebug() << "minwidth:" << m_layout->minimumWidth() << m_toLabel->minimumSize().width();
     int h;
     switch (size) {
         case Icon:
+            h = 22;
+            break;
         case Tiny:
             h = qMax(16, (int)m_subjectLabel->minimumHeight());
             break;
@@ -93,25 +96,45 @@ int EmailWidget::widgetHeight(int size)
 
 void EmailWidget::setIcon()
 {
+    if (m_appletSize == Icon) {
+        return;
+    }
     if (m_expanded) {
         return;
     }
     kDebug() << "Icon ...";
-    setSmall();
-    /*
+    m_appletSize = Icon;
+    m_subjectLabel->hide();
+    m_subjectLabel->setMinimumWidth(0);
     m_toLabel->hide();
+    if (m_fromLabel) {
+        m_fromLabel->hide();
+    }
     m_bodyView->hide();
-    */
+    updateSize(widgetHeight(Icon));
 }
 
 void EmailWidget::setTiny()
 {
-    m_appletSize = Tiny;
-    if (m_expanded) {
+    if (!m_expanded && m_appletSize == Tiny) {
+        kDebug() << "size is tiny already";
         return;
     }
+    m_appletSize = Tiny;
+    /*
+    if (m_expanded) {
+        kDebug() << "expanded ... bailing out";
+        return;
+    }
+    */
     //m_expanded = false;
     m_expandIcon->setIcon("arrow-down-double");
+    m_subjectLabel->show();
+    m_subjectLabel->setMinimumWidth(140);
+
+    if (m_fromLabel) {
+        m_fromLabel->hide();
+    }
     m_toLabel->hide();
     m_bodyView->hide();
     kDebug() << "Tiny ... labelheight:" << m_subjectLabel->minimumHeight();
@@ -131,11 +154,19 @@ void EmailWidget::updateSize(int h)
 
 void EmailWidget::setSmall()
 {
+    if (m_appletSize == Small) {
+        return;
+    }
     if (m_expanded) {
         return;
     }
     kDebug() << "Small ...";
 
+    m_subjectLabel->show();
+    if (m_fromLabel) {
+        m_fromLabel->show();
+    }
+    m_subjectLabel->setMinimumWidth(140);
     m_toLabel->show();
     m_bodyView->hide();
     m_layout->setRowFixedHeight(2,0);
@@ -150,11 +181,17 @@ void EmailWidget::setSmall()
 
 void EmailWidget::setMedium()
 {
+    if (m_appletSize == Medium) {
+        return;
+    }
     if (m_expanded) {
         return;
     }
     m_expandIcon->setIcon("arrow-down-double");
     m_toLabel->show();
+    if (m_fromLabel) {
+        m_fromLabel->show();
+    }
     m_bodyView->hide();
     kDebug() << "Medium ...";
     resizeIcon(32);
@@ -166,7 +203,7 @@ void EmailWidget::setMedium()
 
 void EmailWidget::setLarge(bool expanded)
 {
-    if (m_appletSize == Large) {
+    if (m_expanded && m_appletSize == Large ) {
         return;
     }
     if (!m_fetching) {
@@ -174,16 +211,22 @@ void EmailWidget::setLarge(bool expanded)
     }
     m_expandIcon->setIcon("arrow-up-double");
     m_toLabel->show();
+    m_subjectLabel->show();
+    if (m_fromLabel) {
+        m_fromLabel->show();
+    }
+
     m_bodyView->show();
 
-    m_layout->setRowMinimumHeight(3, 120);
-    m_bodyView->setMinimumHeight(120);
+    //m_layout->setRowMinimumHeight(3, 80);
+    m_bodyView->setMinimumHeight(80);
 
     m_layout->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     kDebug() << "Large ...";
     resizeIcon(32);
     setMinimumHeight(m_layout->minimumSize().height());
+    setMinimumWidth(m_layout->minimumSize().width());
     if (!expanded) {
         m_appletSize = Large;
     }
@@ -231,6 +274,8 @@ void EmailWidget::buildDialog()
 
     m_bodyView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     QString html("<h3>Hi everybody</h3>I hope you're all having a great time on Jamaica, my home country (which you might have noticed after yesterday's bob-marley-on-repeat-for-the-whole-night. I wish I could be with you, but it wasn't meant to be. I'll go out with my friends Kurt and Elvis tonight instead and wish you a happy CampKDE.<br /><br /><em>-- Bob</em>");
+
+    html = "<h1>Fetching data ...</h1>";
     setBody(html);
 
     m_layout->addItem(m_bodyView, 3, 0, 1, 3);
@@ -278,8 +323,8 @@ void EmailWidget::collapse()
 {
     kDebug() << "hiding body";
     m_expandIcon->setIcon("arrow-down-double");
-    m_expanded = false;
     setTiny();
+    m_expanded = false;
 }
 
 
@@ -327,6 +372,7 @@ void EmailWidget::setBody(const QString& body)
 {
     if (m_bodyView && !body.isEmpty()) {
         QString html = body;
+        //kDebug() << body;
         html.replace("\n", "<br />\n");
         html.replace("\r", "<br />\n");
         html.replace("\r\n", "<br />\n");

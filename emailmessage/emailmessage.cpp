@@ -46,7 +46,7 @@ EmailMessage::EmailMessage(QObject *parent, const QVariantList &args)
     setAspectRatioMode(IgnoreAspectRatio);
     setHasConfigurationInterface(true);
     setAcceptsHoverEvents(true);
-    setMinimumSize(12, 12);
+    setMinimumSize(16, 16);
     (void)graphicsWidget();
     setPopupIcon("view-pim-mail");
 }
@@ -88,13 +88,18 @@ void EmailMessage::constraintsEvent(Plasma::Constraints constraints)
 {
     if (constraints & (Plasma::FormFactorConstraint | Plasma::SizeConstraint)) {
         int tiny = m_emailWidget->widgetHeight(EmailWidget::Small);
-        setMinimumSize(tiny, tiny);
+        //setMinimumSize(tiny, m_emailWidget->minimumWidth());
+        kDebug() << contentsRect();
 
         int proximity = 8; // How close can we get to the minimumSize before we change appearance?
-        if (m_emailWidget->minimumSize().width()+proximity > m_emailWidget->geometry().width() ) {
+        //if (m_emailWidget->minimumSize().width()+proximity > m_emailWidget->geometry().width() ) {
+        if (contentsRect().width() < 180 ) {
             // not wide enough, only show the icon
+            int small = m_emailWidget->widgetHeight(EmailWidget::Small);
+            setMinimumSize(small, small);
             m_emailWidget->setIcon();
         } else {
+            setMinimumSize(m_emailWidget->minimumWidth(), tiny);
             if (contentsRect().height() < m_emailWidget->widgetHeight(EmailWidget::Small)+proximity) {
                 m_emailWidget->setTiny();
             } else if (contentsRect().height() < m_emailWidget->widgetHeight(EmailWidget::Medium)+proximity) { // We can fit date, recipient, attachment and such in
