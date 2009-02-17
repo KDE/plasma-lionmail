@@ -133,6 +133,7 @@ void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data
 {
     setBusy(false);
     if (source == "EmailCollections") {
+        kDebug() << source << data.keys();
         m_collections = data;
         m_collections.keys();
         return;

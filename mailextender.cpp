@@ -62,6 +62,7 @@ MailExtender::MailExtender(LionMail * applet, const QString collectionId, Plasma
 
 void MailExtender::setCollection(const QString id)
 {
+    kDebug() << "REMOVE" << m_id;
     disconnectCollection(m_id);
     m_id = id;
     connectCollection(m_id);
