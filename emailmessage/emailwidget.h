@@ -86,6 +86,7 @@ class EmailWidget : public QGraphicsWidget
         void setLarge(bool expanded = false);
 
         void toggleBody();
+        void toggleMeta();
         void expand();
         void collapse();
         //void sizeChanged();

@@ -70,6 +70,8 @@ void LionMail::init()
     initMailExtender(m_activeCollection);
 
     updateToolTip("", 0);
+    dataEngine("akonadi")->connectSource("EmailCollections", this);
+
 }
 
 
@@ -130,8 +132,9 @@ void LionMail::updateToolTip(const QString query, const int matches)
 void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
     setBusy(false);
-    if (source == "Collections") {
+    if (source == "EmailCollections") {
         m_collections = data;
+        m_collections.keys();
         return;
     }
     m_extenders[0]->dataUpdated(source, data);

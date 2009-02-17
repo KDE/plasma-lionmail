@@ -46,6 +46,8 @@ EmailMessage::EmailMessage(QObject *parent, const QVariantList &args)
     setAspectRatioMode(IgnoreAspectRatio);
     setHasConfigurationInterface(true);
     setAcceptsHoverEvents(true);
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+
     setMinimumSize(16, 16);
     (void)graphicsWidget();
     setPopupIcon("view-pim-mail");

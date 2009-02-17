@@ -156,8 +156,8 @@ QGraphicsWidget* MailExtender::graphicsWidget()
     m_layout->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     m_layout->setColumnFixedWidth(0, iconsize);
     m_layout->setColumnMinimumWidth(1, 100);
-    m_layout->setHorizontalSpacing(0);
-    m_layout->setVerticalSpacing(0);
+    m_layout->setHorizontalSpacing(4);
+    m_layout->setVerticalSpacing(4);
 
     // larger icon on the left
     m_icon = new Plasma::IconWidget(m_widget);
@@ -181,7 +181,7 @@ QGraphicsWidget* MailExtender::graphicsWidget()
     m_layout->addItem(m_infoLabel, 1, 1);
 
     m_messageLayout = new QGraphicsLinearLayout(m_layout);
-    m_messageLayout->setSpacing(0);
+    m_messageLayout->setSpacing(4);
     m_messageLayout->setOrientation(Qt::Vertical);
     m_messageLayout->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 

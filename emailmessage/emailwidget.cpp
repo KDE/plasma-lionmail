@@ -206,9 +206,6 @@ void EmailWidget::setLarge(bool expanded)
     if (m_expanded && m_appletSize == Large ) {
         return;
     }
-    if (!m_fetching) {
-        fetchPayload();
-    }
     m_expandIcon->setIcon("arrow-up-double");
     m_toLabel->show();
     m_subjectLabel->show();
@@ -229,6 +226,9 @@ void EmailWidget::setLarge(bool expanded)
     setMinimumWidth(m_layout->minimumSize().width());
     if (!expanded) {
         m_appletSize = Large;
+    }
+    if (!m_fetching) {
+        fetchPayload();
     }
     updateSize(widgetHeight(Large));
 }
@@ -286,6 +286,7 @@ void EmailWidget::buildDialog()
     m_expandIcon->setMinimumSize(16, 16);
     m_expandIcon->setMaximumSize(16, 16);
     connect(m_expandIcon, SIGNAL(clicked()), this, SLOT(toggleBody()));
+    connect(m_icon, SIGNAL(clicked()), this, SLOT(toggleMeta()));
     m_layout->addItem(m_expandIcon, 0, 2, 1, 1, Qt::AlignRight | Qt::AlignTop);
 
     setLayout(m_layout);
@@ -317,6 +318,19 @@ void EmailWidget::toggleBody()
         collapse();
     }
     kDebug() << preferredSize() << minimumSize();
+}
+
+void EmailWidget::toggleMeta()
+{
+    //kDebug() << preferredSize() << minimumSize();
+    if (m_appletSize == Small) {
+        kDebug() << "tinying";
+        setTiny();
+    } else {
+        kDebug() << "smalling";
+        setSmall();
+    }
+    //kDebug() << preferredSize() << minimumSize();
 }
 
 void EmailWidget::collapse()
@@ -394,6 +408,8 @@ void EmailWidget::fetchPayload()
         kDebug() << "id is 0";
         return;
     }
+    m_bodyView->setMinimumHeight(30);
+    updateSize(widgetHeight(Large)-50);
     m_fetching = true;
     kDebug() << "Fetching payload for " << id;
     Akonadi::ItemFetchJob* fetchJob = new Akonadi::ItemFetchJob( Akonadi::Item( id ), this );
@@ -407,8 +423,11 @@ void EmailWidget::fetchDone(KJob* job)
 
     if ( job->error() ) {
         kDebug() << "Error fetching item" << id << ": " << job->errorString();
+        setBody(i18n("<h3>Fetching email body %1 failed: <p /></h3><pre>%2</pre>", id, job->errorString()));
         return;
     }
+    m_bodyView->setMinimumHeight(80);
+    updateSize(widgetHeight(Large));
     Akonadi::Item::List items = static_cast<Akonadi::ItemFetchJob*>( job )->items();
 
     //Akonadi::Item::List items = job->items();
