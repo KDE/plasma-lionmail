@@ -1,0 +1,28 @@
+TODO and Notes for LionMail and EmailMessage applets:
+------------------------------------------------------
+
+
+LionMail:
+- test and fix switching collection (clear list?)
+- multiple collections:
+    - UI for selecting more than one collection
+    - config key (QStringList of ID's)
+    - label: name on extenderitem, number of emails
+    - show unread (pending flags)
+
+
+EmailMessage:
+- date
+- test and fix monitoring
+- flags
+    - unread
+    - important
+    - todo?
+- QDragging
+- Proper parsing of the content
+
+
+General:
+- Find a way to retrieve contact details by an email address
+- Mimetype for akonadi items (id?)
+
