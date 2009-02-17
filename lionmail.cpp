@@ -47,7 +47,6 @@ LionMail::LionMail(QObject *parent, const QVariantList &args)
     m_fontFrom = Plasma::Theme::defaultTheme()->font(Plasma::Theme::DefaultFont);
     m_fontSubject = Plasma::Theme::defaultTheme()->font(Plasma::Theme::DefaultFont);
     setPopupIcon("akonadi");
-    m_maxEmails = 6;
 }
 
 LionMail::~LionMail()
@@ -64,35 +63,15 @@ void LionMail::init()
     }
     kDebug() << "Active Collection" << m_activeCollection;
 
-    engine = dataEngine("akonadi");
-    engine->connectAllSources(this);
-    connectCollection(m_activeCollection);
-    setBusy(true);
-    connect(engine, SIGNAL(sourceAdded(QString)), SLOT(newSource(QString)));
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    //resize(300, 400); // move to constraintsevent
+    resize(300, 400);
     extender()->setEmptyExtenderMessage(i18n("empty..."));
 
-    initMailExtender();
+    initMailExtender(m_activeCollection);
 
     updateToolTip("", 0);
-    m_collections = dataEngine("akonadi")->query("EmailCollections");
 }
 
-void LionMail::connectCollection(QString cid)
-{
-    if (cid.isEmpty()) {
-        return;
-    }
-    kDebug() << "connectSource" << m_activeCollection;
-    engine->connectSource(cid, this); // pass collection ID as string
-}
-
-void LionMail::disconnectCollection(QString cid)
-{
-    kDebug() << "disconnectSource" << cid;
-    engine->disconnectSource(cid, this); // pass collection ID as string
-}
 
 void LionMail::createConfigurationInterface(KConfigDialog *parent)
 {
@@ -102,6 +81,7 @@ void LionMail::createConfigurationInterface(KConfigDialog *parent)
     ui.setupUi(widget);
     parent->addPage(widget, i18n("Collections"), Applet::icon());
 
+    m_collections = dataEngine("akonadi")->query("EmailCollections");
     foreach ( QString c, m_collections.keys() ) {
         ui.collectionCombo->addItem(m_collections[c].toString(), c);
     }
@@ -116,15 +96,13 @@ void LionMail::configAccepted()
 
     if (m_activeCollection != cid) {
         QString name = ui.collectionCombo->currentText();
-        //engine = dataEngine("akonadi");
-        m_extenders[0]->setTitle(name);
 
-        disconnectCollection(m_activeCollection);
+        // FIXME: hardcoded to first extender, needs UI change to support more than one extender
+        m_extenders[0]->setCollection(cid);
+
 
         m_activeCollection = cid;
         setConfigurationRequired(false);
-
-        connectCollection(m_activeCollection);
 
         cg.writeEntry("activeCollection", m_activeCollection);
         kDebug() << "Active Collections changed:" << m_activeCollection;
@@ -132,13 +110,9 @@ void LionMail::configAccepted()
     }
 }
 
-void LionMail::initMailExtender()
+void LionMail::initMailExtender(const QString id)
 {
-    MailExtender* mailView = new MailExtender(this, extender());
-    mailView->setName("foobar"); // also make sure we don't recreate this one ...
-    mailView->setDescription("Private Emails"); // FIXME: sample text
-    mailView->setInfo("2 unread");
-
+    MailExtender* mailView = new MailExtender(this, id, extender());
     m_extenders << mailView;
 }
 
@@ -160,40 +134,14 @@ void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data
         m_collections = data;
         return;
     }
-    EmailMessage* email = 0;
-    if (emails.count() < m_maxEmails && !emails.contains(source)) {
-        kDebug() << "new ...";
-        email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
-        if (m_extenders.count()) {
-            m_extenders[0]->addEmail(email); // FIXME: hardcoded, we need to find a way to select the right extender
-            emails[source] = email;
-        }
-    }
-    if (emails.contains(source)) {
-        email = emails[source];
-    }
-
-    if (email == 0) {
-        return;
-    }
-    // Only set email-specific properties here, layouttweaks and the like should go into MailExtender
-    email->m_emailWidget->id = data["Id"].toLongLong();
-    email->m_emailWidget->setSubject(data["Subject"].toString());
-    email->m_emailWidget->setFrom(data["From"].toString());
-    email->m_emailWidget->setTo(data["To"].toStringList());
-    email->m_emailWidget->setCc(data["Cc"].toStringList());
-    email->m_emailWidget->setBcc(data["Bcc"].toStringList());
-
-    m_fromList[0] = data["From"].toString();
-    m_subjectList[0] = data["Subject"].toString();
-
+    m_extenders[0]->dataUpdated(source, data);
     update();
 }
 
 void LionMail::newSource(const QString & source)
 {
     //kDebug() << "------------- New:" << source;
-    engine->connectSource(source, this);
+    dataEngine("akonadi")->connectSource(source, this);
     // We could create MailExtenders here ...
 }
 

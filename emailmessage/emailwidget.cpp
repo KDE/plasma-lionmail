@@ -181,6 +181,7 @@ void EmailWidget::buildDialog()
     m_subjectLabel->nativeWidget()->setWordWrap(false);
     m_subjectLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     //m_subjectLabel->setMaximumWidth(240);
+    m_subjectLabel->setMinimumWidth(100);
     m_layout->addItem(m_subjectLabel, 0, 1, 1, 1, Qt::AlignTop);
     setSubject("Re: sell me a beer, mon");
 

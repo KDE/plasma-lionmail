@@ -38,8 +38,9 @@
 #include "emailmessage/emailmessage.h"
 
 
-MailExtender::MailExtender(LionMail * applet, Plasma::Extender *ext)
+MailExtender::MailExtender(LionMail * applet, const QString collectionId, Plasma::Extender *ext)
     : Plasma::ExtenderItem(ext),
+      m_id(collectionId),
       m_info(0),
       m_icon(0),
       m_widget(0),
@@ -50,11 +51,84 @@ MailExtender::MailExtender(LionMail * applet, Plasma::Extender *ext)
     setTitle("Lion Mail");
     setName("Lion Mail ExenderItem");
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    setDescription("Some description");
+    m_maxEmails = 6;
+
     (void)graphicsWidget();
+    engine = m_applet->dataEngine("akonadi");
+    connectCollection(m_id);
+    setCollection(m_id);
+}
+
+void MailExtender::setCollection(const QString id)
+{
+    disconnectCollection(m_id);
+    m_id = id;
+    connectCollection(m_id);
+    connect(engine, SIGNAL(sourceAdded(QString)), this, SLOT(newSource(QString)));
 }
 
 MailExtender::~MailExtender()
 {
+}
+
+void MailExtender::setName(const QString name)
+{
+    m_collection = name;
+}
+
+void MailExtender::connectCollection(QString cid)
+{
+    if (cid.isEmpty()) {
+        return;
+    }
+    kDebug() << "connectSource" << cid;
+    engine->connectSource(cid, this); // pass collection ID as string
+}
+
+void MailExtender::disconnectCollection(QString cid)
+{
+    kDebug() << "disconnectSource" << cid;
+    engine->disconnectSource(cid, this); // pass collection ID as string
+}
+
+void MailExtender::newSource(const QString & source)
+{
+    kDebug() << "------------- New:" << source;
+    engine->connectSource(source, this);
+    // We could create MailExtenders here ...
+}
+
+
+void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
+{
+    kDebug() << source;
+    if (source == "Collections") {
+        return;
+    }
+    EmailMessage* email = 0;
+    if (emails.count() < m_maxEmails && !emails.contains(source)) {
+        kDebug() << "new ...";
+        email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
+        addEmail(email);
+        emails[source] = email;
+    }
+    if (emails.contains(source)) {
+        email = emails[source];
+    }
+
+    if (email == 0) {
+        return;
+    }
+    // Only set email-specific properties here, layouttweaks and the like should go into MailExtender
+    email->m_emailWidget->id = data["Id"].toLongLong();
+    email->m_emailWidget->setSubject(data["Subject"].toString());
+    email->m_emailWidget->setFrom(data["From"].toString());
+    email->m_emailWidget->setTo(data["To"].toStringList());
+    email->m_emailWidget->setCc(data["Cc"].toStringList());
+    email->m_emailWidget->setBcc(data["Bcc"].toStringList());
+
+    update();
 }
 
 QGraphicsWidget* MailExtender::graphicsWidget()
