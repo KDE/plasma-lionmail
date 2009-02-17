@@ -73,6 +73,23 @@ EmailWidget::~EmailWidget()
 {
 }
 
+int EmailWidget::widgetHeight(int size)
+{
+    switch (size) {
+        case Icon:
+            return 16;
+        case Tiny:
+            return 16;
+        case Small:
+            return 22;
+        case Medium:
+            return 48;
+        case Large:
+            return 256;
+    }
+    return 16;
+}
+
 void EmailWidget::setIcon()
 {
     if (m_expanded) {
@@ -89,6 +106,7 @@ void EmailWidget::setIcon()
 
 void EmailWidget::setTiny()
 {
+    m_appletSize = Tiny;
     if (m_expanded) {
         return;
     }
@@ -97,9 +115,18 @@ void EmailWidget::setTiny()
     m_toLabel->hide();
     m_bodyView->hide();
     kDebug() << "Tiny ...";
-    resizeIcon(16);
+    int h = widgetHeight(m_appletSize);
+    updateSize(h);
+    resizeIcon(h);
+    kDebug() << m_layout->minimumSize();
+}
 
-    m_appletSize = Tiny;
+void EmailWidget::updateSize(int h)
+{
+    setMinimumHeight(h);
+    setPreferredHeight(h);
+    updateGeometry();
+    m_layout->updateGeometry();
 }
 
 void EmailWidget::setSmall()
@@ -117,6 +144,8 @@ void EmailWidget::setSmall()
     m_expandIcon->setIcon("arrow-down-double");
 
     m_appletSize = Small;
+    int h = widgetHeight(m_appletSize);
+    updateSize(h);
 }
 
 void EmailWidget::setMedium()
@@ -130,6 +159,8 @@ void EmailWidget::setMedium()
     kDebug() << "Medium ...";
     resizeIcon(32);
     m_appletSize = Medium;
+    int h = widgetHeight(m_appletSize);
+    updateSize(h);
     kDebug() << m_layout->geometry().size() << preferredSize() << minimumSize();
 }
 
@@ -152,9 +183,11 @@ void EmailWidget::setLarge(bool expanded)
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     kDebug() << "Large ...";
     resizeIcon(32);
+    setMinimumHeight(m_layout->minimumSize().height());
     if (!expanded) {
         m_appletSize = Large;
     }
+    updateSize(widgetHeight(Large));
     updateGeometry();
     kDebug() << "After ........." << m_layout->geometry().size() << m_layout->minimumSize();
 }

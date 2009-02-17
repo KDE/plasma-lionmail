@@ -50,9 +50,9 @@ MailExtender::MailExtender(LionMail * applet, const QString collectionId, Plasma
     setIcon("akonadi");
     setTitle("Lion Mail");
     setName("Lion Mail ExenderItem");
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     setDescription("Some description");
-    m_maxEmails = 6;
+    m_maxEmails = 12;
 
     (void)graphicsWidget();
     engine = m_applet->dataEngine("akonadi");
@@ -94,7 +94,7 @@ void MailExtender::disconnectCollection(QString cid)
 
 void MailExtender::newSource(const QString & source)
 {
-    kDebug() << "------------- New:" << source;
+    //kDebug() << "------------- New:" << source;
     engine->connectSource(source, this);
     // We could create MailExtenders here ...
 }
@@ -102,7 +102,7 @@ void MailExtender::newSource(const QString & source)
 
 void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
-    kDebug() << source;
+    //kDebug() << source;
     if (source == "Collections") {
         return;
     }
@@ -157,6 +157,7 @@ QGraphicsWidget* MailExtender::graphicsWidget()
     m_layout->setColumnFixedWidth(0, iconsize);
     m_layout->setColumnMinimumWidth(1, 100);
     m_layout->setHorizontalSpacing(0);
+    m_layout->setVerticalSpacing(0);
 
     // larger icon on the left
     m_icon = new Plasma::IconWidget(m_widget);
@@ -204,7 +205,7 @@ void MailExtender::addEmail(EmailMessage* email)
     email->setBackgroundHints(Plasma::Applet::NoBackground);
     email->init();
     email->setPopupIcon(QIcon());
-    email->m_emailWidget->setSmall();
+    email->m_emailWidget->setTiny();
     email->updateConstraints(Plasma::StartupCompletedConstraint);
 
     m_messageLayout->addItem(email->graphicsWidget());

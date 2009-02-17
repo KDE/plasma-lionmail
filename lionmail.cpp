@@ -40,7 +40,7 @@ LionMail::LionMail(QObject *parent, const QVariantList &args)
     m_theme->setImagePath("widgets/akonadi");
     m_theme->setContainsMultipleImages(false);
     setHasConfigurationInterface(true);
-
+    setAspectRatioMode(Plasma::IgnoreAspectRatio);
     m_subjectList[0] = QString("Hello CampKDE, hallo Jamaica!"); // ;-)
     setBackgroundHints(StandardBackground);
 

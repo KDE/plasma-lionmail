@@ -99,6 +99,9 @@ class EmailWidget : public QGraphicsWidget
     private :
         Akonadi::Monitor* m_monitor;
 
+        int widgetHeight(int size);
+        void updateSize(int h);
+
         bool m_fetching;
         void fetchPayload();
         bool m_expanded;
