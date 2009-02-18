@@ -221,6 +221,7 @@ void MailExtender::addEmail(EmailMessage* email)
     email->init();
     email->setPopupIcon(QIcon());
     email->m_emailWidget->setTiny();
+    email->m_emailWidget->setAllowHtml(m_applet->allowHtml());
     email->updateConstraints(Plasma::StartupCompletedConstraint);
 
     m_messageLayout->addItem(email->graphicsWidget());

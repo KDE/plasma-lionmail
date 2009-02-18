@@ -47,6 +47,7 @@ class LionMail : public Plasma::PopupApplet
         void init();
         void updateToolTip(const QString query, const int matches);
         QString collectionName(const QString &id);
+        bool allowHtml();
 
     public Q_SLOTS:
         void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);
@@ -69,6 +70,8 @@ class LionMail : public Plasma::PopupApplet
         QList<MailExtender*> m_extenders;
         Plasma::Svg* m_theme;
         Plasma::ToolTipContent m_toolTip;
+
+         bool m_allowHtml;
 
         Ui::lionmailConfig ui;
 

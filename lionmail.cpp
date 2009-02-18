@@ -47,6 +47,7 @@ LionMail::LionMail(QObject *parent, const QVariantList &args)
     m_fontFrom = Plasma::Theme::defaultTheme()->font(Plasma::Theme::DefaultFont);
     m_fontSubject = Plasma::Theme::defaultTheme()->font(Plasma::Theme::DefaultFont);
     setPopupIcon("akonadi");
+    m_allowHtml = false;
 }
 
 LionMail::~LionMail()
@@ -61,10 +62,15 @@ QString LionMail::collectionName(const QString &id)
     return i18n("Collection %1", id);
 }
 
+bool LionMail::allowHtml()
+{
+    return m_allowHtml;
+}
 void LionMail::init()
 {
     KConfigGroup cg = config();
     m_activeCollection = cg.readEntry("activeCollection", "");
+    m_allowHtml = cg.readEntry("allowHtml", false);
 
     if (m_activeCollection.isEmpty()) {
         setConfigurationRequired(true, i18n("Please select an Email Folder"));
@@ -96,6 +102,7 @@ void LionMail::createConfigurationInterface(KConfigDialog *parent)
     foreach ( QString c, m_collections.keys() ) {
         ui.collectionCombo->addItem(m_collections[c].toString(), c);
     }
+    ui.allowHtml->setChecked(m_allowHtml);
     connect(parent, SIGNAL(applyClicked()), this, SLOT(configAccepted()));
     connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
 }
@@ -118,6 +125,10 @@ void LionMail::configAccepted()
         cg.writeEntry("activeCollection", m_activeCollection);
         kDebug() << "Active Collections changed:" << m_activeCollection;
         emit configNeedsSaving();
+    }
+    if (ui.allowHtml->isChecked() != m_allowHtml) {
+        m_allowHtml = !m_allowHtml;
+        cg.writeEntry("allowHtml", m_allowHtml);
     }
 }
 
