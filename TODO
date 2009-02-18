@@ -24,5 +24,13 @@ EmailMessage:
 
 General:
 - Find a way to retrieve contact details by an email address
+- Retrieval of a contact based on an email address for example (not supported in Akonadi atm)
 - Mimetype for akonadi items (id?)
+    Item::fromUrl
+    Item::url()
 
+flags example from mailody:
+ http://websvn.kde.org/trunk/extragear/pim/mailody/src/messagedata.cpp?revision=868133&view=markup see requestBody()
+
+decoding body:
+ http://api.kde.org/4.x-api/kdepimlibs-apidocs/kmime/html/classKMime_1_1Content.html#5baf20f83dfd3e914096f887202fe5d9
