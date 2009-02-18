@@ -53,6 +53,14 @@ LionMail::~LionMail()
 {
 }
 
+QString LionMail::collectionName(const QString &id)
+{
+    if (m_collections.count() && m_collections.keys().contains(id)) {
+        return m_collections[id].toString();
+    }
+    return i18n("Collection %1", id);
+}
+
 void LionMail::init()
 {
     KConfigGroup cg = config();
@@ -135,6 +143,9 @@ void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data
     setBusy(false);
     //kDebug() << "source";
     if (source == "EmailCollections") {
+        foreach (MailExtender* ext, m_extenders) {
+            ext->setDescription(collectionName(ext->id()));
+        }
         //kDebug() << "Akonadi Email Received collections" << source << data.keys();
         m_collections = data;
         //kDebug() << "Akonadi:" << m_collections.keys();

@@ -46,6 +46,7 @@ class LionMail : public Plasma::PopupApplet
 
         void init();
         void updateToolTip(const QString query, const int matches);
+        QString collectionName(const QString &id);
 
     public Q_SLOTS:
         void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);

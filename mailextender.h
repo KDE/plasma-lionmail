@@ -47,6 +47,7 @@ class MailExtender : public Plasma::ExtenderItem
 
         void setDescription(const QString& desc);
         void setInfo(const QString& info);
+        QString id();
         QString icon();
 
         void addEmail(EmailMessage* email);

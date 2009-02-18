@@ -354,8 +354,9 @@ void EmailWidget::updateColors()
 {
 
     QPalette p = palette();
-    //p.setColor(QPalette::Base, Plasma::Thme::defaultTheme()->color(Plasma::Theme::BackgroundColor));
-    p.setColor(QPalette::Base, Qt::transparent);
+    // Set background to transparent and use the theme to provide contrast with the text
+    p.setColor(QPalette::Base, Qt::transparent); // new in Qt 4.5
+    p.setColor(QPalette::Window, Qt::transparent); // For Qt 4.4, remove when we depend on 4.5
 
     // FIXME: setting foreground color apparently doesn't work?
     p.setColor(QPalette::Text, Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor));

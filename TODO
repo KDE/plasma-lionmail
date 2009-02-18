@@ -19,13 +19,12 @@ EmailMessage:
     - important
     - todo?
 - QDragging
-- Proper parsing of the content
+- parsing of the content to nicer HTML
 
 
 General:
-- Find a way to retrieve contact details by an email address
 - Retrieval of a contact based on an email address for example (not supported in Akonadi atm)
-- Mimetype for akonadi items (id?)
+- Mimetype / URL for akonadi items:
     Item::fromUrl
     Item::url()
 

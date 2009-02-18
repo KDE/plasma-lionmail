@@ -67,10 +67,18 @@ void MailExtender::setCollection(const QString id)
     m_id = id;
     connectCollection(m_id);
     connect(engine, SIGNAL(sourceAdded(QString)), this, SLOT(newSource(QString)));
+    if (m_label) {
+        m_label->setText(m_applet->collectionName(m_id));
+    }
 }
 
 MailExtender::~MailExtender()
 {
+}
+
+QString MailExtender::id()
+{
+    return m_id;
 }
 
 void MailExtender::setName(const QString name)
@@ -116,6 +124,9 @@ void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::
         email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
         addEmail(email);
         emails[source] = email;
+        if (m_infoLabel) {
+            m_infoLabel->setText(i18n("%1 emails", emails.count()));
+        }
     }
     if (emails.contains(source)) {
         email = emails[source];
