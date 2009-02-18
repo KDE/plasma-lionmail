@@ -15,6 +15,8 @@ target_link_libraries(
     ${KDE4_AKONADI_LIBS}
     ${KDE4_KMIME_LIBS}
     ${KDE4_AKONADI_KMIME_LIBS}
+    ${KDE4_KPIMUTILS_LIBS}
+
 )
 
 install(TARGETS plasma_applet_emailmessage DESTINATION ${PLUGIN_INSTALL_DIR})

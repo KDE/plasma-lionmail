@@ -27,10 +27,14 @@
 // KDE
 #include <KPushButton>
 
-
+// PIM & Akonadi
 #include <Akonadi/Item>
 #include <Akonadi/Monitor>
 
+#include <kmime/kmime_message.h>
+
+#include <boost/shared_ptr.hpp>
+typedef boost::shared_ptr<KMime::Message> MessagePtr;
 
 //own
 class EmailMessage;
@@ -63,8 +67,11 @@ class EmailWidget : public QGraphicsWidget
         void setFlags(const QStringList& flagList);
 
         void setSubject(const QString& subject);
+        void setBody(MessagePtr msg);
         void setBody(const QString& body);
         void setAbstract(const QString& abstract);
+
+        void setAllowHtml(bool allow);
 
         void setDate(const QDate& date);
 
@@ -116,6 +123,7 @@ class EmailWidget : public QGraphicsWidget
 
         // The applet attached to this item
         EmailMessage* m_emailMessage;
+        MessagePtr m_msg;
 
         int m_appletSize;
         // Email data
@@ -130,6 +138,8 @@ class EmailWidget : public QGraphicsWidget
 
         QString m_body;
         QString m_abstract;
+        bool m_allowHtml;
+        bool m_showSmilies;
 
         Plasma::IconWidget* m_expandIcon;
         Plasma::IconWidget* m_icon;

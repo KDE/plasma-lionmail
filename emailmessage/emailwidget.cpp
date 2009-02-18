@@ -34,10 +34,9 @@
 #include <Akonadi/ItemFetchJob>
 #include <Akonadi/Monitor>
 
-#include <kmime/kmime_message.h>
-
-#include <boost/shared_ptr.hpp>
-typedef boost::shared_ptr<KMime::Message> MessagePtr;
+#include <kpimutils/email.h>
+#include <kpimutils/linklocator.h>
+#include <kmime/kmime_dateformatter.h>
 
 // Plasma
 #include <Plasma/Theme>
@@ -53,8 +52,12 @@ using namespace Plasma;
 
 EmailWidget::EmailWidget(EmailMessage* emailmessage, QGraphicsWidget *parent)
     : QGraphicsWidget(parent),
-      id(61771),
+      //id(61771), // more plain example
+      id(97160), // html email
+      //id(0), // what it's supposed to be
       m_fetching(false),
+      m_allowHtml(true), // no html emails for now, it doesn't work with black backgrounds
+      m_showSmilies(true),
       m_toLabel(0),
       m_fromLabel(0),
       m_ccLabel(0),
@@ -367,6 +370,11 @@ void EmailWidget::updateColors()
     m_bodyView->page()->setPalette(p);
 }
 
+void EmailWidget::setAllowHtml(bool allow)
+{
+    m_allowHtml = allow;
+}
+
 void EmailWidget::setSubject(const QString& subject)
 {
     if (m_subjectLabel && !subject.isEmpty()) {
@@ -387,11 +395,6 @@ void EmailWidget::setBody(const QString& body)
 {
     if (m_bodyView && !body.isEmpty()) {
         QString html = body;
-        //kDebug() << body;
-        html.replace("\n", "<br />\n");
-        html.replace("\r", "<br />\n");
-        html.replace("\r\n", "<br />\n");
-        html.replace("=20<br />", "<br />");
         //kDebug() << html;
 
         QString c = Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor).name(); // FIXME: nasty color
@@ -402,6 +405,69 @@ void EmailWidget::setBody(const QString& body)
         m_bodyView->setHtml(QString("<body style=\"color: %1;\">%3</body>").arg(c, html)); // FIXME: Urks. :(
     }
     m_body = body;
+}
+
+void EmailWidget::setBody(MessagePtr msg)
+{
+    // Borrowed from Tom Albers' mailody/src/messagedata.cpp
+    m_msg = msg;
+    // Retrieve the plain and html part.
+    QString plainPart, htmlPart;
+    KMime::Content* part = m_msg->mainBodyPart( "text/plain" );
+    if ( part ) {
+        plainPart = part->decodedText( true, true );
+    }
+    part = m_msg->mainBodyPart( "text/html" );
+    if ( part ) {
+        htmlPart = part->decodedText( true, true );
+    }
+    kDebug() << plainPart;
+    kDebug() << htmlPart;
+/*
+    // replace all cid: entries with their filenames.
+    QHash<KUrl,QString>::Iterator ita;
+    for ( ita = m_attachments.begin(); ita != m_attachments.end(); ++ita ) {
+        kDebug() << "cid:"+ita.key().path() << " -> " << ita.value() << endl;
+        htmlPart.replace( "cid:"+ita.value(), "file://" + ita.key().path() );
+    }
+*/
+    // Assign m_body
+    using KPIMUtils::LinkLocator;
+    int flags = LinkLocator::PreserveSpaces | LinkLocator::HighlightText;
+    QString raw;
+
+    //KConfigGroup config = KGlobal::config()->group( "General" );
+    if ( m_showSmilies ) {
+        flags |= LinkLocator::ReplaceSmileys;
+    }
+
+    if ( m_allowHtml ) {
+        if ( htmlPart.trimmed().isEmpty() ) {
+            m_body = LinkLocator::convertToHtml( plainPart, flags );
+        } else {
+            m_body = htmlPart;
+        }
+        // when replying prefer plain
+        !plainPart.isEmpty() ? raw = plainPart : raw = htmlPart;
+    } else {
+        // show plain
+        if ( plainPart.trimmed().isEmpty() ) {
+            m_body = LinkLocator::convertToHtml( htmlPart, flags );
+        } else {
+            m_body = LinkLocator::convertToHtml( plainPart, flags );
+        }
+        // when replying prefer plain
+        !plainPart.isEmpty() ? raw = plainPart : raw = htmlPart;
+    }
+
+    // make the quotation colors.
+    //m_body = Global::highlightText( m_body );
+    kDebug() << m_body;
+    QString c = Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor).name(); // FIXME: nasty color
+    QString b = Plasma::Theme::defaultTheme()->color(Plasma::Theme::BackgroundColor).name(); // FIXME: nasty color hack
+    //m_bodyView->setHtml(QString("<body style=\"color: %1; background-color: %2\">%3</body>").arg(c, b, html)); // FIXME: Urks. :(
+    m_bodyView->setHtml(QString("<body style=\"color: %1;\">%3</body>").arg(c, m_body)); // FIXME: Urks. :(
+
 }
 
 void EmailWidget::fetchPayload()
@@ -442,7 +508,7 @@ void EmailWidget::fetchDone(KJob* job)
         }
         m_monitor->setItemMonitored(item);
         connect( m_monitor, SIGNAL(itemChanged(Akonadi::Item, QSet<QByteArray>)),
-            SLOT(itemChanged(Akonadi::Item)) );
+            this, SLOT(itemChanged(Akonadi::Item)) );
 
         itemChanged(&item);
     }
@@ -460,7 +526,8 @@ void EmailWidget::itemChanged(const Akonadi::Item* item)
         setTo(QStringList(msg->to()->asUnicodeString()));
         setCc(QStringList(msg->cc()->asUnicodeString()));
         setBcc(QStringList(msg->bcc()->asUnicodeString()));
-        setBody(msg->mainBodyPart()->decodedText());
+        setBody(msg);
+        //setBody(msg->mainBodyPart()->decodedText());
     } else {
         setSubject(i18n("Couldn't fetch email payload"));
     }
