@@ -354,8 +354,8 @@ void EmailWidget::updateColors()
 {
 
     QPalette p = palette();
-    //p.setColor(QPalette::Window, Plasma::Thme::defaultTheme()->color(Plasma::Theme::BackgroundColor));
-    p.setColor(QPalette::Window, Qt::transparent);
+    //p.setColor(QPalette::Base, Plasma::Thme::defaultTheme()->color(Plasma::Theme::BackgroundColor));
+    p.setColor(QPalette::Base, Qt::transparent);
 
     // FIXME: setting foreground color apparently doesn't work?
     p.setColor(QPalette::Text, Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor));
@@ -397,7 +397,8 @@ void EmailWidget::setBody(const QString& body)
         QString b = Plasma::Theme::defaultTheme()->color(Plasma::Theme::BackgroundColor).name(); // FIXME: nasty color hack
         //b = "transparent";
 
-        m_bodyView->setHtml(QString("<body style=\"color: %1; background-color: %2\">%3</body>").arg(c, b, html)); // FIXME: Urks. :(
+        //m_bodyView->setHtml(QString("<body style=\"color: %1; background-color: %2\">%3</body>").arg(c, b, html)); // FIXME: Urks. :(
+        m_bodyView->setHtml(QString("<body style=\"color: %1;\">%3</body>").arg(c, html)); // FIXME: Urks. :(
     }
     m_body = body;
 }
