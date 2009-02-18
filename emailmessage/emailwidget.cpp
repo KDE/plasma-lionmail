@@ -137,11 +137,11 @@ void EmailWidget::setTiny()
     }
     m_toLabel->hide();
     m_bodyView->hide();
-    kDebug() << "Tiny ... labelheight:" << m_subjectLabel->minimumHeight();
+    //kDebug() << "Tiny ... labelheight:" << m_subjectLabel->minimumHeight();
     int h = widgetHeight(m_appletSize);
     updateSize(h);
     resizeIcon(h);
-    kDebug() << m_layout->minimumSize();
+    //kDebug() << m_layout->minimumSize();
 }
 
 void EmailWidget::updateSize(int h)
@@ -293,7 +293,7 @@ void EmailWidget::buildDialog()
 
     connect(Plasma::Theme::defaultTheme(), SIGNAL(themeChanged()), this, SLOT(updateColors()));
     updateColors();
-    kDebug() << "EmailWidget built";
+    //kDebug() << "EmailWidget built";
 }
 
 void EmailWidget::resizeIcon(int iconsize)
@@ -360,7 +360,7 @@ void EmailWidget::updateColors()
     // FIXME: setting foreground color apparently doesn't work?
     p.setColor(QPalette::Text, Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor));
     p.setColor(QPalette::WindowText, Qt::green);
-    kDebug() << "Textcolor:" << Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor);
+    //kDebug() << "Textcolor:" << Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor);
 
     setPalette(p);
     m_bodyView->page()->setPalette(p);
@@ -376,7 +376,7 @@ void EmailWidget::setSubject(const QString& subject)
 
 void EmailWidget::setTo(const QStringList& toList)
 {
-    kDebug() << "Setting recipient" << toList;
+    //kDebug() << "Setting recipient" << toList;
     if (m_toLabel && toList.count()) {
         m_toLabel->setText(i18n("<b>To:</b> %1", toList.join(", ")));
     }
@@ -391,7 +391,7 @@ void EmailWidget::setBody(const QString& body)
         html.replace("\r", "<br />\n");
         html.replace("\r\n", "<br />\n");
         html.replace("=20<br />", "<br />");
-        kDebug() << html;
+        //kDebug() << html;
 
         QString c = Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor).name(); // FIXME: nasty color
         QString b = Plasma::Theme::defaultTheme()->color(Plasma::Theme::BackgroundColor).name(); // FIXME: nasty color hack
@@ -458,7 +458,7 @@ void EmailWidget::itemChanged(const Akonadi::Item* item)
         setTo(QStringList(msg->to()->asUnicodeString()));
         setCc(QStringList(msg->cc()->asUnicodeString()));
         setBcc(QStringList(msg->bcc()->asUnicodeString()));
-        setBody(msg->mainBodyPart()->body());
+        setBody(msg->mainBodyPart()->decodedText());
     } else {
         setSubject(i18n("Couldn't fetch email payload"));
     }

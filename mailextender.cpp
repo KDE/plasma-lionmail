@@ -104,12 +104,15 @@ void MailExtender::newSource(const QString & source)
 void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
     //kDebug() << source;
-    if (source == "Collections") {
+    if (source == "EmailCollections" || source == "ContactCollections") {
+        // Apparently the signal ends up in here, while it should in these
+        // cases happen in the applet, just pass it on for now
+        m_applet->dataUpdated(source, data);
         return;
     }
     EmailMessage* email = 0;
     if (emails.count() < m_maxEmails && !emails.contains(source)) {
-        kDebug() << "new ...";
+        //kDebug() << "new ...";
         email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
         addEmail(email);
         emails[source] = email;

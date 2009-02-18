@@ -71,6 +71,7 @@ void LionMail::init()
 
     updateToolTip("", 0);
     dataEngine("akonadi")->connectSource("EmailCollections", this);
+    //dataEngine("akonadi")->connectSource("ContactCollections", this); // FIXME: remove, only for testing the contacts in the dataengine
 
 }
 
@@ -83,7 +84,7 @@ void LionMail::createConfigurationInterface(KConfigDialog *parent)
     ui.setupUi(widget);
     parent->addPage(widget, i18n("Collections"), Applet::icon());
 
-    m_collections = dataEngine("akonadi")->query("EmailCollections");
+    //m_collections = dataEngine("akonadi")->query("EmailCollections");
     foreach ( QString c, m_collections.keys() ) {
         ui.collectionCombo->addItem(m_collections[c].toString(), c);
     }
@@ -132,13 +133,17 @@ void LionMail::updateToolTip(const QString query, const int matches)
 void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
     setBusy(false);
+    //kDebug() << "source";
     if (source == "EmailCollections") {
-        kDebug() << source << data.keys();
+        //kDebug() << "Akonadi Email Received collections" << source << data.keys();
         m_collections = data;
-        m_collections.keys();
+        //kDebug() << "Akonadi:" << m_collections.keys();
         return;
     }
-    m_extenders[0]->dataUpdated(source, data);
+    if (source == "ContactCollections") {
+        kDebug() << "Akonadi contacts collections:" << data.keys() << data;
+    }
+    //m_extenders[0]->dataUpdated(source, data); // FIXME: put data into the right extender
     update();
 }
 

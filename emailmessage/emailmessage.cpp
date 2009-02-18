@@ -59,7 +59,7 @@ EmailMessage::~EmailMessage()
 
 void EmailMessage::init()
 {
-    kDebug() << "init: email";
+    //kDebug() << "init: email";
     KConfigGroup cg = config();
 
     Plasma::ToolTipManager::self()->registerWidget(this);
@@ -70,9 +70,8 @@ void EmailMessage::init()
 QGraphicsWidget* EmailMessage::graphicsWidget()
 {
     if (!m_emailWidget) {
-        kDebug() << "new EmailWidget";
+        //kDebug() << "new EmailWidget";
         m_emailWidget = new EmailWidget(this);
-        connect(m_emailWidget, SIGNAL(geometryChanged(QSizeF)), this, SLOT(updateSize(const QSizeF)));
     }
     return m_emailWidget;
 }
@@ -91,7 +90,7 @@ void EmailMessage::constraintsEvent(Plasma::Constraints constraints)
     if (constraints & (Plasma::FormFactorConstraint | Plasma::SizeConstraint)) {
         int tiny = m_emailWidget->widgetHeight(EmailWidget::Small);
         //setMinimumSize(tiny, m_emailWidget->minimumWidth());
-        kDebug() << contentsRect();
+        //kDebug() << contentsRect();
 
         int proximity = 8; // How close can we get to the minimumSize before we change appearance?
         //if (m_emailWidget->minimumSize().width()+proximity > m_emailWidget->geometry().width() ) {
