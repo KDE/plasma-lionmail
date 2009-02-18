@@ -26,6 +26,7 @@
 
 // KDE
 #include <KPushButton>
+#include <KJob>
 
 // PIM & Akonadi
 #include <Akonadi/Item>
@@ -36,19 +37,23 @@
 #include <boost/shared_ptr.hpp>
 typedef boost::shared_ptr<KMime::Message> MessagePtr;
 
-//own
-class EmailMessage;
-class KJob;
 
+// Plasma
+#include <Plasma/Frame>
 namespace Plasma
 {
     class IconWidget;
     class Dialog;
     class Label;
     class WebView;
+    class Frame;
 }
 
-class EmailWidget : public QGraphicsWidget
+//own
+class EmailMessage;
+
+
+class EmailWidget : public Plasma::Frame
 {
     Q_OBJECT
 

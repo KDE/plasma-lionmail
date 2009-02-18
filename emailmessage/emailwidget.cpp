@@ -51,7 +51,7 @@
 using namespace Plasma;
 
 EmailWidget::EmailWidget(EmailMessage* emailmessage, QGraphicsWidget *parent)
-    : QGraphicsWidget(parent),
+    : Frame(parent),
       //id(61771), // more plain example
       id(97160), // html email
       //id(0), // what it's supposed to be
@@ -150,7 +150,7 @@ void EmailWidget::setTiny()
 
 void EmailWidget::updateSize(int h)
 {
-    setMinimumHeight(h);
+    setMinimumHeight(h+6);
     setPreferredHeight(h);
     updateGeometry();
     m_layout->updateGeometry();
@@ -246,12 +246,14 @@ void EmailWidget::setLarge(bool expanded)
 void EmailWidget::buildDialog()
 {
 
+    //m_frame = new Plasma::Frame(this);
+
     m_layout = new QGraphicsGridLayout(this);
     m_layout->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     m_layout->setColumnFixedWidth(0, 40); // This should be dynamic, we'll also want to decrease the second column if the first one expands
     m_layout->setColumnPreferredWidth(1, 140);
     m_layout->setColumnFixedWidth(2, 22);
-    m_layout->setHorizontalSpacing(4);
+    m_layout->setHorizontalSpacing(0);
 
     m_icon = new Plasma::IconWidget(this);
     m_icon->setIcon("view-pim-mail");
