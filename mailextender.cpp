@@ -140,6 +140,8 @@ void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::
     email->m_emailWidget->setSubject(data["Subject"].toString());
     email->m_emailWidget->setFrom(data["From"].toString());
     email->m_emailWidget->setTo(data["To"].toStringList());
+    email->m_emailWidget->setDate(data["DateTime"].toDate());
+
     email->m_emailWidget->setCc(data["Cc"].toStringList());
     email->m_emailWidget->setBcc(data["Bcc"].toStringList());
 
@@ -190,19 +192,19 @@ QGraphicsWidget* MailExtender::graphicsWidget()
 
     // smaller label
     m_infoLabel = new Plasma::Label(m_widget);
-    m_infoLabel->setText("33 emails");
+    m_infoLabel->setText(i18n("No emails loaded found"));
     m_infoLabel->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
     m_infoLabel->nativeWidget()->setWordWrap(false);
     m_layout->addItem(m_infoLabel, 1, 1);
 
     m_messageLayout = new QGraphicsLinearLayout(m_layout);
-    m_messageLayout->setSpacing(4);
+    m_messageLayout->setSpacing(8);
     m_messageLayout->setOrientation(Qt::Vertical);
     m_messageLayout->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     m_layout->addItem(m_messageLayout, 3, 0, 1, 3);
-    m_messageLayout->addStretch();
-    m_messageLayout->addStretch();
+    m_messageLayout->addStretch(-1);
+    m_messageLayout->addStretch(-1);
     m_widget->setLayout(m_layout);
 
     setWidget(m_widget);

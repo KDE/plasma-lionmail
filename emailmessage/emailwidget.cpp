@@ -135,10 +135,11 @@ void EmailWidget::setTiny()
     m_subjectLabel->show();
     m_subjectLabel->setMinimumWidth(140);
 
-    if (m_fromLabel) {
-        m_fromLabel->hide();
-    }
     m_toLabel->hide();
+    if (m_fromLabel && m_dateLabel) {
+        m_fromLabel->hide();
+        m_dateLabel->hide();
+    }
     m_bodyView->hide();
     //kDebug() << "Tiny ... labelheight:" << m_subjectLabel->minimumHeight();
     int h = widgetHeight(m_appletSize);
@@ -171,6 +172,10 @@ void EmailWidget::setSmall()
     }
     m_subjectLabel->setMinimumWidth(140);
     m_toLabel->show();
+    if (m_fromLabel && m_dateLabel) {
+        m_fromLabel->hide();
+        m_dateLabel->hide();
+    }
     m_bodyView->hide();
     m_layout->setRowFixedHeight(2,0);
     resizeIcon(22);
@@ -192,8 +197,9 @@ void EmailWidget::setMedium()
     }
     m_expandIcon->setIcon("arrow-down-double");
     m_toLabel->show();
-    if (m_fromLabel) {
+    if (m_fromLabel && m_dateLabel) {
         m_fromLabel->show();
+        m_dateLabel->show();
     }
     m_bodyView->hide();
     kDebug() << "Medium ...";
@@ -212,8 +218,9 @@ void EmailWidget::setLarge(bool expanded)
     m_expandIcon->setIcon("arrow-up-double");
     m_toLabel->show();
     m_subjectLabel->show();
-    if (m_fromLabel) {
+    if (m_fromLabel && m_dateLabel) {
         m_fromLabel->show();
+        m_dateLabel->show();
     }
 
     m_bodyView->show();
@@ -271,6 +278,21 @@ void EmailWidget::buildDialog()
 
     m_layout->addItem(m_toLabel, 1, 1, 1, 2);
 
+    // From and date
+    m_fromLabel = new Plasma::Label(this);
+    m_fromLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    m_fromLabel->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
+    setFrom(i18n("Unknown Sender"));
+    m_layout->addItem(m_fromLabel, 2, 0, 1, 3);
+
+    m_dateLabel = new Plasma::Label(this);
+    m_dateLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    m_dateLabel->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
+    setDate(QDate());
+    m_layout->addItem(m_dateLabel, 3, 0, 1, 3);
+
+
+
     m_bodyView = new Plasma::WebView(this);
     //m_bodyView->setMinimumSize(20, 40);
     //m_bodyView->page()->view()->setAutoFillBackground(false);
@@ -281,7 +303,7 @@ void EmailWidget::buildDialog()
     html = "<h1>Fetching data ...</h1>";
     setBody(html);
 
-    m_layout->addItem(m_bodyView, 3, 0, 1, 3);
+    m_layout->addItem(m_bodyView, 4, 0, 1, 3);
 
     m_expandIcon = new Plasma::IconWidget(this);
     m_expandIcon->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -331,7 +353,7 @@ void EmailWidget::toggleMeta()
         setTiny();
     } else {
         kDebug() << "smalling";
-        setSmall();
+        setMedium();
     }
     //kDebug() << preferredSize() << minimumSize();
 }
@@ -533,11 +555,6 @@ void EmailWidget::itemChanged(const Akonadi::Item* item)
     }
 }
 
-void setDate(KDateTime* date)
-{
-    // TODO
-}
-
 void EmailWidget::setAbstract(const QString& abstract)
 {
     if (m_abstractLabel && abstract.isEmpty()) {
@@ -548,16 +565,20 @@ void EmailWidget::setAbstract(const QString& abstract)
 
 void EmailWidget::setDate(const QDate& date)
 {
-    if (m_dateLabel && date.isValid()) {
-        m_dateLabel->setText(date.toString());
+    if (m_dateLabel) {
+        if (date.isValid()) {
+            m_date = date;
+            m_dateLabel->setText(i18n("<b>Date:</b> %1", date.toString()));
+        } else {
+            m_dateLabel->setText(i18n("<b>Date:</b> unknown"));
+        }
     }
-    m_date = date;
 }
 
 void EmailWidget::setFrom(const QString& from)
 {
     if (m_fromLabel && !from.isEmpty()) {
-        m_fromLabel->setText(from);
+        m_fromLabel->setText(i18n("<b>From:</b> %1", from));
     }
     m_from = from;
 }
@@ -565,7 +586,7 @@ void EmailWidget::setFrom(const QString& from)
 void EmailWidget::setCc(const QStringList& ccList)
 {
     if (m_ccLabel && ccList.count()) {
-        m_ccLabel->setText(ccList.join(", "));
+        m_ccLabel->setText(i18n("<b>CC:</b> %1", ccList.join(", ")));
     }
     m_cc = ccList;
 }
@@ -573,7 +594,7 @@ void EmailWidget::setCc(const QStringList& ccList)
 void EmailWidget::setBcc(const QStringList& bccList)
 {
     if (m_bccLabel && bccList.count()) {
-        m_bccLabel->setText(bccList.join(", "));
+        m_bccLabel->setText(i18n("<b>BCC:</b> %1", bccList.join(", ")));
     }
     m_bcc = bccList;
 }

@@ -71,7 +71,7 @@ class LionMail : public Plasma::PopupApplet
         Plasma::Svg* m_theme;
         Plasma::ToolTipContent m_toolTip;
 
-         bool m_allowHtml;
+        bool m_allowHtml;
 
         Ui::lionmailConfig ui;
 
