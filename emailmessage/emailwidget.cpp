@@ -638,6 +638,12 @@ void EmailWidget::startDrag()
     kDebug() << "Starting drag!";
     QMimeData* mimeData = new QMimeData();
     mimeData->setText("This is some random email");
+
+    // This is a bit random, but we need a QWidget for the constructor
+    // not sure if this works at all ... :/
+    QDrag* drag = new QDrag(m_subjectLabel->nativeWidget());
+    drag->setMimeData(mimeData);
+    drag->setPixmap(m_icon->icon().pixmap(64, 64));
 }
 
 
