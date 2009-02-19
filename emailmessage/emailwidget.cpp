@@ -19,8 +19,12 @@
 
 //Qt
 #include <QGraphicsGridLayout>
+#include <QGraphicsSceneMouseEvent>
+#include <QMimeData>
 #include <QWebPage>
 #include <QLabel>
+#include <QApplication>
+
 //KDE
 #include <KDebug>
 #include <KColorScheme>
@@ -95,15 +99,15 @@ int EmailWidget::widgetHeight(int size)
     int h;
     switch (size) {
         case Icon:
-            h = 22;
+            h = 16;
             break;
         case Tiny:
-            h = qMax(16, (int)m_subjectLabel->minimumHeight());
+            h = qMax(22, (int)m_subjectLabel->minimumHeight());
             break;
         case Small:
             return 32;
         case Medium:
-            return 64;
+            return 84;
         case Large:
             return 200;
     }
@@ -609,6 +613,33 @@ void EmailWidget::setBcc(const QStringList& bccList)
     }
     m_bcc = bccList;
 }
+
+void EmailWidget::mousePressEvent(QGraphicsSceneMouseEvent * event)
+{
+    if (event->button() == Qt::LeftButton) {
+        kDebug() << "clicked";
+        m_startPos = event->pos();
+    }
+}
+
+void EmailWidget::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
+{
+    if (event->buttons() & Qt::LeftButton) {
+        int distance = (event->pos() - m_startPos).toPoint().manhattanLength();
+        kDebug() << "moved + pressed";
+        if (distance >= QApplication::startDragDistance()) {
+            startDrag();
+        }
+    }
+}
+
+void EmailWidget::startDrag()
+{
+    kDebug() << "Starting drag!";
+    QMimeData* mimeData = new QMimeData();
+    mimeData->setText("This is some random email");
+}
+
 
 
 #include "emailwidget.moc"

@@ -23,6 +23,7 @@
 //Qt
 #include <QGraphicsGridLayout>
 #include <QGraphicsWidget>
+#include <QGraphicsSceneMouseEvent>
 
 // KDE
 #include <KPushButton>
@@ -110,10 +111,15 @@ class EmailWidget : public Plasma::Frame
     Q_SIGNALS:
         void geometryChanged(QSizeF newSize);
 
+    protected:
+        void mousePressEvent(QGraphicsSceneMouseEvent * event);
+        void mouseMoveEvent(QGraphicsSceneMouseEvent * event);
+
     private :
         Akonadi::Monitor* m_monitor;
 
         void updateSize(int h);
+        void startDrag();
 
         bool m_fetching;
         void fetchPayload();
@@ -162,6 +168,8 @@ class EmailWidget : public Plasma::Frame
         Plasma::Label* m_dateLabel;
         Plasma::WebView* m_bodyView;
         Plasma::Label* m_abstractLabel;
+
+        QPointF m_startPos;
 };
 
 #endif
