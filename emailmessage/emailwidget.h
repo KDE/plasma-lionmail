@@ -73,7 +73,7 @@ class EmailWidget : public Plasma::Frame
 
         void setSubject(const QString& subject);
         void setBody(MessagePtr msg);
-        void setBody(const QString& body);
+        void setRawBody(const QString& body);
         void setAbstract(const QString& abstract);
 
         void setAllowHtml(bool allow);

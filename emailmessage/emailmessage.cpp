@@ -127,7 +127,7 @@ void EmailMessage::setTo(const QStringList& toList)
 
 void EmailMessage::setBody(const QString& body)
 {
-    m_emailWidget->setBody(body);
+    m_emailWidget->setRawBody(body);
 }
 
 void EmailMessage::setAbstract(const QString& abstract)

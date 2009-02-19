@@ -60,7 +60,6 @@ EmailWidget::EmailWidget(EmailMessage* emailmessage, QGraphicsWidget *parent)
       // Are we already fetching the data?
       m_fetching(false),
 
-
       // Flags
       m_isNew(false),
       m_isUnread(false),
@@ -138,13 +137,6 @@ void EmailWidget::setTiny()
         return;
     }
     m_appletSize = Tiny;
-    /*
-    if (m_expanded) {
-        kDebug() << "expanded ... bailing out";
-        return;
-    }
-    */
-    //m_expanded = false;
     m_expandIcon->setIcon("arrow-down-double");
     m_subjectLabel->show();
     m_subjectLabel->setMinimumWidth(140);
@@ -155,7 +147,6 @@ void EmailWidget::setTiny()
         m_dateLabel->hide();
     }
     m_bodyView->hide();
-    //kDebug() << "Tiny ... labelheight:" << m_subjectLabel->minimumHeight();
     int h = widgetHeight(m_appletSize);
     updateSize(h);
     resizeIcon(h);
@@ -307,17 +298,13 @@ void EmailWidget::buildDialog()
     setDate(QDateTime());
     m_layout->addItem(m_dateLabel, 3, 0, 1, 3);
 
-
-
+    // The Body
     m_bodyView = new Plasma::WebView(this);
     //m_bodyView->setMinimumSize(20, 40);
-    //m_bodyView->page()->view()->setAutoFillBackground(false);
 
     m_bodyView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    QString html("<h3>Hi everybody</h3>I hope you're all having a great time on Jamaica, my home country (which you might have noticed after yesterday's bob-marley-on-repeat-for-the-whole-night. I wish I could be with you, but it wasn't meant to be. I'll go out with my friends Kurt and Elvis tonight instead and wish you a happy CampKDE.<br /><br /><em>-- Bob</em>");
 
-    html = "<h1>Fetching data ...</h1>";
-    setBody(html);
+    setRawBody("<b>Fetching data ...</b>");
 
     m_layout->addItem(m_bodyView, 4, 0, 1, 3);
 
@@ -333,7 +320,6 @@ void EmailWidget::buildDialog()
     setLayout(m_layout);
 
     updateColors();
-    //kDebug() << "EmailWidget built";
 }
 
 void EmailWidget::resizeIcon(int iconsize)
@@ -362,7 +348,6 @@ void EmailWidget::toggleBody()
 
 void EmailWidget::toggleMeta()
 {
-    //kDebug() << preferredSize() << minimumSize();
     if (m_appletSize == Medium) {
         kDebug() << "tinying";
         setTiny();
@@ -370,7 +355,6 @@ void EmailWidget::toggleMeta()
         kDebug() << "smalling";
         setMedium();
     }
-    //kDebug() << preferredSize() << minimumSize();
 }
 
 void EmailWidget::collapse()
@@ -387,18 +371,15 @@ void EmailWidget::expand()
     kDebug() << "showing body";
     m_expanded = true;
     setLarge(true);
-    //m_bodyView->setMinimumSize(200, 200);
 }
 
 void EmailWidget::updateColors()
 {
-
     QPalette p = palette();
+
     // Set background to transparent and use the theme to provide contrast with the text
     p.setColor(QPalette::Base, Qt::transparent); // new in Qt 4.5
     p.setColor(QPalette::Window, Qt::transparent); // For Qt 4.4, remove when we depend on 4.5
-
-    // FIXME: setting foreground color apparently doesn't work?
 
     QColor text = Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor);
     QColor link = Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor);
@@ -406,6 +387,11 @@ void EmailWidget::updateColors()
     QColor linkvisited = Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor);
     linkvisited.setAlphaF(qreal(.6));
 
+    p.setColor(QPalette::Text, text);
+    p.setColor(QPalette::Link, link);
+    p.setColor(QPalette::LinkVisited, linkvisited);
+
+    setPalette(p);
 
     m_stylesheet = QString("\
                 body { color: %1; }\
@@ -415,13 +401,6 @@ void EmailWidget::updateColors()
                 a:hover { text-decoration: none; } \
     ").arg(text.name()).arg(link.name()).arg(linkvisited.name());
 
-    p.setColor(QPalette::Text, text);
-    p.setColor(QPalette::Link, link);
-    p.setColor(QPalette::LinkVisited, linkvisited);
-    //p.setColor(QPalette::WindowText, Qt::green);
-    //kDebug() << "Textcolor:" << Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor);
-
-    setPalette(p);
     if (m_bodyView) {
         m_bodyView->page()->setPalette(p);
         m_subjectLabel->setStyleSheet(m_stylesheet);
@@ -452,11 +431,11 @@ void EmailWidget::setTo(const QStringList& toList)
     }
 }
 
-void EmailWidget::setBody(const QString& body)
+void EmailWidget::setRawBody(const QString& body)
 {
     if (m_bodyView && !body.isEmpty()) {
         QString html = QString("<style type=\"text/css\">%1</style><body>%2</body>").arg(m_stylesheet, body);
-        kDebug() << html;
+        //kDebug() << html;
         m_bodyView->setHtml(html);
     }
     m_body = body;
@@ -471,12 +450,10 @@ void EmailWidget::setBody(MessagePtr msg)
     KMime::Content* part = m_msg->mainBodyPart( "text/plain" );
     if ( part ) {
         plainPart = part->decodedText( true, true );
-        //kDebug() << "=== PlainPart:" << plainPart;
     }
     part = m_msg->mainBodyPart( "text/html" );
     if ( part ) {
         htmlPart = part->decodedText( true, true );
-        //kDebug() << "=== HTMLPart:" << htmlPart;
     }
     //kDebug() << plainPart;
     //kDebug() << htmlPart;
@@ -520,12 +497,7 @@ void EmailWidget::setBody(MessagePtr msg)
 
     // make the quotation colors.
     //m_body = Global::highlightText( m_body );
-    //kDebug() << m_body;
-    //QString c = Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor).name(); // FIXME: nasty color
-    //QString b = Plasma::Theme::defaultTheme()->color(Plasma::Theme::BackgroundColor).name(); // FIXME: nasty color hack
-    //m_bodyView->setHtml(QString("<body style=\"color: %1; background-color: %2\">%3</body>").arg(c, b, html)); // FIXME: Urks. :(
-    //m_bodyView->setHtml(QString("<body style=\"color: %1;\">%3</body>").arg(m_stylesheet, m_body)); // FIXME: Urks. :(
-    setBody(m_body);
+    setRawBody(m_body);
 }
 
 void EmailWidget::fetchPayload()
@@ -549,15 +521,14 @@ void EmailWidget::fetchDone(KJob* job)
 
     if ( job->error() ) {
         kDebug() << "Error fetching item" << id << ": " << job->errorString();
-        setBody(i18n("<h3>Fetching email body %1 failed: <p /></h3><pre>%2</pre>", id, job->errorString()));
+        setRawBody(i18n("<h3>Fetching email body %1 failed: <p /></h3><pre>%2</pre>", id, job->errorString()));
         return;
     }
     m_bodyView->setMinimumHeight(80);
     updateSize(widgetHeight(Large));
     Akonadi::Item::List items = static_cast<Akonadi::ItemFetchJob*>( job )->items();
 
-    //Akonadi::Item::List items = job->items();
-    kDebug() << "Fetched" << items.count() << " body Items.";
+    kDebug() << "Fetched" << items.count() << " email Items.";
     foreach( const Akonadi::Item &item, items ) {
 
         // Start monitoring this item
@@ -585,7 +556,6 @@ void EmailWidget::itemChanged(const Akonadi::Item* item)
         setCc(QStringList(msg->cc()->asUnicodeString()));
         setBcc(QStringList(msg->bcc()->asUnicodeString()));
         setBody(msg);
-        //setBody(msg->mainBodyPart()->decodedText());
     } else {
         setSubject(i18n("Couldn't fetch email payload"));
     }
