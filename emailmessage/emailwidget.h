@@ -22,6 +22,7 @@
 
 //Qt
 #include <QGraphicsGridLayout>
+#include <QGraphicsLinearLayout>
 #include <QGraphicsWidget>
 #include <QGraphicsSceneMouseEvent>
 
@@ -127,10 +128,7 @@ class EmailWidget : public Plasma::Frame
 
         void buildDialog();
         void resizeIcon(int iconsize);
-
-        // The widget which displays in the panel
-        //QGraphicsWidget* m_widget;
-        QGraphicsGridLayout* m_layout;
+        void showFlags(bool show);
 
         // The applet attached to this item
         EmailMessage* m_emailMessage;
@@ -158,6 +156,9 @@ class EmailWidget : public Plasma::Frame
         bool m_allowHtml;
         bool m_showSmilies;
 
+        QGraphicsGridLayout* m_layout;
+        QGraphicsLinearLayout* m_flagsLayout;
+
         Plasma::IconWidget* m_expandIcon;
         Plasma::IconWidget* m_icon;
         Plasma::Label* m_subjectLabel;
@@ -166,6 +167,12 @@ class EmailWidget : public Plasma::Frame
         Plasma::Label* m_ccLabel;
         Plasma::Label* m_bccLabel;
         Plasma::Label* m_dateLabel;
+
+        Plasma::IconWidget* m_newIcon;
+        Plasma::IconWidget* m_importantIcon;
+        Plasma::IconWidget* m_taskIcon;
+        Plasma::IconWidget* m_unreadIcon;
+
         Plasma::WebView* m_bodyView;
         Plasma::Label* m_abstractLabel;
 

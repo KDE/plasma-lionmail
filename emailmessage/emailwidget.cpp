@@ -80,6 +80,9 @@ EmailWidget::EmailWidget(EmailMessage* emailmessage, QGraphicsWidget *parent)
       m_ccLabel(0),
       m_bccLabel(0),
       m_dateLabel(0),
+      m_newIcon(0),
+      m_importantIcon(0),
+      m_taskIcon(0),
       m_bodyView(0),
       m_abstractLabel(0)
 {
@@ -129,6 +132,7 @@ void EmailWidget::setIcon()
     m_toLabel->hide();
     if (m_fromLabel) {
         m_fromLabel->hide();
+        showFlags(false);
     }
     m_bodyView->hide();
     updateSize(widgetHeight(Icon));
@@ -149,6 +153,7 @@ void EmailWidget::setTiny()
     if (m_fromLabel && m_dateLabel) {
         m_fromLabel->hide();
         m_dateLabel->hide();
+        showFlags(false);
     }
     m_bodyView->hide();
     int h = widgetHeight(m_appletSize);
@@ -184,6 +189,7 @@ void EmailWidget::setSmall()
     if (m_fromLabel && m_dateLabel) {
         m_fromLabel->hide();
         m_dateLabel->hide();
+        showFlags(false);
     }
     m_bodyView->hide();
     //m_layout->setRowFixedHeight(2,0);
@@ -209,6 +215,7 @@ void EmailWidget::setMedium()
     if (m_fromLabel && m_dateLabel) {
         m_fromLabel->show();
         m_dateLabel->show();
+        showFlags(true);
     }
     m_bodyView->hide();
     kDebug() << "Medium ...";
@@ -230,6 +237,7 @@ void EmailWidget::setLarge(bool expanded)
     if (m_fromLabel && m_dateLabel) {
         m_fromLabel->show();
         m_dateLabel->show();
+        showFlags(true);
     }
 
     m_bodyView->show();
@@ -300,7 +308,47 @@ void EmailWidget::buildDialog()
     m_dateLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     m_dateLabel->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
     setDate(QDateTime());
-    m_layout->addItem(m_dateLabel, 3, 0, 1, 3);
+    //m_layout->addItem(m_dateLabel, 3, 0, 1, 3);
+
+    m_flagsLayout = new QGraphicsLinearLayout(m_layout);
+    //m_flagsLayout->addStretch();
+    m_flagsLayout->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    //m_flagsLayout->setColumnFixedWidth(1,s);
+    //m_flagsLayout->setColumnFixedWidth(2,s);
+    //m_flagsLayout->setColumnFixedWidth(3,s);
+
+    m_flagsLayout->addItem(m_dateLabel);
+
+    int s = KIconLoader::SizeSmall;
+    m_newIcon = new IconWidget(this);
+    m_newIcon->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    m_newIcon->setIcon("mail-mark-unread-new");
+    m_newIcon->setMinimumWidth(s);
+    m_newIcon->setMaximumHeight(s);
+    m_newIcon->setMaximumWidth(s);
+
+    kDebug() << "IconLoader::Small:" << s;
+    m_importantIcon = new IconWidget(this);
+    m_importantIcon->setIcon("mail-mark-important");
+    m_importantIcon->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    m_importantIcon->setMinimumWidth(s);
+    m_importantIcon->setMaximumHeight(s);
+    m_importantIcon->setMaximumWidth(s);
+
+    m_taskIcon = new IconWidget(this);
+    m_taskIcon->setIcon("mail-mark-task");
+    m_taskIcon->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    m_taskIcon->setMinimumWidth(s);
+    m_taskIcon->setMaximumHeight(s);
+    m_taskIcon->setMaximumWidth(s);
+
+    m_flagsLayout->addItem(m_newIcon);
+    m_flagsLayout->addItem(m_importantIcon);
+    m_flagsLayout->addItem(m_taskIcon);
+    //m_flagsLayout;
+
+    m_layout->addItem(m_flagsLayout, 4, 0, 1, 3);
+
 
     // The Body
     m_bodyView = new Plasma::WebView(this);
@@ -310,7 +358,7 @@ void EmailWidget::buildDialog()
 
     setRawBody("<b>Fetching data ...</b>");
 
-    m_layout->addItem(m_bodyView, 4, 0, 1, 3);
+    m_layout->addItem(m_bodyView, 5, 0, 1, 3);
 
     m_expandIcon = new Plasma::IconWidget(this);
     m_expandIcon->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -324,6 +372,24 @@ void EmailWidget::buildDialog()
     setLayout(m_layout);
 
     updateColors();
+}
+
+void EmailWidget::showFlags(bool show)
+{
+    if (!m_newIcon) {
+        return;
+    }
+
+    if (show) {
+        m_newIcon->show();
+        m_taskIcon->show();
+        m_importantIcon->show();
+    } else {
+        m_newIcon->hide();
+        m_taskIcon->hide();
+        m_importantIcon->hide();
+
+    }
 }
 
 void EmailWidget::resizeIcon(int iconsize)
@@ -400,9 +466,9 @@ void EmailWidget::updateColors()
     m_stylesheet = QString("\
                 body { color: %1; }\
                 a:visited   { color: %1; }\
-                a:link   { color: %2; }\
-                a:visited   { color: %3; }\
-                a:hover { text-decoration: none; } \
+                a:link   { color: %2; opacity: .8; }\
+                a:visited   { color: %3; opacity: .6; }\
+                a:hover { text-decoration: none; opacity: .4; } \
     ").arg(text.name()).arg(link.name()).arg(linkvisited.name());
 
     if (m_bodyView) {
