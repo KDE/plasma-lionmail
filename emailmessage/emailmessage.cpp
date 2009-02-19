@@ -135,7 +135,7 @@ void EmailMessage::setAbstract(const QString& abstract)
     m_emailWidget->setAbstract(abstract);
 }
 
-void EmailMessage::setDate(const QDate& date)
+void EmailMessage::setDate(const QDateTime& date)
 {
     m_emailWidget->setDate(date);
 }

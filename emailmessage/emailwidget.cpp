@@ -53,11 +53,25 @@ using namespace Plasma;
 EmailWidget::EmailWidget(EmailMessage* emailmessage, QGraphicsWidget *parent)
     : Frame(parent),
       //id(61771), // more plain example
-      id(97160), // html email
+      //id(97160), // sample html email
+      id(97162), // sample email + patch attached
       //id(0), // what it's supposed to be
+
+      // Are we already fetching the data?
       m_fetching(false),
-      m_allowHtml(true), // no html emails for now, it doesn't work with black backgrounds
+
+
+      // Flags
+      m_isNew(false),
+      m_isUnread(false),
+      m_isImportant(false),
+      m_isActionItem(false),
+
+      // Display options
+      m_allowHtml(true), // no html emails for now
       m_showSmilies(true),
+
+      // UI Items
       m_toLabel(0),
       m_fromLabel(0),
       m_ccLabel(0),
@@ -177,7 +191,7 @@ void EmailWidget::setSmall()
         m_dateLabel->hide();
     }
     m_bodyView->hide();
-    m_layout->setRowFixedHeight(2,0);
+    //m_layout->setRowFixedHeight(2,0);
     resizeIcon(22);
 
     m_expandIcon->setIcon("arrow-down-double");
@@ -245,7 +259,7 @@ void EmailWidget::setLarge(bool expanded)
 
 void EmailWidget::buildDialog()
 {
-
+    updateColors();
     //m_frame = new Plasma::Frame(this);
 
     m_layout = new QGraphicsGridLayout(this);
@@ -253,7 +267,7 @@ void EmailWidget::buildDialog()
     m_layout->setColumnFixedWidth(0, 40); // This should be dynamic, we'll also want to decrease the second column if the first one expands
     m_layout->setColumnPreferredWidth(1, 140);
     m_layout->setColumnFixedWidth(2, 22);
-    m_layout->setHorizontalSpacing(0);
+    m_layout->setHorizontalSpacing(4);
 
     m_icon = new Plasma::IconWidget(this);
     m_icon->setIcon("view-pim-mail");
@@ -290,7 +304,7 @@ void EmailWidget::buildDialog()
     m_dateLabel = new Plasma::Label(this);
     m_dateLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     m_dateLabel->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
-    setDate(QDate());
+    setDate(QDateTime());
     m_layout->addItem(m_dateLabel, 3, 0, 1, 3);
 
 
@@ -318,7 +332,6 @@ void EmailWidget::buildDialog()
 
     setLayout(m_layout);
 
-    connect(Plasma::Theme::defaultTheme(), SIGNAL(themeChanged()), this, SLOT(updateColors()));
     updateColors();
     //kDebug() << "EmailWidget built";
 }
@@ -350,7 +363,7 @@ void EmailWidget::toggleBody()
 void EmailWidget::toggleMeta()
 {
     //kDebug() << preferredSize() << minimumSize();
-    if (m_appletSize == Small) {
+    if (m_appletSize == Medium) {
         kDebug() << "tinying";
         setTiny();
     } else {
@@ -386,12 +399,35 @@ void EmailWidget::updateColors()
     p.setColor(QPalette::Window, Qt::transparent); // For Qt 4.4, remove when we depend on 4.5
 
     // FIXME: setting foreground color apparently doesn't work?
-    p.setColor(QPalette::Text, Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor));
-    p.setColor(QPalette::WindowText, Qt::green);
+
+    QColor text = Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor);
+    QColor link = Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor);
+    link.setAlphaF(qreal(.8));
+    QColor linkvisited = Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor);
+    linkvisited.setAlphaF(qreal(.6));
+
+
+    m_stylesheet = QString("\
+                body { color: %1; }\
+                a:visited   { color: %1; }\
+                a:link   { color: %2; }\
+                a:visited   { color: %3; }\
+                a:hover { text-decoration: none; } \
+    ").arg(text.name()).arg(link.name()).arg(linkvisited.name());
+
+    p.setColor(QPalette::Text, text);
+    p.setColor(QPalette::Link, link);
+    p.setColor(QPalette::LinkVisited, linkvisited);
+    //p.setColor(QPalette::WindowText, Qt::green);
     //kDebug() << "Textcolor:" << Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor);
 
     setPalette(p);
-    m_bodyView->page()->setPalette(p);
+    if (m_bodyView) {
+        m_bodyView->page()->setPalette(p);
+        m_subjectLabel->setStyleSheet(m_stylesheet);
+        m_toLabel->setStyleSheet(m_stylesheet);
+        m_fromLabel->setStyleSheet(m_stylesheet);
+    }
 }
 
 void EmailWidget::setAllowHtml(bool allow)
@@ -411,22 +447,17 @@ void EmailWidget::setTo(const QStringList& toList)
 {
     //kDebug() << "Setting recipient" << toList;
     if (m_toLabel && toList.count()) {
-        m_toLabel->setText(i18n("<b>To:</b> %1", toList.join(", ")));
+        QString html = KPIMUtils::LinkLocator::convertToHtml(toList.join(", "));
+        m_toLabel->setText(i18n("<style>%1</style><b>To:</b> %2", m_stylesheet, html));
     }
 }
 
 void EmailWidget::setBody(const QString& body)
 {
     if (m_bodyView && !body.isEmpty()) {
-        QString html = body;
-        //kDebug() << html;
-
-        QString c = Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor).name(); // FIXME: nasty color
-        QString b = Plasma::Theme::defaultTheme()->color(Plasma::Theme::BackgroundColor).name(); // FIXME: nasty color hack
-        //b = "transparent";
-
-        //m_bodyView->setHtml(QString("<body style=\"color: %1; background-color: %2\">%3</body>").arg(c, b, html)); // FIXME: Urks. :(
-        m_bodyView->setHtml(QString("<body style=\"color: %1;\">%3</body>").arg(c, html)); // FIXME: Urks. :(
+        QString html = QString("<style type=\"text/css\">%1</style><body>%2</body>").arg(m_stylesheet, body);
+        kDebug() << html;
+        m_bodyView->setHtml(html);
     }
     m_body = body;
 }
@@ -440,13 +471,15 @@ void EmailWidget::setBody(MessagePtr msg)
     KMime::Content* part = m_msg->mainBodyPart( "text/plain" );
     if ( part ) {
         plainPart = part->decodedText( true, true );
+        //kDebug() << "=== PlainPart:" << plainPart;
     }
     part = m_msg->mainBodyPart( "text/html" );
     if ( part ) {
         htmlPart = part->decodedText( true, true );
+        //kDebug() << "=== HTMLPart:" << htmlPart;
     }
-    kDebug() << plainPart;
-    kDebug() << htmlPart;
+    //kDebug() << plainPart;
+    //kDebug() << htmlPart;
 /*
     // replace all cid: entries with their filenames.
     QHash<KUrl,QString>::Iterator ita;
@@ -464,6 +497,7 @@ void EmailWidget::setBody(MessagePtr msg)
     if ( m_showSmilies ) {
         flags |= LinkLocator::ReplaceSmileys;
     }
+    flags |= LinkLocator::HighlightText;
 
     if ( m_allowHtml ) {
         if ( htmlPart.trimmed().isEmpty() ) {
@@ -486,12 +520,12 @@ void EmailWidget::setBody(MessagePtr msg)
 
     // make the quotation colors.
     //m_body = Global::highlightText( m_body );
-    kDebug() << m_body;
-    QString c = Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor).name(); // FIXME: nasty color
-    QString b = Plasma::Theme::defaultTheme()->color(Plasma::Theme::BackgroundColor).name(); // FIXME: nasty color hack
+    //kDebug() << m_body;
+    //QString c = Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor).name(); // FIXME: nasty color
+    //QString b = Plasma::Theme::defaultTheme()->color(Plasma::Theme::BackgroundColor).name(); // FIXME: nasty color hack
     //m_bodyView->setHtml(QString("<body style=\"color: %1; background-color: %2\">%3</body>").arg(c, b, html)); // FIXME: Urks. :(
-    m_bodyView->setHtml(QString("<body style=\"color: %1;\">%3</body>").arg(c, m_body)); // FIXME: Urks. :(
-
+    //m_bodyView->setHtml(QString("<body style=\"color: %1;\">%3</body>").arg(m_stylesheet, m_body)); // FIXME: Urks. :(
+    setBody(m_body);
 }
 
 void EmailWidget::fetchPayload()
@@ -546,7 +580,7 @@ void EmailWidget::itemChanged(const Akonadi::Item* item)
         id = item->id(); // This shouldn't change ... right?
         setSubject(msg->subject()->asUnicodeString());
         setFrom(msg->from()->asUnicodeString());
-        setDate(msg->date()->dateTime().date());
+        setDate(msg->date()->dateTime().dateTime());
         setTo(QStringList(msg->to()->asUnicodeString()));
         setCc(QStringList(msg->cc()->asUnicodeString()));
         setBcc(QStringList(msg->bcc()->asUnicodeString()));
@@ -560,16 +594,18 @@ void EmailWidget::itemChanged(const Akonadi::Item* item)
 void EmailWidget::setAbstract(const QString& abstract)
 {
     if (m_abstractLabel && abstract.isEmpty()) {
-        m_abstractLabel->setText(abstract);
+        QString html = KPIMUtils::LinkLocator::convertToHtml(abstract);
+        m_abstractLabel->setText(html);
     }
     m_abstract = abstract;
 }
 
-void EmailWidget::setDate(const QDate& date)
+void EmailWidget::setDate(const QDateTime& date)
 {
     if (m_dateLabel) {
         if (date.isValid()) {
             m_date = date;
+            QString d = KGlobal::locale()->formatDateTime( m_date, KLocale::FancyShortDate );
             m_dateLabel->setText(i18n("<b>Date:</b> %1", date.toString()));
         } else {
             m_dateLabel->setText(i18n("<b>Date:</b> unknown"));
@@ -580,7 +616,8 @@ void EmailWidget::setDate(const QDate& date)
 void EmailWidget::setFrom(const QString& from)
 {
     if (m_fromLabel && !from.isEmpty()) {
-        m_fromLabel->setText(i18n("<b>From:</b> %1", from));
+        QString html = KPIMUtils::LinkLocator::convertToHtml(from);
+        m_fromLabel->setText(i18n("<style>%1</style><b>From:</b> %2", m_stylesheet, html));
     }
     m_from = from;
 }
@@ -588,7 +625,8 @@ void EmailWidget::setFrom(const QString& from)
 void EmailWidget::setCc(const QStringList& ccList)
 {
     if (m_ccLabel && ccList.count()) {
-        m_ccLabel->setText(i18n("<b>CC:</b> %1", ccList.join(", ")));
+        QString html = KPIMUtils::LinkLocator::convertToHtml(ccList.join(", "));
+        m_ccLabel->setText(i18n("<style>%1</style><b>Cc:</b> %2", m_stylesheet, html));
     }
     m_cc = ccList;
 }
@@ -596,7 +634,8 @@ void EmailWidget::setCc(const QStringList& ccList)
 void EmailWidget::setBcc(const QStringList& bccList)
 {
     if (m_bccLabel && bccList.count()) {
-        m_bccLabel->setText(i18n("<b>BCC:</b> %1", bccList.join(", ")));
+        QString html = KPIMUtils::LinkLocator::convertToHtml(bccList.join(", "));
+        m_bccLabel->setText(i18n("<style>%1</style><b>Bcc:</b> %2", m_stylesheet, html));
     }
     m_bcc = bccList;
 }

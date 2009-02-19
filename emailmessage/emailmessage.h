@@ -56,7 +56,7 @@ class EmailMessage : public Plasma::PopupApplet
         void setSubject(const QString& subject);
         void setBody(const QString& body);
         void setAbstract(const QString& abstract);
-        void setDate(const QDate& date);
+        void setDate(const QDateTime& date);
 
     protected:
         void popupEvent(bool show);

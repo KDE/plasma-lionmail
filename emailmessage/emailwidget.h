@@ -78,7 +78,7 @@ class EmailWidget : public Plasma::Frame
 
         void setAllowHtml(bool allow);
 
-        void setDate(const QDate& date);
+        void setDate(const QDateTime& date);
 
         int widgetHeight(int size);
         enum AppletSize {
@@ -133,7 +133,7 @@ class EmailWidget : public Plasma::Frame
         int m_appletSize;
         // Email data
         QString m_subject;
-        QDate m_date;
+        QDateTime m_date;
 
         QStringList m_to;
         QString m_from;
@@ -141,8 +141,14 @@ class EmailWidget : public Plasma::Frame
         QStringList m_bcc;
         QStringList m_flags;
 
+        bool m_isNew;
+        bool m_isUnread;
+        bool m_isImportant;
+        bool m_isActionItem;
+
         QString m_body;
         QString m_abstract;
+        QString m_stylesheet;
         bool m_allowHtml;
         bool m_showSmilies;
 
