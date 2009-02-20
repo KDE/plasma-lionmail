@@ -61,10 +61,17 @@ class EmailMessage : public Plasma::PopupApplet
     protected:
         void popupEvent(bool show);
 
+    private Q_SLOTS:
+        void animationUpdate(qreal progress);
+
     private:
         int m_appletSize;
         ///the icon used when the applet is in the taskbar
         Plasma::IconWidget *m_icon;
+        
+        void appear(bool show);
+        int m_animId;
+        bool m_fadeIn;
 };
 
 #endif

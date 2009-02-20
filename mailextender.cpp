@@ -196,7 +196,7 @@ QGraphicsWidget* MailExtender::graphicsWidget()
 
     // smaller label
     m_infoLabel = new Plasma::Label(m_widget);
-    m_infoLabel->setText(i18n("No emails loaded found"));
+    m_infoLabel->setText(i18n("No emails found"));
     m_infoLabel->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
     m_infoLabel->nativeWidget()->setWordWrap(false);
     m_layout->addItem(m_infoLabel, 1, 1);

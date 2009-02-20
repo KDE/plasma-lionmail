@@ -92,6 +92,7 @@ EmailWidget::EmailWidget(EmailMessage* emailmessage, QGraphicsWidget *parent)
     m_emailMessage = emailmessage;
     m_expanded = false;
     buildDialog();
+
 }
 
 EmailWidget::~EmailWidget()
@@ -670,8 +671,8 @@ void EmailWidget::setDate(const QDateTime& date)
     if (m_dateLabel) {
         if (date.isValid()) {
             m_date = date;
-            QString d = KGlobal::locale()->formatDateTime( m_date, KLocale::FancyShortDate );
-            m_dateLabel->setText(i18n("<b>Date:</b> %1", date.toString()));
+            QString d = KGlobal::locale()->formatDateTime( m_date, KLocale::FancyLongDate );
+            m_dateLabel->setText(i18n("<b>Date:</b> %1", d));
         } else {
             m_dateLabel->setText(i18n("<b>Date:</b> unknown"));
         }

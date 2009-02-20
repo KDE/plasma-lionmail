@@ -39,7 +39,9 @@ using namespace Plasma;
 EmailMessage::EmailMessage(QObject *parent, const QVariantList &args)
     : Plasma::PopupApplet(parent, args),
       m_emailWidget(0),
-      m_icon(0)
+      m_icon(0),
+      m_animId(-1),
+      m_fadeIn(false)
 {
     KGlobal::locale()->insertCatalog("plasma_applet_lionmail");
     setBackgroundHints(StandardBackground);
@@ -47,6 +49,7 @@ EmailMessage::EmailMessage(QObject *parent, const QVariantList &args)
     setHasConfigurationInterface(true);
     setAcceptsHoverEvents(true);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    setPassivePopup(true);
 
     setMinimumSize(80, 48);
     (void)graphicsWidget();
@@ -65,7 +68,7 @@ void EmailMessage::init()
 
     Plasma::ToolTipManager::self()->registerWidget(this);
     // TODO ...
-
+    appear(true);
 }
 
 QGraphicsWidget* EmailMessage::graphicsWidget()
@@ -155,5 +158,44 @@ void EmailMessage::setBcc(const QStringList& bccList)
 {
     m_emailWidget->setBcc(bccList);
 }
+
+
+void EmailMessage::appear(bool show)
+{
+    if (m_fadeIn == show) {
+        return;
+    }
+    m_fadeIn = show;
+    const qreal sec = 2.4;
+
+    const int FadeInDuration = sec * 1000;
+
+
+    if (m_animId != -1) {
+        Plasma::Animator::self()->stopCustomAnimation(m_animId);
+    }
+    m_animId = Plasma::Animator::self()->customAnimation(40 * (sec), FadeInDuration,
+                                                      Plasma::Animator::EaseInCurve, this,
+                                                      "animationUpdate");
+}
+
+
+void EmailMessage::animationUpdate(qreal progress)
+{
+    return; // FIXME: no animation for now
+    if (progress == 1) {
+        m_animId = -1;
+    }
+    qreal alpha = m_fadeIn ? progress : 1 - progress;
+
+    alpha = qMax(qreal(0.0), alpha);
+    kDebug() << progress << alpha;
+    //shear(alpha, 0);
+    setOpacity(alpha);
+    //scale(alpha, alpha);
+    //rotate(alpha);
+    update();
+}
+
 
 #include "emailmessage.moc"
