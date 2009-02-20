@@ -149,6 +149,16 @@ void LionMail::updateToolTip(const QString query, const int matches)
     Plasma::ToolTipManager::self()->setContent(this, m_toolTip);
 }
 
+void LionMail::popupEvent(bool show)
+{
+    kDebug() << "POPUP" << show;
+    if (show) {
+        Plasma::ToolTipManager::self()->setState(Plasma::ToolTipManager::Inhibited);
+    } else {
+        Plasma::ToolTipManager::self()->setState(Plasma::ToolTipManager::Activated);
+    }
+}
+
 void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
     setBusy(false);

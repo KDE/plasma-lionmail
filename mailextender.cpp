@@ -142,6 +142,10 @@ void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::
     email->m_emailWidget->setTo(data["To"].toStringList());
     email->m_emailWidget->setDate(data["DateTime"].toDateTime());
 
+    email->m_emailWidget->setNew(data["Flag-New"].toBool());
+    email->m_emailWidget->setTask(data["Flag-Task"].toBool());
+    email->m_emailWidget->setImportant(data["Flag-Important"].toBool());
+
     email->m_emailWidget->setCc(data["Cc"].toStringList());
     email->m_emailWidget->setBcc(data["Bcc"].toStringList());
 
@@ -179,7 +183,7 @@ QGraphicsWidget* MailExtender::graphicsWidget()
     // larger icon on the left
     m_icon = new Plasma::IconWidget(m_widget);
     //m_icon->setIcon(icon());
-    m_icon->setIcon("mail-receive");
+    m_icon->setIcon("view-pim-mail");
     m_icon->resize(iconsize, iconsize);
     m_icon->setMinimumHeight(iconsize);
     m_icon->setMaximumHeight(iconsize);

@@ -12,12 +12,12 @@ LionMail:
 
 
 EmailMessage:
-- date
+- fancy date
 - test and fix monitoring
 - flags
     - unread
     - important
-    - todo?
+    - task
 - QDragging
 - parsing of the content to nicer HTML
 
@@ -27,6 +27,7 @@ General:
 - Mimetype / URL for akonadi items:
     Item::fromUrl
     Item::url()
+- Contact plasmoid?
 
 flags example from mailody:
  http://websvn.kde.org/trunk/extragear/pim/mailody/src/messagedata.cpp?revision=868133&view=markup see requestBody()

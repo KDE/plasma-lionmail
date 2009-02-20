@@ -80,6 +80,10 @@ class EmailWidget : public Plasma::Frame
 
         void setAllowHtml(bool allow);
 
+        void setNew(bool isnew);
+        void setImportant(bool important);
+        void setTask(bool task);
+
         void setDate(const QDateTime& date);
 
         int widgetHeight(int size);
@@ -91,6 +95,8 @@ class EmailWidget : public Plasma::Frame
             Large = 8
         };
         Q_DECLARE_FLAGS(AppletSizes, AppletSize)
+
+        Plasma::PopupApplet* m_applet;
 
     public Q_SLOTS:
         void setIcon();
@@ -128,7 +134,8 @@ class EmailWidget : public Plasma::Frame
 
         void buildDialog();
         void resizeIcon(int iconsize);
-        void showFlags(bool show);
+        void refreshFlags();
+        void refreshFlags(bool show);
 
         // The applet attached to this item
         EmailMessage* m_emailMessage;
@@ -148,7 +155,8 @@ class EmailWidget : public Plasma::Frame
         bool m_isNew;
         bool m_isUnread;
         bool m_isImportant;
-        bool m_isActionItem;
+        bool m_isTask;
+        bool m_flagsShown;
 
         QString m_body;
         QString m_abstract;

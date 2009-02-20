@@ -48,9 +48,10 @@ EmailMessage::EmailMessage(QObject *parent, const QVariantList &args)
     setAcceptsHoverEvents(true);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-    setMinimumSize(16, 16);
+    setMinimumSize(80, 48);
     (void)graphicsWidget();
-    setPopupIcon("view-pim-mail");
+    m_emailWidget->m_applet = this;
+    setPopupIcon("mail-mark-read");
 }
 
 EmailMessage::~EmailMessage()

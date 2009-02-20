@@ -57,6 +57,7 @@ class LionMail : public Plasma::PopupApplet
 
     protected:
         void createConfigurationInterface(KConfigDialog *parent);
+        void popupEvent(bool show);
 
     private Q_SLOTS:
         void newSource( const QString &source );

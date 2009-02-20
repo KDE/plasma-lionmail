@@ -56,11 +56,13 @@ using namespace Plasma;
 
 EmailWidget::EmailWidget(EmailMessage* emailmessage, QGraphicsWidget *parent)
     : Frame(parent),
+      m_applet(0),
       //id(61771), // more plain example
       //id(97160), // sample html email
-      id(97162), // sample email + patch attached
+      //id(97162), // sample email + patch attached
       //id(0), // what it's supposed to be
 
+      id(83964),
       // Are we already fetching the data?
       m_fetching(false),
 
@@ -68,7 +70,7 @@ EmailWidget::EmailWidget(EmailMessage* emailmessage, QGraphicsWidget *parent)
       m_isNew(false),
       m_isUnread(false),
       m_isImportant(false),
-      m_isActionItem(false),
+      m_isTask(false),
 
       // Display options
       m_allowHtml(true), // no html emails for now
@@ -132,7 +134,7 @@ void EmailWidget::setIcon()
     m_toLabel->hide();
     if (m_fromLabel) {
         m_fromLabel->hide();
-        showFlags(false);
+        refreshFlags(false);
     }
     m_bodyView->hide();
     updateSize(widgetHeight(Icon));
@@ -153,7 +155,7 @@ void EmailWidget::setTiny()
     if (m_fromLabel && m_dateLabel) {
         m_fromLabel->hide();
         m_dateLabel->hide();
-        showFlags(false);
+        refreshFlags(false);
     }
     m_bodyView->hide();
     int h = widgetHeight(m_appletSize);
@@ -189,7 +191,7 @@ void EmailWidget::setSmall()
     if (m_fromLabel && m_dateLabel) {
         m_fromLabel->hide();
         m_dateLabel->hide();
-        showFlags(false);
+        refreshFlags(false);
     }
     m_bodyView->hide();
     //m_layout->setRowFixedHeight(2,0);
@@ -215,7 +217,7 @@ void EmailWidget::setMedium()
     if (m_fromLabel && m_dateLabel) {
         m_fromLabel->show();
         m_dateLabel->show();
-        showFlags(true);
+        refreshFlags(true);
     }
     m_bodyView->hide();
     kDebug() << "Medium ...";
@@ -237,7 +239,7 @@ void EmailWidget::setLarge(bool expanded)
     if (m_fromLabel && m_dateLabel) {
         m_fromLabel->show();
         m_dateLabel->show();
-        showFlags(true);
+        refreshFlags(true);
     }
 
     m_bodyView->show();
@@ -273,7 +275,7 @@ void EmailWidget::buildDialog()
     m_layout->setHorizontalSpacing(4);
 
     m_icon = new Plasma::IconWidget(this);
-    m_icon->setIcon("view-pim-mail");
+    m_icon->setIcon("mail-mark-read");
     m_icon->setAcceptHoverEvents(false);
     resizeIcon(32);
     //m_layout->addItem(m_icon, 0, 0, 1, 1, Qt::AlignTop);
@@ -322,7 +324,7 @@ void EmailWidget::buildDialog()
     int s = KIconLoader::SizeSmall;
     m_newIcon = new IconWidget(this);
     m_newIcon->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    m_newIcon->setIcon("mail-mark-unread-new");
+    m_newIcon->setIcon("mail-mark-unread");
     m_newIcon->setMinimumWidth(s);
     m_newIcon->setMaximumHeight(s);
     m_newIcon->setMaximumWidth(s);
@@ -372,23 +374,42 @@ void EmailWidget::buildDialog()
     setLayout(m_layout);
 
     updateColors();
+
+    // Refresh flags
+    setNew(m_isNew);
+    setTask(m_isTask);
+    setImportant(m_isImportant);
 }
 
-void EmailWidget::showFlags(bool show)
+void EmailWidget::refreshFlags()
 {
+    refreshFlags(m_flagsShown);
+}
+
+void EmailWidget::refreshFlags(bool show)
+{
+    m_flagsShown = show;
+
     if (!m_newIcon) {
         return;
     }
 
-    if (show) {
+    if (show && m_isNew) {
         m_newIcon->show();
-        m_taskIcon->show();
-        m_importantIcon->show();
     } else {
         m_newIcon->hide();
-        m_taskIcon->hide();
-        m_importantIcon->hide();
+    }
 
+    if (show && m_isImportant) {
+        m_importantIcon->show();
+    } else {
+        m_importantIcon->hide();
+    }
+
+    if (show && m_isTask) {
+        m_taskIcon->show();
+    } else {
+        m_taskIcon->hide();
     }
 }
 
@@ -487,7 +508,11 @@ void EmailWidget::setAllowHtml(bool allow)
 void EmailWidget::setSubject(const QString& subject)
 {
     if (m_subjectLabel && !subject.isEmpty()) {
-        m_subjectLabel->setText(subject);
+        if (m_isNew) {
+            m_subjectLabel->setText(QString("<b>%1</b>").arg(subject));
+        } else {
+            m_subjectLabel->setText(subject);
+        }
     }
     m_subject = subject;
 }
@@ -678,6 +703,34 @@ void EmailWidget::setBcc(const QStringList& bccList)
         m_bccLabel->setText(i18n("<style>%1</style><b>Bcc:</b> %2", m_stylesheet, html));
     }
     m_bcc = bccList;
+}
+
+void EmailWidget::setNew(bool isnew)
+{
+    if (isnew) {
+        m_icon->setIcon("mail-mark-unread");
+    } else {
+        m_icon->setIcon("mail-mark-read");
+    }
+    m_isNew = isnew;
+
+    //if (m_applet) {
+    //    kDebug() << "Setting popupicon";
+        //m_applet->setPopupIcon("mail-mark-unread");
+    //}
+    refreshFlags();
+}
+
+void EmailWidget::setImportant(bool important)
+{
+    m_isImportant = important;
+    refreshFlags();
+}
+
+void EmailWidget::setTask(bool task)
+{
+    m_isTask = task;
+    refreshFlags();
 }
 
 void EmailWidget::mousePressEvent(QGraphicsSceneMouseEvent * event)
