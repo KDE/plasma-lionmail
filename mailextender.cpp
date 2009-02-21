@@ -40,29 +40,43 @@
 
 MailExtender::MailExtender(LionMail * applet, const QString collectionId, Plasma::Extender *ext)
     : Plasma::ExtenderItem(ext),
-      m_id(collectionId),
+      m_id(0),
       m_info(0),
+      m_iconName(QString("mail-folder-inbox")),
       m_icon(0),
       m_widget(0),
       m_label(0)
 {
+    m_id = collectionId;
+    kDebug() << "ctr" << m_id;
     m_applet = applet;
-    setIcon("akonadi");
     setTitle("Lion Mail");
     setName("Lion Mail ExenderItem");
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     setDescription("Some description");
     m_maxEmails = 12;
-
+    if (m_id.isEmpty()) {
+        kDebug() << "Empty id:";
+        return;
+    }
+    kDebug() << "gw";
     (void)graphicsWidget();
     engine = m_applet->dataEngine("akonadi");
-    connectCollection(m_id);
+    kDebug() << "gw";
+    
+    //connectCollection(m_id);
+    kDebug() << "gw";
     setCollection(m_id);
+    kDebug() << "gw";
+    setIcon(m_iconName);
 }
 
 void MailExtender::setCollection(const QString id)
 {
-    kDebug() << "REMOVE" << m_id;
+    if (id != 0 && id == m_id) {
+        //return;
+    }
+    kDebug() << "Setting collection from to " << m_id << id;
     disconnectCollection(m_id);
     m_id = id;
     connectCollection(m_id);
@@ -83,6 +97,7 @@ QString MailExtender::id()
 
 void MailExtender::setName(const QString name)
 {
+    ExtenderItem::setName(name);
     m_collection = name;
 }
 
@@ -111,7 +126,7 @@ void MailExtender::newSource(const QString & source)
 
 void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
-    //kDebug() << source;
+    kDebug() << source;
     if (source == "EmailCollections" || source == "ContactCollections") {
         // Apparently the signal ends up in here, while it should in these
         // cases happen in the applet, just pass it on for now
@@ -192,6 +207,7 @@ QGraphicsWidget* MailExtender::graphicsWidget()
 
     // top label
     m_label = new Plasma::Label(m_widget);
+    setDescription(m_id);
     m_layout->addItem(m_label, 0, 1);
 
     // smaller label
@@ -247,12 +263,13 @@ void MailExtender::setIcon(const QString& icon)
     if (m_icon) {
         m_icon->setIcon(icon);
     }
+    m_iconName = icon;
     ExtenderItem::setIcon(icon);
 }
 
 QString MailExtender::icon()
 {
-    return "akonadi"; // TODO: iconstring should be customizable
+    return m_iconName;
 }
 
 void MailExtender::setInfo(const QString& info)

@@ -56,13 +56,14 @@ using namespace Plasma;
 
 EmailWidget::EmailWidget(EmailMessage* emailmessage, QGraphicsWidget *parent)
     : Frame(parent),
-      m_applet(0),
       //id(61771), // more plain example
       //id(97160), // sample html email
       //id(97162), // sample email + patch attached
       //id(0), // what it's supposed to be
 
       id(83964),
+      
+      m_applet(0),
       // Are we already fetching the data?
       m_fetching(false),
 
@@ -529,8 +530,12 @@ void EmailWidget::setTo(const QStringList& toList)
 
 void EmailWidget::setRawBody(const QString& body)
 {
-    if (m_bodyView && !body.isEmpty()) {
-        QString html = QString("<style type=\"text/css\">%1</style><body>%2</body>").arg(m_stylesheet, body);
+    if (m_bodyView) {
+        QString html = i18n("<h3>Empty body loaded.</h3>");
+        html = i18n("<style type=\"text/css\">%1</style><body><h3>Empty body loaded.</h3></body>", m_stylesheet);
+        if (!body.isEmpty()) {
+            html = QString("<style type=\"text/css\">%1</style><body>%2</body>").arg(m_stylesheet, body);
+        }
         //kDebug() << html;
         m_bodyView->setHtml(html);
     }

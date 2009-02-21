@@ -70,6 +70,7 @@ class MailExtender : public Plasma::ExtenderItem
         QString m_collection;
         QString m_description;
         QString m_info;
+        QString m_iconName;
         QHash<QString, EmailMessage*> emails;
         int m_maxEmails;
 
