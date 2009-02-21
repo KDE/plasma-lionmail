@@ -61,6 +61,9 @@ class LionMail : public Plasma::PopupApplet
 
     private Q_SLOTS:
         void newSource( const QString &source );
+        void addListItem();
+        void removeListItem();
+        void listItemChanged ();
 
     private:
         void initMailExtender(const QString);

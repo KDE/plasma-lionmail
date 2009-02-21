@@ -104,8 +104,18 @@ void LionMail::createConfigurationInterface(KConfigDialog *parent)
         ui.collectionCombo->addItem(m_collections[c].toString(), c);
     }
     ui.allowHtml->setChecked(m_allowHtml);
+
+    ui.removeCollection->setEnabled(ui.collectionList->count() != 0);
+
+
     connect(parent, SIGNAL(applyClicked()), this, SLOT(configAccepted()));
     connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
+    connect(ui.addCollection, SIGNAL(clicked()), this, SLOT(addListItem()));
+    connect(ui.removeCollection, SIGNAL(clicked()), this, SLOT(removeListItem()));
+    //connect(ui.collectionList, SIGNAL(currentItemChanged(QListWidgetItem, QListWidgetItem)),
+    //        this, SLOT(listItemChanged(QListWidgetItem, QListWidgetItem)));
+    connect(ui.collectionList, SIGNAL(itemSelectionChanged()),
+            this, SLOT(listItemChanged()));
 }
 
 void LionMail::configAccepted()
@@ -130,6 +140,54 @@ void LionMail::configAccepted()
     if (ui.allowHtml->isChecked() != m_allowHtml) {
         m_allowHtml = !m_allowHtml;
         cg.writeEntry("allowHtml", m_allowHtml);
+    }
+}
+
+void LionMail::addListItem()
+{
+    QString name = ui.collectionCombo->currentText();
+    QListWidgetItem* item = new QListWidgetItem(KIcon("mail-folder-inbox"), name);
+    QString cid = ui.collectionCombo->itemData(ui.collectionCombo->currentIndex()).toString();
+    item->setData(Qt::UserRole, cid);
+    ui.collectionList->addItem(item);
+    ui.collectionCombo->removeItem(ui.collectionCombo->currentIndex());
+    ui.removeCollection->setEnabled(false);
+
+}
+
+void LionMail::removeListItem()
+{
+    int row = ui.collectionList->currentRow();
+    if (row != -1) {
+        ui.collectionList->takeItem(row);
+        if (ui.collectionList->count() == 0) {
+            ui.removeCollection->setEnabled(false);
+        }
+    }
+/*
+    kDebug() << "removing item:" << ui.collectionList->currentItem()->text();
+    //ui.collectionList->removeItemWidget(ui.collectionList->currentItem());
+    QListWidgetItem* take = ui.collectionList->takeItem(ui.collectionList->currentRow());
+
+    ui.collectionCombo->addItem(ui.collectionList->currentItem()->text(), 
+                                ui.collectionList->currentItem()->data(Qt::UserRole).toString());
+
+    if (take) {
+        ui.collectionCombo->addItem(ui.collectionList->currentItem()->text(), 
+                                ui.collectionList->currentItem()->data(Qt::UserRole).toString());
+    } else {
+        ui.removeCollection->setEnabled(false);
+    }
+    delete take;
+    */
+}
+
+void LionMail::listItemChanged()
+{
+    if (ui.collectionList->currentRow() != -1) {
+        kDebug() << "item selection:" << ui.collectionList->currentItem()->text();
+        ui.removeCollection->setEnabled(true);
+        ui.labelEdit->setText(ui.collectionList->currentItem()->text());
     }
 }
 

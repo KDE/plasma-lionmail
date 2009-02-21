@@ -183,7 +183,7 @@ QGraphicsWidget* MailExtender::graphicsWidget()
     // larger icon on the left
     m_icon = new Plasma::IconWidget(m_widget);
     //m_icon->setIcon(icon());
-    m_icon->setIcon("view-pim-mail");
+    m_icon->setIcon("mail-folder-inbox");
     m_icon->resize(iconsize, iconsize);
     m_icon->setMinimumHeight(iconsize);
     m_icon->setMaximumHeight(iconsize);
