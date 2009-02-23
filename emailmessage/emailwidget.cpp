@@ -56,13 +56,13 @@ using namespace Plasma;
 
 EmailWidget::EmailWidget(EmailMessage* emailmessage, QGraphicsWidget *parent)
     : Frame(parent),
-      //id(61771), // more plain example
+      id(61771), // more plain example
       //id(97160), // sample html email
       //id(97162), // sample email + patch attached
       //id(0), // what it's supposed to be
 
-      id(83964),
-      
+      //id(83964),
+
       m_applet(0),
       // Are we already fetching the data?
       m_fetching(false),
@@ -106,17 +106,17 @@ int EmailWidget::widgetHeight(int size)
     int h;
     switch (size) {
         case Icon:
-            h = 16;
+            h = KIconLoader::SizeSmall;
             break;
         case Tiny:
-            h = qMax(22, (int)m_subjectLabel->minimumHeight());
+            h = qMax((int)KIconLoader::SizeSmall, (int)m_subjectLabel->minimumHeight());
             break;
         case Small:
-            return 32;
+            return KIconLoader::SizeMedium; // 32
         case Medium:
-            return 84;
+            return (int)(KIconLoader::SizeHuge * 1.5); // 96
         case Large:
-            return 200;
+            return (int)(KIconLoader::SizeEnormous * 1.5); // 192
     }
     return h;
 }
@@ -183,6 +183,7 @@ void EmailWidget::setSmall()
         return;
     }
     kDebug() << "Small ...";
+    m_appletSize = Small;
 
     m_subjectLabel->show();
     if (m_fromLabel) {
@@ -201,7 +202,6 @@ void EmailWidget::setSmall()
 
     m_expandIcon->setIcon("arrow-down-double");
 
-    m_appletSize = Small;
     int h = widgetHeight(m_appletSize);
     updateSize(h);
 }
@@ -214,6 +214,8 @@ void EmailWidget::setMedium()
     if (m_expanded) {
         return;
     }
+
+    m_appletSize = Medium;
     m_expandIcon->setIcon("arrow-down-double");
     m_toLabel->show();
     if (m_fromLabel && m_dateLabel) {
@@ -224,7 +226,6 @@ void EmailWidget::setMedium()
     m_bodyView->hide();
     kDebug() << "Medium ...";
     resizeIcon(32);
-    m_appletSize = Medium;
     int h = widgetHeight(m_appletSize);
     updateSize(h);
     kDebug() << m_layout->geometry().size() << preferredSize() << minimumSize();
@@ -235,6 +236,10 @@ void EmailWidget::setLarge(bool expanded)
     if (m_expanded && m_appletSize == Large ) {
         return;
     }
+    if (!expanded) {
+        m_appletSize = Large;
+    }
+
     m_expandIcon->setIcon("arrow-up-double");
     m_toLabel->show();
     m_subjectLabel->show();
@@ -255,9 +260,7 @@ void EmailWidget::setLarge(bool expanded)
     resizeIcon(32);
     setMinimumHeight(m_layout->minimumSize().height());
     setMinimumWidth(m_layout->minimumSize().width());
-    if (!expanded) {
-        m_appletSize = Large;
-    }
+
     if (!m_fetching) {
         fetchPayload();
     }
@@ -625,11 +628,14 @@ void EmailWidget::fetchDone(KJob* job)
         setRawBody(i18n("<h3>Fetching email body %1 failed: <p /></h3><pre>%2</pre>", id, job->errorString()));
         return;
     }
-    m_bodyView->setMinimumHeight(80);
-    updateSize(widgetHeight(Large));
-    Akonadi::Item::List items = static_cast<Akonadi::ItemFetchJob*>( job )->items();
+    //m_bodyView->setMinimumHeight(80);
+    //updateSize(widgetHeight(Large));
+    Akonadi::Item::List items = static_cast<Akonadi::ItemFetchJob*>(job)->items();
 
-    kDebug() << "Fetched" << items.count() << " email Items.";
+    kDebug() << "Fetched" << items.count() << "email Items." << id;
+    if (items.count() == 0) {
+        setRawBody(i18n("<h3>Could not find Email with id: <p /></h3><pre>%1</pre>", id));
+    }
     foreach( const Akonadi::Item &item, items ) {
 
         // Start monitoring this item
@@ -674,7 +680,7 @@ void EmailWidget::setAbstract(const QString& abstract)
 void EmailWidget::setDate(const QDateTime& date)
 {
     if (m_dateLabel) {
-        if (date.isValid()) {
+        if (date.isValid() && !date.isNull()) {
             m_date = date;
             QString d = KGlobal::locale()->formatDateTime( m_date, KLocale::FancyLongDate );
             m_dateLabel->setText(i18n("<b>Date:</b> %1", d));

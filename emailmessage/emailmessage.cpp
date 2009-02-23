@@ -51,7 +51,7 @@ EmailMessage::EmailMessage(QObject *parent, const QVariantList &args)
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     setPassivePopup(true);
 
-    setMinimumSize(80, 48);
+    //setMinimumSize(80, 48);
     (void)graphicsWidget();
     m_emailWidget->m_applet = this;
     setPopupIcon("mail-mark-read");
