@@ -781,7 +781,7 @@ void EmailWidget::startDrag()
     QList<QUrl> urls;
     urls << m_url;
     //mimeData->setUrls(urls);
-    mimeData->setText(QString("Email with URL: %1").arg(m_url.url()));
+    mimeData->setText(QString("Email with URL: %1<br /><br />%2").arg(m_url.url()).arg(m_body));
 
     // This is a bit random, but we need a QWidget for the constructor
     // not sure if this works at all ... :/

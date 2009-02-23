@@ -12,14 +12,11 @@ LionMail:
 
 
 EmailMessage:
-- flags
-    - unread
-    - important
-    - task
+- Fix setting of envelope data from MailExtender (only shows properly after expanding)
 - QDragging
     - proper URL / Mimetype mixture in QMimeData
     - How do we load the dropped data?
-    - fix dragging from inside Lion Mail
+    - fix dragging from inside Lion Mail after email has been expanded
     - How do akonadi urls actually look like?
 - parsing of the content to nicer HTML
 - putting "something sensible" info in the To field
