@@ -72,6 +72,7 @@ class EmailWidget : public Plasma::Frame
         void setCc(const QStringList& ccList);
         void setBcc(const QStringList& bccList);
         void setFlags(const QStringList& flagList);
+        void setUrl(const KUrl);
 
         void setSubject(const QString& subject);
         void setBody(MessagePtr msg);
@@ -145,7 +146,7 @@ class EmailWidget : public Plasma::Frame
         // Email data
         QString m_subject;
         QDateTime m_date;
-
+        KUrl m_url;
         QStringList m_to;
         QString m_from;
         QStringList m_cc;

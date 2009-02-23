@@ -12,15 +12,23 @@ LionMail:
 
 
 EmailMessage:
-- fancy date
-- test and fix monitoring
 - flags
     - unread
     - important
     - task
 - QDragging
+    - proper URL / Mimetype mixture in QMimeData
+    - How do we load the dropped data?
+    - fix dragging from inside Lion Mail
+    - How do akonadi urls actually look like?
 - parsing of the content to nicer HTML
-
+- putting "something sensible" info in the To field
+- merge to, from, cc, bcc and possibly date in another webview
+- test and fix monitoring
+- saving of config in extenderitem
+- UI multi-collection config details (save button?)
+- Are multiple flags in Akonadi possible?
+- clearing and reloading the MailExtender's content
 
 General:
 - Retrieval of a contact based on an email address for example (not supported in Akonadi atm)

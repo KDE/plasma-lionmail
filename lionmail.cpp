@@ -152,16 +152,21 @@ void LionMail::configAccepted()
         }
 
         m_activeCollection = cid;
-        setConfigurationRequired(false);
 
         cg.writeEntry("activeCollection", m_activeCollection);
         kDebug() << "Active Collections changed:" << m_activeCollection;
         emit configNeedsSaving();
     }
     */
+    if (ui.allowHtml->isChecked() != m_allowHtml) {
+        m_allowHtml = !m_allowHtml;
+        cg.writeEntry("allowHtml", m_allowHtml);
+    }
+    
     int c = ui.collectionList->count();
     for (int i = 0; i < c; i++) {
     //foreach (QListWidgetItem* item, ui.collectionList->items()) {
+        setConfigurationRequired(false);
         QString itemid = ui.collectionList->item(i)->data(Qt::UserRole).toString();
         kDebug() << "selected id:" << itemid << collectionName(itemid);
         if (m_extenders.keys().contains(itemid)) {
@@ -169,12 +174,11 @@ void LionMail::configAccepted()
         } else {
             // TODO: set config
             initMailExtender(itemid);
+            m_extenders[itemid]->showUnreadOnly(ui.showUnreadOnly->isChecked());
+            m_extenders[itemid]->load();
         }
     }
-    if (ui.allowHtml->isChecked() != m_allowHtml) {
-        m_allowHtml = !m_allowHtml;
-        cg.writeEntry("allowHtml", m_allowHtml);
-    }
+    
 }
 
 void LionMail::addListItem()

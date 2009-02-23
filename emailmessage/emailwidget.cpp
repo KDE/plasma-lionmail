@@ -56,12 +56,12 @@ using namespace Plasma;
 
 EmailWidget::EmailWidget(EmailMessage* emailmessage, QGraphicsWidget *parent)
     : Frame(parent),
-      id(61771), // more plain example
+      //id(61771), // more plain example
       //id(97160), // sample html email
       //id(97162), // sample email + patch attached
       //id(0), // what it's supposed to be
 
-      //id(83964),
+      id(83964),
 
       m_applet(0),
       // Are we already fetching the data?
@@ -505,6 +505,12 @@ void EmailWidget::updateColors()
     }
 }
 
+void EmailWidget::setUrl(KUrl url)
+{
+    kDebug() << url.url();
+    m_url = url;
+}
+
 void EmailWidget::setAllowHtml(bool allow)
 {
     m_allowHtml = allow;
@@ -768,7 +774,14 @@ void EmailWidget::startDrag()
 {
     kDebug() << "Starting drag!";
     QMimeData* mimeData = new QMimeData();
-    mimeData->setText("This is some random email");
+    //QString url = QString("akonadi://%1").arg(id);
+    QString url = m_url.url();
+
+    mimeData->setData(QString("message/rfc822"), url.toUtf8());
+    QList<QUrl> urls;
+    urls << m_url;
+    //mimeData->setUrls(urls);
+    mimeData->setText(QString("Email with URL: %1").arg(m_url.url()));
 
     // This is a bit random, but we need a QWidget for the constructor
     // not sure if this works at all ... :/

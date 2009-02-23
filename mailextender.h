@@ -40,6 +40,7 @@ class MailExtender : public Plasma::ExtenderItem
     public:
         MailExtender(LionMail * applet, const QString collectionId, Plasma::Extender *ext = 0);
         virtual ~MailExtender();
+        void load();
 
         void setCollection(const QString id);
         QGraphicsWidget* graphicsWidget();
@@ -52,6 +53,8 @@ class MailExtender : public Plasma::ExtenderItem
 
         void addEmail(EmailMessage* email);
         void setName(const QString name);
+        void showUnreadOnly(bool show);
+        void setMaxEmails(int max);
 
     public Q_SLOTS:
         void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);
@@ -72,7 +75,9 @@ class MailExtender : public Plasma::ExtenderItem
         QString m_info;
         QString m_iconName;
         QHash<QString, EmailMessage*> emails;
+
         int m_maxEmails;
+        bool m_showUnreadOnly;
 
         LionMail* m_applet;
         Plasma::DataEngine* engine;

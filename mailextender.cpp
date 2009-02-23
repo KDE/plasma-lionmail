@@ -59,15 +59,15 @@ MailExtender::MailExtender(LionMail * applet, const QString collectionId, Plasma
         kDebug() << "Empty id:";
         return;
     }
-    kDebug() << "gw";
+}
+
+void MailExtender::load()
+{
     (void)graphicsWidget();
     engine = m_applet->dataEngine("akonadi");
-    kDebug() << "gw";
-    
     //connectCollection(m_id);
-    kDebug() << "gw";
     setCollection(m_id);
-    kDebug() << "gw";
+    kDebug() << "loading ...";
     setIcon(m_iconName);
 }
 
@@ -81,9 +81,7 @@ void MailExtender::setCollection(const QString id)
     m_id = id;
     connectCollection(m_id);
     connect(engine, SIGNAL(sourceAdded(QString)), this, SLOT(newSource(QString)));
-    if (m_label) {
-        m_label->setText(m_applet->collectionName(m_id));
-    }
+    setDescription(m_applet->collectionName(m_id));
 }
 
 MailExtender::~MailExtender()
@@ -126,7 +124,7 @@ void MailExtender::newSource(const QString & source)
 
 void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
-    kDebug() << source;
+    //kDebug() << source << emails.keys();
     if (source == "EmailCollections" || source == "ContactCollections") {
         // Apparently the signal ends up in here, while it should in these
         // cases happen in the applet, just pass it on for now
@@ -134,13 +132,19 @@ void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::
         return;
     }
     EmailMessage* email = 0;
-    if (emails.count() < m_maxEmails && !emails.contains(source)) {
+    if (emails.count() < m_maxEmails && !emails.keys().contains(source)) {
         //kDebug() << "new ...";
+        kDebug() << "New email:" << source;
         email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
-        addEmail(email);
-        emails[source] = email;
-        if (m_infoLabel) {
-            m_infoLabel->setText(i18n("%1 emails", emails.count()));
+        if (!m_showUnreadOnly || data["Flag-New"].toBool()) {
+            addEmail(email);
+            emails[source] = email;
+            if (m_infoLabel) {
+                m_infoLabel->setText(i18n("%1 emails", emails.count()));
+            }
+            kDebug() << "::Yes, showing" << source << "New?" << data["Flag-New"].toBool() << data;
+        } else {
+            kDebug() << "::Not showing" << source << "New?" << data["Flag-New"].toBool();
         }
     }
     if (emails.contains(source)) {
@@ -152,6 +156,7 @@ void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::
     }
     // Only set email-specific properties here, layouttweaks and the like should go into MailExtender
     email->m_emailWidget->id = data["Id"].toLongLong();
+    email->m_emailWidget->setUrl(QUrl(data["Url"].toString()));
     email->m_emailWidget->setSubject(data["Subject"].toString());
     email->m_emailWidget->setFrom(data["From"].toString());
     email->m_emailWidget->setTo(data["To"].toStringList());
@@ -235,6 +240,16 @@ QGraphicsWidget* MailExtender::graphicsWidget()
     return m_widget;
 }
 
+void MailExtender::showUnreadOnly(bool show)
+{
+    m_showUnreadOnly = show;
+}
+
+void MailExtender::setMaxEmails(int max)
+{
+    m_maxEmails = max;
+}
+
 void MailExtender::addEmail(EmailMessage* email)
 {
     email->setParent(this);
@@ -251,6 +266,7 @@ void MailExtender::addEmail(EmailMessage* email)
 
 void MailExtender::setDescription(const QString& desc)
 {
+    setTitle(desc);
     if (m_label) {
         QString html = "<b>" + desc + "</b>";
         m_label->setText(html);
