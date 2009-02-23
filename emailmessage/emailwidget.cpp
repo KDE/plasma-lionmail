@@ -769,6 +769,9 @@ void EmailWidget::startDrag()
     QDrag* drag = new QDrag(m_subjectLabel->nativeWidget());
     drag->setMimeData(mimeData);
     drag->setPixmap(m_icon->icon().pixmap(64, 64));
+    if (drag->start(Qt::CopyAction | Qt::MoveAction)) {
+        kDebug() << "dragging starting";
+    }
 }
 
 
