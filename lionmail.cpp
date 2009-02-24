@@ -102,26 +102,12 @@ void LionMail::createConfigurationInterface(KConfigDialog *parent)
     //m_allCollections = dataEngine("akonadi")->query("EmailCollections");
     ui.addCollection->setEnabled(false);
     kDebug() << m_extenders.keys();
-    foreach ( QString cid, m_allCollections.keys() ) {
-        if (m_extenders.keys().contains(cid)) {
-            kDebug() << cid << "have" << m_extenders[cid]->icon() << m_extenders[cid]->name();
-            // A currently configured extender / collection
-            QString icon = m_extenders[cid]->icon();
-            if (icon.isEmpty()) {
-                icon = "mail-folder-inbox";
-            }
-            QListWidgetItem* item = new QListWidgetItem(QIcon(icon), collectionName(cid));
-            item->setData(Qt::UserRole, cid);
-            ui.collectionList->addItem(item);
-            //ui.addCollection->setEnabled(true);
-
-        } else {
-            kDebug() << cid << "don't have" << m_allCollections[cid].toString();
-            ui.collectionCombo->addItem(m_allCollections[cid].toString(), cid);
-            ui.addCollection->setEnabled(true);
-        }
+    if (m_allCollections.count() == 0) {
+        ui.collectionsStatus->setText(i18n("Loading collection list. Hang on ..."));
+    } else {
+        ui.collectionsStatus->setText("");
     }
-
+    addConfigCollections();
     ui.allowHtml->setChecked(m_allowHtml);
 
     ui.removeCollection->setEnabled(ui.collectionList->count() != 0);
@@ -135,6 +121,35 @@ void LionMail::createConfigurationInterface(KConfigDialog *parent)
     //        this, SLOT(listItemChanged(QListWidgetItem, QListWidgetItem)));
     connect(ui.collectionList, SIGNAL(itemSelectionChanged()),
             this, SLOT(listItemChanged()));
+    m_configCreated = true;
+}
+
+void LionMail::addConfigCollections()
+{
+    if (!m_configCreated) {
+        return;
+    }
+    if (ui.collectionCombo) {
+        foreach ( QString cid, m_allCollections.keys() ) {
+            if (m_extenders.keys().contains(cid)) {
+                kDebug() << cid << "have" << m_extenders[cid]->icon() << m_extenders[cid]->name();
+                // A currently configured extender / collection
+                QString icon = m_extenders[cid]->icon();
+                if (icon.isEmpty()) {
+                    icon = "mail-folder-inbox";
+                }
+                QListWidgetItem* item = new QListWidgetItem(QIcon(icon), collectionName(cid));
+                item->setData(Qt::UserRole, cid);
+                ui.collectionList->addItem(item);
+                //ui.addCollection->setEnabled(true);
+
+            } else {
+                kDebug() << cid << "don't have" << m_allCollections[cid].toString();
+                ui.collectionCombo->addItem(m_allCollections[cid].toString(), cid);
+                ui.addCollection->setEnabled(true);
+            }
+        }
+    }
 }
 
 void LionMail::configAccepted()
@@ -162,7 +177,7 @@ void LionMail::configAccepted()
         m_allowHtml = !m_allowHtml;
         cg.writeEntry("allowHtml", m_allowHtml);
     }
-    
+
     int c = ui.collectionList->count();
     for (int i = 0; i < c; i++) {
     //foreach (QListWidgetItem* item, ui.collectionList->items()) {
@@ -178,7 +193,7 @@ void LionMail::configAccepted()
             m_extenders[itemid]->load();
         }
     }
-    
+
 }
 
 void LionMail::addListItem()
@@ -263,6 +278,7 @@ void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data
         //kDebug() << "Akonadi Email Received collections" << source << data.keys();
         //kDebug()  << data;
         m_allCollections = data;
+        addConfigCollections();
         //kDebug() << "Akonadi:" << m_allCollections.keys();
         return;
     }

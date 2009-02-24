@@ -170,6 +170,7 @@ void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::
     email->m_emailWidget->setBcc(data["Bcc"].toStringList());
 
     update();
+    setPreferredSize(email->m_emailWidget->preferredSize());
 }
 
 QGraphicsWidget* MailExtender::graphicsWidget()

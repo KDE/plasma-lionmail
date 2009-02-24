@@ -67,7 +67,7 @@ class LionMail : public Plasma::PopupApplet
 
     private:
         void initMailExtender(const QString);
-
+        void addConfigCollections();
 
         QHash<QString, QVariant> m_allCollections;
         QString m_activeCollection;
@@ -84,6 +84,7 @@ class LionMail : public Plasma::PopupApplet
 
         QMap<int,QString> m_fromList;
         QMap<int,QString> m_subjectList;
+        bool m_configCreated;
 };
 
 

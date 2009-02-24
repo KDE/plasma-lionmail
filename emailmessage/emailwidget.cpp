@@ -274,8 +274,8 @@ void EmailWidget::buildDialog()
 
     m_layout = new QGraphicsGridLayout(this);
     m_layout->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    m_layout->setColumnFixedWidth(0, 40); // This should be dynamic, we'll also want to decrease the second column if the first one expands
-    m_layout->setColumnPreferredWidth(1, 140);
+    m_layout->setColumnFixedWidth(0, 40); // This could probably be a bit more dynamic should be dynamic
+    m_layout->setColumnPreferredWidth(1, 180);
     m_layout->setColumnFixedWidth(2, 22);
     m_layout->setHorizontalSpacing(4);
 
@@ -302,14 +302,14 @@ void EmailWidget::buildDialog()
     m_toLabel->nativeWidget()->setWordWrap(false);
     setTo(QStringList("Bob Marley <marley@kde.org>"));
 
-    m_layout->addItem(m_toLabel, 1, 1, 1, 2);
+    m_layout->addItem(m_toLabel, 1, 1, 1, 2, Qt::AlignTop);
 
     // From and date
     m_fromLabel = new Plasma::Label(this);
-    m_fromLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    m_fromLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
     m_fromLabel->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
     setFrom(i18n("Unknown Sender"));
-    m_layout->addItem(m_fromLabel, 2, 0, 1, 3);
+    m_layout->addItem(m_fromLabel, 2, 0, 1, 3, Qt::AlignTop);
 
     m_dateLabel = new Plasma::Label(this);
     m_dateLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -354,7 +354,7 @@ void EmailWidget::buildDialog()
     m_flagsLayout->addItem(m_taskIcon);
     //m_flagsLayout;
 
-    m_layout->addItem(m_flagsLayout, 4, 0, 1, 3);
+    m_layout->addItem(m_flagsLayout, 3, 0, 1, 3, Qt::AlignTop | Qt::AlignRight);
 
 
     // The Body
