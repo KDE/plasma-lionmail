@@ -117,6 +117,7 @@ void LionMail::createConfigurationInterface(KConfigDialog *parent)
     connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
     connect(ui.addCollection, SIGNAL(clicked()), this, SLOT(addListItem()));
     connect(ui.removeCollection, SIGNAL(clicked()), this, SLOT(removeListItem()));
+    connect(ui.saveCollection, SIGNAL(clicked()), this, SLOT(saveCurrentCollection()));
     //connect(ui.collectionList, SIGNAL(currentItemChanged(QListWidgetItem, QListWidgetItem)),
     //        this, SLOT(listItemChanged(QListWidgetItem, QListWidgetItem)));
     connect(ui.collectionList, SIGNAL(itemSelectionChanged()),
@@ -134,7 +135,7 @@ void LionMail::addConfigCollections()
     if (ui.collectionCombo) {
         foreach ( QString cid, m_allCollections.keys() ) {
             if (m_extenders.keys().contains(cid)) {
-                kDebug() << cid << "have" << m_extenders[cid]->icon() << m_extenders[cid]->name();
+                //kDebug() << cid << "have" << m_extenders[cid]->icon() << m_extenders[cid]->name();
                 // A currently configured extender / collection
                 QString icon = m_extenders[cid]->icon();
                 if (icon.isEmpty()) {
@@ -146,12 +147,35 @@ void LionMail::addConfigCollections()
                 //ui.addCollection->setEnabled(true);
 
             } else {
-                kDebug() << cid << "don't have" << m_allCollections[cid].toString();
+                //kDebug() << cid << "don't have" << m_allCollections[cid].toString();
                 ui.collectionCombo->addItem(m_allCollections[cid].toString(), cid);
                 ui.addCollection->setEnabled(true);
             }
         }
     }
+}
+
+void LionMail::saveCurrentCollection()
+{
+    QString collectionId = ui.collectionList->currentItem()->data(Qt::UserRole).toString();
+    saveCollection(collectionId);
+    m_extenders[collectionId]->setDescription(ui.labelEdit->text());
+    m_extenders[collectionId]->setIcon(ui.icon->icon());
+    m_extenders[collectionId]->setMaxEmails(ui.maxEmails->value());
+    m_extenders[collectionId]->setShowUnreadOnly(ui.showUnreadOnly->isChecked());
+}
+ 
+void LionMail::saveCollection(const QString &collectionId)
+{ 
+    setConfigurationRequired(false);
+    if (!m_extenders.keys().contains(collectionId)) {
+        kDebug() << "New collection ... " << collectionId << collectionName(collectionId);
+        initMailExtender(collectionId);
+        m_extenders[collectionId]->load();
+    }
+   
+    
+    kDebug() << ui.labelEdit->text() << ui.showUnreadOnly->isChecked() << ui.maxEmails->value() << ui.icon->icon();
 }
 
 void LionMail::configFinished()
@@ -162,24 +186,6 @@ void LionMail::configFinished()
 void LionMail::configAccepted()
 {
     KConfigGroup cg = config();
-    /*
-    QString cid = ui.collectionCombo->itemData(ui.collectionCombo->currentIndex()).toString();
-
-    if (m_activeCollection != cid) {
-        QString name = ui.collectionCombo->currentText();
-
-        // FIXME: hardcoded to first extender, needs UI change to support more than one extender
-        if (m_extenders.keys().contains(cid)) {
-            m_extenders[cid]->setCollection(cid); // FIXME: pending configuration stuff ....
-        }
-
-        m_activeCollection = cid;
-
-        cg.writeEntry("activeCollection", m_activeCollection);
-        kDebug() << "Active Collections changed:" << m_activeCollection;
-        emit configNeedsSaving();
-    }
-    */
     m_configCreated = false;
     if (ui.allowHtml->isChecked() != m_allowHtml) {
         m_allowHtml = !m_allowHtml;
@@ -187,19 +193,17 @@ void LionMail::configAccepted()
     }
 
     int c = ui.collectionList->count();
+    if (ui.collectionList->selectedItems().count()) {
+        saveCurrentCollection();
+    }
     for (int i = 0; i < c; i++) {
     //foreach (QListWidgetItem* item, ui.collectionList->items()) {
         setConfigurationRequired(false);
         QString itemid = ui.collectionList->item(i)->data(Qt::UserRole).toString();
         kDebug() << "selected id:" << itemid << collectionName(itemid);
-        if (m_extenders.keys().contains(itemid)) {
-            // TODO: set config for that item
-        } else {
-            // TODO: set config
-            initMailExtender(itemid);
-            m_extenders[itemid]->showUnreadOnly(ui.showUnreadOnly->isChecked());
-            m_extenders[itemid]->load();
-        }
+        saveCollection(itemid);
+
+        // FIXME: save collections 
     }
 
 }
@@ -211,6 +215,7 @@ void LionMail::addListItem()
     QString cid = ui.collectionCombo->itemData(ui.collectionCombo->currentIndex()).toString();
     item->setData(Qt::UserRole, cid);
     ui.collectionList->addItem(item);
+    ui.collectionList->setCurrentItem(item);
     ui.collectionCombo->removeItem(ui.collectionCombo->currentIndex());
     ui.removeCollection->setEnabled(true);
 
@@ -235,6 +240,23 @@ void LionMail::listItemChanged()
         kDebug() << "item selection:" << ui.collectionList->currentItem()->text();
         ui.removeCollection->setEnabled(true);
         ui.labelEdit->setText(ui.collectionList->currentItem()->text());
+    
+        QString itemid = ui.collectionList->currentItem()->data(Qt::UserRole).toString();
+        if (m_extenders.keys().contains(itemid)) {
+            ui.labelEdit->setText(m_extenders[itemid]->description());
+            ui.maxEmails->setValue(m_extenders[itemid]->maxEmails());
+            ui.icon->setIcon(m_extenders[itemid]->icon());
+            ui.showUnreadOnly->setChecked(m_extenders[itemid]->showUnreadOnly());
+
+        } else {
+            // Default values for our collection
+            ui.labelEdit->setText(collectionName(itemid));
+            ui.maxEmails->setValue(8);
+            ui.icon->setIcon("mail-folder-inbox");
+            ui.showUnreadOnly->setChecked(false);
+
+        }
+
     }
 }
 

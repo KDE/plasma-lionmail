@@ -45,16 +45,21 @@ class MailExtender : public Plasma::ExtenderItem
         void setCollection(const QString id);
         QGraphicsWidget* graphicsWidget();
         void setIcon(const QString& icon);
-
-        void setDescription(const QString& desc);
-        void setInfo(const QString& info);
+        
         QString id();
         QString icon();
 
+        void setDescription(const QString& desc);
+        QString description();
+        void setInfo(const QString& info);
+        
+
         void addEmail(EmailMessage* email);
         void setName(const QString name);
-        void showUnreadOnly(bool show);
+        void setShowUnreadOnly(bool show);
+        bool showUnreadOnly();
         void setMaxEmails(int max);
+        int maxEmails();
 
     public Q_SLOTS:
         void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);

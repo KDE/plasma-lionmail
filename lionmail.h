@@ -55,6 +55,8 @@ class LionMail : public Plasma::PopupApplet
     protected Q_SLOTS:
         void configAccepted();
         void configFinished();
+        void saveCurrentCollection();
+        void saveCollection(const QString& collectionId);
 
     protected:
         void createConfigurationInterface(KConfigDialog *parent);

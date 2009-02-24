@@ -241,14 +241,29 @@ QGraphicsWidget* MailExtender::graphicsWidget()
     return m_widget;
 }
 
-void MailExtender::showUnreadOnly(bool show)
+void MailExtender::setShowUnreadOnly(bool show)
 {
     m_showUnreadOnly = show;
+}
+
+bool MailExtender::showUnreadOnly()
+{
+    return m_showUnreadOnly;
 }
 
 void MailExtender::setMaxEmails(int max)
 {
     m_maxEmails = max;
+}
+
+int MailExtender::maxEmails()
+{
+    return m_maxEmails;
+}
+
+QString MailExtender::description()
+{
+    return m_description;
 }
 
 void MailExtender::addEmail(EmailMessage* email)
