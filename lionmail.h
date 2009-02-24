@@ -80,14 +80,13 @@ class LionMail : public Plasma::PopupApplet
 
         bool m_allowHtml;
 
-        Ui::lionmailConfig ui;
+        Ui::lionmailConfig* ui;
 
         QFont m_fontFrom;
         QFont m_fontSubject;
 
         QMap<int,QString> m_fromList;
         QMap<int,QString> m_subjectList;
-        bool m_configCreated;
 };
 
 
