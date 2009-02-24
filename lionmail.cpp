@@ -93,8 +93,6 @@ void LionMail::init()
 
 void LionMail::createConfigurationInterface(KConfigDialog *parent)
 {
-    Q_UNUSED(parent);
-
     QWidget *widget = new QWidget();
     ui.setupUi(widget);
     parent->addPage(widget, i18n("Collections"), Applet::icon());
@@ -107,12 +105,14 @@ void LionMail::createConfigurationInterface(KConfigDialog *parent)
     } else {
         ui.collectionsStatus->setText("");
     }
+    m_configCreated = true;
     addConfigCollections();
     ui.allowHtml->setChecked(m_allowHtml);
 
     ui.removeCollection->setEnabled(ui.collectionList->count() != 0);
 
 
+    connect(parent, SIGNAL(finished()), this, SLOT(configFinished()));
     connect(parent, SIGNAL(applyClicked()), this, SLOT(configAccepted()));
     connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
     connect(ui.addCollection, SIGNAL(clicked()), this, SLOT(addListItem()));
@@ -121,13 +121,15 @@ void LionMail::createConfigurationInterface(KConfigDialog *parent)
     //        this, SLOT(listItemChanged(QListWidgetItem, QListWidgetItem)));
     connect(ui.collectionList, SIGNAL(itemSelectionChanged()),
             this, SLOT(listItemChanged()));
-    m_configCreated = true;
 }
 
 void LionMail::addConfigCollections()
 {
     if (!m_configCreated) {
         return;
+    }
+    if (m_allCollections.count()) {
+        ui.collectionsStatus->setText("");
     }
     if (ui.collectionCombo) {
         foreach ( QString cid, m_allCollections.keys() ) {
@@ -152,6 +154,11 @@ void LionMail::addConfigCollections()
     }
 }
 
+void LionMail::configFinished()
+{
+    m_configCreated = false;
+}
+
 void LionMail::configAccepted()
 {
     KConfigGroup cg = config();
@@ -173,6 +180,7 @@ void LionMail::configAccepted()
         emit configNeedsSaving();
     }
     */
+    m_configCreated = false;
     if (ui.allowHtml->isChecked() != m_allowHtml) {
         m_allowHtml = !m_allowHtml;
         cg.writeEntry("allowHtml", m_allowHtml);
