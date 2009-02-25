@@ -5,27 +5,22 @@ TODO and Notes for LionMail and EmailMessage applets:
 LionMail:
 - test and fix switching collection (clear list?)
 - multiple collections:
-    - UI for selecting more than one collection
     - config key (QStringList of ID's)
-    - label: name on extenderitem, number of emails
-    - show unread (pending flags)
-
+    - show loading emails in extenderitem's infolabel
 
 EmailMessage:
-- Fix setting of envelope data from MailExtender (only shows properly after expanding)
 - QDragging
     - proper URL / Mimetype mixture in QMimeData
     - How do we load the dropped data?
     - fix dragging from inside Lion Mail after email has been expanded
-    - How do akonadi urls actually look like?
 - parsing of the content to nicer HTML
 - putting "something sensible" info in the To field
-- merge to, from, cc, bcc and possibly date in another webview
+- merge cc, bcc in another webview
 - test and fix monitoring
 - saving of config in extenderitem
-- UI multi-collection config details (save button?)
+- collection icons in widgetlist
 - Are multiple flags in Akonadi possible?
-- clearing and reloading the MailExtender's content
+- clearing and reloading the MailExtender's content on config changes
 
 General:
 - Retrieval of a contact based on an email address for example (not supported in Akonadi atm)
