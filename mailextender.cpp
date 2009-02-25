@@ -116,9 +116,9 @@ void MailExtender::disconnectCollection(QString cid)
 
 void MailExtender::newSource(const QString & source)
 {
+    // TODO: make sure we only connect to new emails
     //kDebug() << "------------- New:" << source;
     engine->connectSource(source, this);
-    // We could create MailExtenders here ...
 }
 
 
@@ -137,12 +137,13 @@ void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::
         return;
     }
 
-    EmailMessage* email = 0;
+    EmailWidget* email = 0;
     
     if (!emails.keys().contains(source)) {
         //kDebug() << "new ...";
         kDebug() << "New email:" << source;
-        email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
+        //email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
+        email = new EmailWidget(this);
         if (!m_showUnreadOnly || data["Flag-New"].toBool()) {
             addEmail(email);
             emails[source] = email;
@@ -165,22 +166,22 @@ void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::
     }
     kDebug() << "Subject:" << data["Subject"].toString();
     // Only set email-specific properties here, layouttweaks and the like should go into MailExtender
-    email->m_emailWidget->id = data["Id"].toLongLong();
-    email->m_emailWidget->setUrl(QUrl(data["Url"].toString()));
-    email->m_emailWidget->setSubject(data["Subject"].toString());
-    email->m_emailWidget->setFrom(data["From"].toString());
-    email->m_emailWidget->setTo(data["To"].toStringList());
-    email->m_emailWidget->setDate(data["DateTime"].toDateTime());
+    email->id = data["Id"].toLongLong();
+    email->setUrl(QUrl(data["Url"].toString()));
+    email->setSubject(data["Subject"].toString());
+    email->setFrom(data["From"].toString());
+    email->setTo(data["To"].toStringList());
+    email->setDate(data["DateTime"].toDateTime());
 
-    email->m_emailWidget->setNew(data["Flag-New"].toBool());
-    email->m_emailWidget->setTask(data["Flag-Task"].toBool());
-    email->m_emailWidget->setImportant(data["Flag-Important"].toBool());
+    email->setNew(data["Flag-New"].toBool());
+    email->setTask(data["Flag-Task"].toBool());
+    email->setImportant(data["Flag-Important"].toBool());
 
-    email->m_emailWidget->setCc(data["Cc"].toStringList());
-    email->m_emailWidget->setBcc(data["Bcc"].toStringList());
+    email->setCc(data["Cc"].toStringList());
+    email->setBcc(data["Bcc"].toStringList());
 
     update();
-    setPreferredSize(email->m_emailWidget->preferredSize());
+    //setPreferredSize(m_layout->preferredSize());
 }
 
 QGraphicsWidget* MailExtender::graphicsWidget()
@@ -276,18 +277,18 @@ QString MailExtender::description()
     return m_description;
 }
 
-void MailExtender::addEmail(EmailMessage* email)
+void MailExtender::addEmail(EmailWidget* email)
 {
     email->setParent(this);
     email->setParentItem(m_widget);
-    email->setBackgroundHints(Plasma::Applet::NoBackground);
-    email->init();
-    email->setPopupIcon(QIcon());
-    email->m_emailWidget->setTiny();
-    email->m_emailWidget->setAllowHtml(m_applet->allowHtml());
-    email->updateConstraints(Plasma::StartupCompletedConstraint);
+    //email->setBackgroundHints(Plasma::Applet::NoBackground);
+    //email->init();
+    //email->setPopupIcon(QIcon());
+    email->setTiny();
+    email->setAllowHtml(m_applet->allowHtml());
+    //email->updateConstraints(Plasma::StartupCompletedConstraint);
 
-    m_messageLayout->addItem(email->graphicsWidget());
+    m_messageLayout->addItem(email);
 }
 
 void MailExtender::setDescription(const QString& desc)

@@ -60,7 +60,7 @@ class EmailWidget : public Plasma::Frame
     Q_OBJECT
 
     public:
-        EmailWidget(EmailMessage* emailmessage, QGraphicsWidget *parent = 0);
+        EmailWidget(QGraphicsWidget *parent = 0);
         virtual ~EmailWidget();
 
         QGraphicsWidget* dialog();

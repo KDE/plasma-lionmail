@@ -54,7 +54,7 @@
 
 using namespace Plasma;
 
-EmailWidget::EmailWidget(EmailMessage* emailmessage, QGraphicsWidget *parent)
+EmailWidget::EmailWidget(QGraphicsWidget *parent)
     : Frame(parent),
       //id(61771), // more plain example
       //id(97160), // sample html email
@@ -90,7 +90,6 @@ EmailWidget::EmailWidget(EmailMessage* emailmessage, QGraphicsWidget *parent)
       m_abstractLabel(0)
 {
     m_monitor = 0;
-    m_emailMessage = emailmessage;
     m_expanded = false;
     buildDialog();
 

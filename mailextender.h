@@ -31,7 +31,7 @@
 // own
 #include "lionmail.h"
 
-class EmailMessage;
+class EmailWidget;
 
 class MailExtender : public Plasma::ExtenderItem
 {
@@ -54,7 +54,7 @@ class MailExtender : public Plasma::ExtenderItem
         void setInfo(const QString& info);
         
 
-        void addEmail(EmailMessage* email);
+        void addEmail(EmailWidget* email);
         void setName(const QString name);
         void setShowUnreadOnly(bool show);
         bool showUnreadOnly();
@@ -79,7 +79,7 @@ class MailExtender : public Plasma::ExtenderItem
         QString m_description;
         QString m_info;
         QString m_iconName;
-        QHash<QString, EmailMessage*> emails;
+        QHash<QString, EmailWidget*> emails;
 
         int m_maxEmails;
         bool m_showUnreadOnly;
