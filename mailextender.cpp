@@ -131,8 +131,15 @@ void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::
         m_applet->dataUpdated(source, data);
         return;
     }
+
+    if (emails.count() >= m_maxEmails) {
+        //kDebug() << "Max emails reached";
+        return;
+    }
+
     EmailMessage* email = 0;
-    if (emails.count() < m_maxEmails && !emails.keys().contains(source)) {
+    
+    if (!emails.keys().contains(source)) {
         //kDebug() << "new ...";
         kDebug() << "New email:" << source;
         email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
@@ -142,18 +149,21 @@ void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::
             if (m_infoLabel) {
                 m_infoLabel->setText(i18n("%1 emails", emails.count()));
             }
-            kDebug() << "::Yes, showing" << source << "New?" << data["Flag-New"].toBool() << data;
+            //kDebug() << "::Yes, showing" << source << "New?" << data["Flag-New"].toBool() << data;
         } else {
-            kDebug() << "::Not showing" << source << "New?" << data["Flag-New"].toBool();
+            //kDebug() << "::Not showing" << source << "New?" << data["Flag-New"].toBool();
         }
-    }
-    if (emails.contains(source)) {
+    } else {    
+        // update the data on an existing one
         email = emails[source];
     }
 
+    kDebug() << "??????" << emails.keys() << source << data;
     if (email == 0) {
+        kDebug() << "didn't load email" << source;
         return;
     }
+    kDebug() << "Subject:" << data["Subject"].toString();
     // Only set email-specific properties here, layouttweaks and the like should go into MailExtender
     email->m_emailWidget->id = data["Id"].toLongLong();
     email->m_emailWidget->setUrl(QUrl(data["Url"].toString()));

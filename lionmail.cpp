@@ -211,7 +211,6 @@ void LionMail::configAccepted()
         kDebug() << "selected id:" << itemid << collectionName(itemid);
         saveCollection(itemid);
     }
-
 }
 
 void LionMail::addListItem()
@@ -224,7 +223,6 @@ void LionMail::addListItem()
     ui->collectionList->setCurrentItem(item);
     ui->collectionCombo->removeItem(ui->collectionCombo->currentIndex());
     ui->removeCollection->setEnabled(true);
-
 }
 
 void LionMail::removeListItem()
@@ -260,9 +258,7 @@ void LionMail::listItemChanged()
             ui->maxEmails->setValue(8);
             ui->icon->setIcon("mail-folder-inbox");
             ui->showUnreadOnly->setChecked(false);
-
         }
-
     }
 }
 
@@ -310,21 +306,17 @@ void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data
     if (source == "EmailCollections") {
         m_allCollections = data;
         addConfigCollections();
-        //kDebug() << "Akonadi:" << m_allCollections.keys();
+        update();
         return;
     }
     if (source == "ContactCollections") {
         kDebug() << "Akonadi contacts collections:" << data.keys() << data;
     }
-    //m_extenders[0]->dataUpdated(source, data); // FIXME: put data into the right extender
-    update();
 }
 
 void LionMail::newSource(const QString & source)
 {
-    //kDebug() << "------------- New:" << source;
-    dataEngine("akonadi")->connectSource(source, this);
-    // We could create MailExtenders here ...
+    //dataEngine("akonadi")->connectSource(source, this);
 }
 
 K_EXPORT_PLASMA_APPLET(lionmail, LionMail)
