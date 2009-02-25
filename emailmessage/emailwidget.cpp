@@ -58,10 +58,10 @@ EmailWidget::EmailWidget(QGraphicsWidget *parent)
     : Frame(parent),
       //id(61771), // more plain example
       //id(97160), // sample html email
-      //id(97162), // sample email + patch attached
+      id(168594), // sample email + patch attached
       //id(0), // what it's supposed to be
 
-      id(83964),
+      //id(83964),
 
       m_applet(0),
       // Are we already fetching the data?
@@ -79,7 +79,7 @@ EmailWidget::EmailWidget(QGraphicsWidget *parent)
 
       // UI Items
       m_toLabel(0),
-      m_fromLabel(0),
+      m_header(0),
       m_ccLabel(0),
       m_bccLabel(0),
       m_dateLabel(0),
@@ -132,9 +132,11 @@ void EmailWidget::setIcon()
     m_appletSize = Icon;
     m_subjectLabel->hide();
     m_subjectLabel->setMinimumWidth(0);
-    m_toLabel->hide();
-    if (m_fromLabel) {
-        m_fromLabel->hide();
+    //m_toLabel->hide();
+    if (m_header) {
+        m_header->hide();
+        m_dateLabel->hide();
+        m_expandIcon->hide();
         refreshFlags(false);
     }
     m_bodyView->hide();
@@ -147,14 +149,16 @@ void EmailWidget::setTiny()
         kDebug() << "size is tiny already";
         return;
     }
+    m_dateLabel->hide();
+    m_expandIcon->show();
     m_appletSize = Tiny;
     m_expandIcon->setIcon("arrow-down-double");
     m_subjectLabel->show();
     m_subjectLabel->setMinimumWidth(140);
 
-    m_toLabel->hide();
-    if (m_fromLabel && m_dateLabel) {
-        m_fromLabel->hide();
+    //m_toLabel->hide();
+    if (m_header && m_dateLabel) {
+        m_header->hide();
         m_dateLabel->hide();
         refreshFlags(false);
     }
@@ -185,15 +189,16 @@ void EmailWidget::setSmall()
     m_appletSize = Small;
 
     m_subjectLabel->show();
-    if (m_fromLabel) {
-        m_fromLabel->show();
+    m_expandIcon->show();
+    if (m_header) {
+        m_header->show();
     }
     m_subjectLabel->setMinimumWidth(140);
-    m_toLabel->show();
-    if (m_fromLabel && m_dateLabel) {
-        m_fromLabel->hide();
-        m_dateLabel->hide();
-        refreshFlags(false);
+    //m_toLabel->show();
+    if (m_header && m_dateLabel) {
+        m_header->hide();
+        m_dateLabel->show();
+        refreshFlags(true);
     }
     m_bodyView->hide();
     //m_layout->setRowFixedHeight(2,0);
@@ -216,9 +221,10 @@ void EmailWidget::setMedium()
 
     m_appletSize = Medium;
     m_expandIcon->setIcon("arrow-down-double");
-    m_toLabel->show();
-    if (m_fromLabel && m_dateLabel) {
-        m_fromLabel->show();
+    m_expandIcon->show();
+    m_subjectLabel->show();
+    if (m_header && m_dateLabel) {
+        m_header->show();
         m_dateLabel->show();
         refreshFlags(true);
     }
@@ -235,15 +241,20 @@ void EmailWidget::setLarge(bool expanded)
     if (m_expanded && m_appletSize == Large ) {
         return;
     }
+    if (m_appletSize == Large) {
+        return;
+    }
     if (!expanded) {
         m_appletSize = Large;
     }
 
     m_expandIcon->setIcon("arrow-up-double");
-    m_toLabel->show();
+    //m_toLabel->show();
     m_subjectLabel->show();
-    if (m_fromLabel && m_dateLabel) {
-        m_fromLabel->show();
+    m_expandIcon->show();
+
+    if (m_header && m_dateLabel) {
+        m_header->show();
         m_dateLabel->show();
         refreshFlags(true);
     }
@@ -294,22 +305,6 @@ void EmailWidget::buildDialog()
     m_layout->addItem(m_subjectLabel, 0, 1, 1, 1, Qt::AlignTop);
     setSubject("Re: sell me a beer, mon");
 
-
-    m_toLabel = new Plasma::Label(this);
-    m_toLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    m_toLabel->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
-    m_toLabel->nativeWidget()->setWordWrap(false);
-    setTo(QStringList("Bob Marley <marley@kde.org>"));
-
-    m_layout->addItem(m_toLabel, 1, 1, 1, 2, Qt::AlignTop);
-
-    // From and date
-    m_fromLabel = new Plasma::Label(this);
-    m_fromLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
-    m_fromLabel->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
-    setFrom(i18n("Unknown Sender"));
-    m_layout->addItem(m_fromLabel, 2, 0, 1, 3, Qt::AlignTop);
-
     m_dateLabel = new Plasma::Label(this);
     m_dateLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     m_dateLabel->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
@@ -353,7 +348,26 @@ void EmailWidget::buildDialog()
     m_flagsLayout->addItem(m_taskIcon);
     //m_flagsLayout;
 
-    m_layout->addItem(m_flagsLayout, 3, 0, 1, 3, Qt::AlignTop | Qt::AlignRight);
+    m_layout->addItem(m_flagsLayout, 1, 1, 1, 2, Qt::AlignTop | Qt::AlignRight);
+
+
+/*
+    m_toLabel = new Plasma::Label(this);
+    m_toLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    m_toLabel->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
+    m_toLabel->nativeWidget()->setWordWrap(false);
+    setTo(QStringList("Bob Marley <marley@kde.org>"));
+
+    m_layout->addItem(m_toLabel, 1, 1, 1, 2, Qt::AlignTop);
+*/
+    // From and date
+    m_header = new Plasma::WebView(this);
+    m_header->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    m_header->setPreferredHeight(48);
+    //m_header->page()->setFont(KGlobalSettings::smallestReadableFont());
+    setFrom(i18n("Unknown Sender"));
+    m_layout->addItem(m_header, 2, 0, 1, 3, Qt::AlignTop);
+
 
 
     // The Body
@@ -364,7 +378,7 @@ void EmailWidget::buildDialog()
 
     setRawBody("<b>Fetching data ...</b>");
 
-    m_layout->addItem(m_bodyView, 5, 0, 1, 3);
+    m_layout->addItem(m_bodyView, 3, 0, 1, 3);
 
     m_expandIcon = new Plasma::IconWidget(this);
     m_expandIcon->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -432,22 +446,22 @@ void EmailWidget::toggleBody()
 {
     kDebug() << preferredSize() << minimumSize();
     if (!m_expanded) {
-        kDebug() << "expanding";
+        //kDebug() << "expanding";
         expand();
     } else {
-        kDebug() << "collapsing";
+        //kDebug() << "collapsing";
         collapse();
     }
-    kDebug() << preferredSize() << minimumSize();
+    //kDebug() << preferredSize() << minimumSize();
 }
 
 void EmailWidget::toggleMeta()
 {
     if (m_appletSize == Medium) {
-        kDebug() << "tinying";
+        //kDebug() << "tinying";
         setTiny();
     } else {
-        kDebug() << "smalling";
+        //kDebug() << "smalling";
         setMedium();
     }
 }
@@ -488,20 +502,68 @@ void EmailWidget::updateColors()
 
     setPalette(p);
 
+    qreal fontsize = .8;
     m_stylesheet = QString("\
-                body { color: %1; }\
+                body { \
+                    color: %1; \
+                    font-size: %4em; \
+                    /* background-color: orange; border-style: dotted; border-width: thin; */ \
+                    width: 100%, \
+                    margin-left: 0px; \
+                    margin-top: 0px; \
+                    margin-right: 0px; \
+                    margin-bottom: 0px; \
+                    padding: 0px; \
+                } \
+                .header { \
+                    overflow: hidden; \
+                    font-size: 1em; \
+                    opacity: .9; \
+                    cell-padding: 0; \
+                    cell-spacing: 0; \
+                    /* background-color: green; border-style: dotted; border-width: thin; */\
+                } \
+                .headerlabel { \
+                    font-size: 1em; \
+                    font-weight: bold;\
+                    opacity: 1; \
+                    text-align: right; \
+                    vertical-align: top; \
+                } \
+\
                 a:visited   { color: %1; }\
                 a:link   { color: %2; opacity: .8; }\
                 a:visited   { color: %3; opacity: .6; }\
                 a:hover { text-decoration: none; opacity: .4; } \
-    ").arg(text.name()).arg(link.name()).arg(linkvisited.name());
+\
+    ").arg(text.name()).arg(link.name()).arg(linkvisited.name()).arg(fontsize);
 
     if (m_bodyView) {
+        m_header->page()->setPalette(p);
         m_bodyView->page()->setPalette(p);
         m_subjectLabel->setStyleSheet(m_stylesheet);
-        m_toLabel->setStyleSheet(m_stylesheet);
-        m_fromLabel->setStyleSheet(m_stylesheet);
     }
+}
+
+void EmailWidget::updateHeader()
+{
+    QString table = QString("<table class=\"header\">");
+    if (!m_to.isEmpty()) {
+        table += QString("<tr><td class=\"headerlabel\" valign=\"top\" >%1</td><td>%2</td></tr>").arg(
+                            i18n("To:"), 
+                            KPIMUtils::LinkLocator::convertToHtml(m_to.join(", ")));
+    }
+    if (!m_from.isEmpty()) {
+        table += QString("<tr><td class=\"headerlabel\">%1</td><td>%2</td></tr>").arg(
+                            i18n("From:"), 
+                            KPIMUtils::LinkLocator::convertToHtml(m_from));
+    }
+    table += "</table>";
+    m_header->setHtml(QString("<style>%1</style>%2").arg(m_stylesheet, table));
+
+    // TODO: bcc + cc, attachments
+    //kDebug() << QString("<style>%1</style>%2").arg(m_stylesheet, table);
+
 }
 
 void EmailWidget::setUrl(KUrl url)
@@ -529,11 +591,8 @@ void EmailWidget::setSubject(const QString& subject)
 
 void EmailWidget::setTo(const QStringList& toList)
 {
-    //kDebug() << "Setting recipient" << toList;
-    if (m_toLabel && toList.count()) {
-        QString html = KPIMUtils::LinkLocator::convertToHtml(toList.join(", "));
-        m_toLabel->setText(i18n("<style>%1</style><b>To:</b> %2", m_stylesheet, html));
-    }
+    m_to = toList;
+    updateHeader();
 }
 
 void EmailWidget::setRawBody(const QString& body)
@@ -667,6 +726,7 @@ void EmailWidget::itemChanged(const Akonadi::Item* item)
         setTo(QStringList(msg->to()->asUnicodeString()));
         setCc(QStringList(msg->cc()->asUnicodeString()));
         setBcc(QStringList(msg->bcc()->asUnicodeString()));
+        updateHeader();
         setBody(msg);
     } else {
         setSubject(i18n("Couldn't fetch email payload"));
@@ -697,11 +757,8 @@ void EmailWidget::setDate(const QDateTime& date)
 
 void EmailWidget::setFrom(const QString& from)
 {
-    if (m_fromLabel && !from.isEmpty()) {
-        QString html = KPIMUtils::LinkLocator::convertToHtml(from);
-        m_fromLabel->setText(i18n("<style>%1</style><b>From:</b> %2", m_stylesheet, html));
-    }
     m_from = from;
+    updateHeader();
 }
 
 void EmailWidget::setCc(const QStringList& ccList)
@@ -715,6 +772,7 @@ void EmailWidget::setCc(const QStringList& ccList)
 
 void EmailWidget::setBcc(const QStringList& bccList)
 {
+    // FIXME; merge into header
     if (m_bccLabel && bccList.count()) {
         QString html = KPIMUtils::LinkLocator::convertToHtml(bccList.join(", "));
         m_bccLabel->setText(i18n("<style>%1</style><b>Bcc:</b> %2", m_stylesheet, html));
@@ -753,7 +811,7 @@ void EmailWidget::setTask(bool task)
 void EmailWidget::mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
     if (event->button() == Qt::LeftButton) {
-        kDebug() << "clicked";
+        //kDebug() << "clicked";
         m_startPos = event->pos();
     }
 }
@@ -762,7 +820,7 @@ void EmailWidget::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 {
     if (event->buttons() & Qt::LeftButton) {
         int distance = (event->pos() - m_startPos).toPoint().manhattanLength();
-        kDebug() << "moved + pressed";
+        //kDebug() << "moved + pressed";
         if (distance >= QApplication::startDragDistance()) {
             startDrag();
         }
@@ -771,7 +829,7 @@ void EmailWidget::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
 void EmailWidget::startDrag()
 {
-    kDebug() << "Starting drag!";
+    //kDebug() << "Starting drag!";
     QMimeData* mimeData = new QMimeData();
     //QString url = QString("akonadi://%1").arg(id);
     QString url = m_url.url();

@@ -127,6 +127,7 @@ class EmailWidget : public Plasma::Frame
         Akonadi::Monitor* m_monitor;
 
         void updateSize(int h);
+        void updateHeader();
         void startDrag();
 
         bool m_fetching;
@@ -171,8 +172,8 @@ class EmailWidget : public Plasma::Frame
         Plasma::IconWidget* m_expandIcon;
         Plasma::IconWidget* m_icon;
         Plasma::Label* m_subjectLabel;
-        Plasma::Label* m_toLabel;
-        Plasma::Label* m_fromLabel;
+        Plasma::Label* m_toLabel; // TODO: get rid of this one
+        Plasma::WebView* m_header;
         Plasma::Label* m_ccLabel;
         Plasma::Label* m_bccLabel;
         Plasma::Label* m_dateLabel;

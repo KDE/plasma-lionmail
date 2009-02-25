@@ -75,7 +75,7 @@ void LionMail::init()
     //dataEngine("akonadi")->connectSource("ContactCollections", this); // FIXME: remove, only for testing the contacts in the dataengine
 
     KConfigGroup cg = config();
-    m_activeCollection = cg.readEntry("activeCollection", "");
+    m_activeCollection = cg.readEntry("activeCollection", "EmailCollection-62"); // FIXME: empty default
     m_allowHtml = cg.readEntry("allowHtml", false);
 
     if (m_activeCollection.isEmpty()) {
@@ -88,6 +88,7 @@ void LionMail::init()
     extender()->setEmptyExtenderMessage(i18n("empty..."));
 
     initMailExtender(m_activeCollection);
+    m_extenders[m_activeCollection]->load();
 
     updateToolTip("", 0);
 }

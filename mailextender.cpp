@@ -142,7 +142,7 @@ void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::
     
     if (!emails.keys().contains(source)) {
         //kDebug() << "new ...";
-        kDebug() << "New email:" << source;
+        //kDebug() << "New email:" << source;
         //email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
         email = new EmailWidget(this);
         if (!m_showUnreadOnly || data["Flag-New"].toBool()) {
@@ -160,12 +160,12 @@ void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::
         email = emails[source];
     }
 
-    kDebug() << "??????" << emails.keys() << source << data;
+    //kDebug() << "??????" << emails.keys() << source << data;
     if (email == 0) {
         kDebug() << "didn't load email" << source;
         return;
     }
-    kDebug() << "Subject:" << data["Subject"].toString();
+    //kDebug() << "Subject:" << data["Subject"].toString();
     // Only set email-specific properties here, layouttweaks and the like should go into MailExtender
     email->id = data["Id"].toLongLong();
     email->setUrl(QUrl(data["Url"].toString()));
