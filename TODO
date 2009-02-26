@@ -14,6 +14,7 @@ EmailMessage:
     - How do we load the dropped data?
     - fix dragging from inside Lion Mail after email has been expanded
 - parsing of the content to nicer HTML
+- security: in HTML mode, images are always loaded
 - putting "something sensible" info in the To field
 - merge cc, bcc in another webview
 - test and fix monitoring

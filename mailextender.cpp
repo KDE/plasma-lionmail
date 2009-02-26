@@ -35,7 +35,6 @@
 //own
 #include "mailextender.h"
 #include "lionmail.h"
-#include "emailmessage/emailmessage.h"
 
 
 MailExtender::MailExtender(LionMail * applet, const QString collectionId, Plasma::Extender *ext)
@@ -55,26 +54,24 @@ MailExtender::MailExtender(LionMail * applet, const QString collectionId, Plasma
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     setDescription("Some description");
     m_maxEmails = 12;
-    if (m_id.isEmpty()) {
-        kDebug() << "Empty id:";
-        return;
-    }
 }
 
 void MailExtender::load()
 {
     (void)graphicsWidget();
     engine = m_applet->dataEngine("akonadi");
-    //connectCollection(m_id);
     setCollection(m_id);
     kDebug() << "loading ...";
+    if (m_infoLabel) {
+        m_infoLabel->setText(i18n("Loading emails..."));
+    }
     setIcon(m_iconName);
 }
 
 void MailExtender::setCollection(const QString id)
 {
     if (id != 0 && id == m_id) {
-        //return;
+        //return; // FIXME: investigate
     }
     kDebug() << "Setting collection from to " << m_id << id;
     disconnectCollection(m_id);
@@ -82,6 +79,7 @@ void MailExtender::setCollection(const QString id)
     connectCollection(m_id);
     connect(engine, SIGNAL(sourceAdded(QString)), this, SLOT(newSource(QString)));
     setDescription(m_applet->collectionName(m_id));
+    setInfo(i18n("Loading emails..."));
 }
 
 MailExtender::~MailExtender()
@@ -124,43 +122,33 @@ void MailExtender::newSource(const QString & source)
 
 void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
-    //kDebug() << source << emails.keys();
-    //if (source == "EmailCollections" || source == "ContactCollections") {
     if (!source.startsWith("Email-")) {
         // Apparently the signal ends up in here, while it should in these
         // cases happen in the applet, just pass it on for now
         m_applet->dataUpdated(source, data);
+        setDescription(m_applet->collectionName(m_id));
         return;
     }
 
     if (emails.count() >= m_maxEmails) {
-        //kDebug() << "Max emails reached";
         return;
     }
 
     EmailWidget* email = 0;
     
     if (!emails.keys().contains(source)) {
-        //kDebug() << "new ...";
         //kDebug() << "New email:" << source;
-        //email = static_cast<EmailMessage*>(Plasma::Applet::load("emailmessage"));
         email = new EmailWidget(this);
         if (!m_showUnreadOnly || data["Flag-New"].toBool()) {
             addEmail(email);
             emails[source] = email;
-            if (m_infoLabel) {
-                m_infoLabel->setText(i18n("%1 emails", emails.count()));
-            }
-            //kDebug() << "::Yes, showing" << source << "New?" << data["Flag-New"].toBool() << data;
-        } else {
-            //kDebug() << "::Not showing" << source << "New?" << data["Flag-New"].toBool();
+            setInfo(i18n("%1 emails", emails.count()));
         }
     } else {    
         // update the data on an existing one
         email = emails[source];
     }
 
-    //kDebug() << "??????" << emails.keys() << source << data;
     if (email == 0) {
         kDebug() << "didn't load email" << source;
         return;
@@ -182,7 +170,6 @@ void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::
     email->setBcc(data["Bcc"].toStringList());
 
     update();
-    //setPreferredSize(m_layout->preferredSize());
 }
 
 QGraphicsWidget* MailExtender::graphicsWidget()
@@ -282,15 +269,25 @@ void MailExtender::addEmail(EmailWidget* email)
 {
     email->setParent(this);
     email->setParentItem(m_widget);
-    //email->setBackgroundHints(Plasma::Applet::NoBackground);
-    //email->init();
-    //email->setPopupIcon(QIcon());
-    email->setTiny();
+    email->setSmall();
     email->setAllowHtml(m_applet->allowHtml());
-    //email->updateConstraints(Plasma::StartupCompletedConstraint);
 
     m_messageLayout->addItem(email);
 }
+
+void MailExtender::setEmailSize(int appletsize)
+{
+    foreach (EmailWidget* e, emails.values()) {
+        if (appletsize == EmailWidget::Tiny) {
+            e->setTiny();
+        } else if (appletsize == EmailWidget::Small) {
+            e->setSmall();
+        } else {
+            e->setMedium();
+        }
+    }
+}
+
 
 void MailExtender::setDescription(const QString& desc)
 {

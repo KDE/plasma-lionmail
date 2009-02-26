@@ -30,6 +30,7 @@
 
 // own
 #include "lionmail.h"
+#include "emailmessage/emailwidget.h"
 
 class EmailWidget;
 
@@ -45,7 +46,8 @@ class MailExtender : public Plasma::ExtenderItem
         void setCollection(const QString id);
         QGraphicsWidget* graphicsWidget();
         void setIcon(const QString& icon);
-        
+        void setEmailSize(int appletsize);
+
         QString id();
         QString icon();
 

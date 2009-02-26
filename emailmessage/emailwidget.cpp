@@ -58,7 +58,7 @@ EmailWidget::EmailWidget(QGraphicsWidget *parent)
     : Frame(parent),
       //id(61771), // more plain example
       //id(97160), // sample html email
-      id(168594), // sample email + patch attached
+      id(168593), // sample email + image + pdf attached
       //id(0), // what it's supposed to be
 
       //id(83964),
@@ -92,7 +92,8 @@ EmailWidget::EmailWidget(QGraphicsWidget *parent)
     m_monitor = 0;
     m_expanded = false;
     buildDialog();
-
+    connect(Plasma::Theme::defaultTheme(), SIGNAL(themeChanged()), SLOT(updateColors()));
+    connect(KGlobalSettings::self(), SIGNAL(kdisplayPaletteChanged()), SLOT(updateColors()));
 }
 
 EmailWidget::~EmailWidget()
@@ -146,7 +147,6 @@ void EmailWidget::setIcon()
 void EmailWidget::setTiny()
 {
     if (!m_expanded && m_appletSize == Tiny) {
-        kDebug() << "size is tiny already";
         return;
     }
     m_dateLabel->hide();
@@ -328,7 +328,7 @@ void EmailWidget::buildDialog()
     m_newIcon->setMaximumHeight(s);
     m_newIcon->setMaximumWidth(s);
 
-    kDebug() << "IconLoader::Small:" << s;
+    //kDebug() << "IconLoader::Small:" << s;
     m_importantIcon = new IconWidget(this);
     m_importantIcon->setIcon("mail-mark-important");
     m_importantIcon->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -391,12 +391,13 @@ void EmailWidget::buildDialog()
 
     setLayout(m_layout);
 
-    updateColors();
 
     // Refresh flags
     setNew(m_isNew);
     setTask(m_isTask);
     setImportant(m_isImportant);
+    
+    updateColors();
 }
 
 void EmailWidget::refreshFlags()
@@ -408,8 +409,17 @@ void EmailWidget::refreshFlags(bool show)
 {
     m_flagsShown = show;
 
-    if (!m_newIcon) {
+    if (!m_icon) {
         return;
+    }
+
+
+    if (m_isImportant) {
+        m_icon->setIcon("mail-mark-important");
+    } else if (m_isNew) {
+        m_icon->setIcon("mail-mark-unread");
+    } else {
+        m_icon->setIcon("mail-mark-read");
     }
 
     if (show && m_isNew) {
@@ -502,11 +512,11 @@ void EmailWidget::updateColors()
 
     setPalette(p);
 
-    qreal fontsize = .8;
+    qreal fontsize = KGlobalSettings::smallestReadableFont().pointSize();
     m_stylesheet = QString("\
                 body { \
                     color: %1; \
-                    font-size: %4em; \
+                    font-size: %4pt; \
                     /* background-color: orange; border-style: dotted; border-width: thin; */ \
                     width: 100%, \
                     margin-left: 0px; \
@@ -543,32 +553,58 @@ void EmailWidget::updateColors()
         m_bodyView->page()->setPalette(p);
         m_subjectLabel->setStyleSheet(m_stylesheet);
     }
+    updateHeader();
 }
 
 void EmailWidget::updateHeader()
 {
-    QString table = QString("<table class=\"header\">");
-    if (!m_to.isEmpty()) {
-        table += QString("<tr><td class=\"headerlabel\" valign=\"top\" >%1</td><td>%2</td></tr>").arg(
-                            i18n("To:"), 
-                            KPIMUtils::LinkLocator::convertToHtml(m_to.join(", ")));
+    if (!m_header) {
+        return;
     }
+    QString table = QString("<table class=\"header\">");
+    int r = 0;
     if (!m_from.isEmpty()) {
+        r++;
         table += QString("<tr><td class=\"headerlabel\">%1</td><td>%2</td></tr>").arg(
                             i18n("From:"), 
                             KPIMUtils::LinkLocator::convertToHtml(m_from));
     }
-    table += "</table>";
-    m_header->setHtml(QString("<style>%1</style>%2").arg(m_stylesheet, table));
+    if (!m_to.isEmpty()) {
+        r++;
+        table += QString("<tr><td class=\"headerlabel\" valign=\"top\" >%1</td><td>%2</td></tr>").arg(
+                            i18n("To:"), 
+                            KPIMUtils::LinkLocator::convertToHtml(m_to.join(", ")));
+    }
+    if (!m_cc.isEmpty()) {
+        r++;
+        table += QString("<tr><td class=\"headerlabel\">%1</td><td>%2</td></tr>").arg(
+                            i18n("CC:"), 
+                            KPIMUtils::LinkLocator::convertToHtml(m_cc.join(", ")));
+    }
+    if (!m_bcc.isEmpty()) {
+        r++;
+        table += QString("<tr><td class=\"headerlabel\">%1</td><td>%2</td></tr>").arg(
+                            i18n("BCC:"), 
+                            KPIMUtils::LinkLocator::convertToHtml(m_bcc.join(", ")));
+    }
 
-    // TODO: bcc + cc, attachments
+    QFontMetrics fm(KGlobalSettings::smallestReadableFont());
+    qreal header_height = (fm.height() * 1.3) * r;
+    m_header->setMinimumHeight(header_height);
+    m_header->setPreferredHeight(header_height);
+    m_header->setMaximumHeight(header_height);
+
+    table += "</table>";
+    m_header->setHtml(QString("<style>%1 %2</style>%3").arg("body { overflow: hidden; }", m_stylesheet, table));
+    updateGeometry();
+    // TODO: attachments
     //kDebug() << QString("<style>%1</style>%2").arg(m_stylesheet, table);
 
 }
 
 void EmailWidget::setUrl(KUrl url)
 {
-    kDebug() << url.url();
+    //kDebug() << url.url();
     m_url = url;
 }
 
@@ -767,7 +803,9 @@ void EmailWidget::setCc(const QStringList& ccList)
         QString html = KPIMUtils::LinkLocator::convertToHtml(ccList.join(", "));
         m_ccLabel->setText(i18n("<style>%1</style><b>Cc:</b> %2", m_stylesheet, html));
     }
+    //kDebug() << ccList;
     m_cc = ccList;
+    updateHeader();
 }
 
 void EmailWidget::setBcc(const QStringList& bccList)
@@ -777,18 +815,14 @@ void EmailWidget::setBcc(const QStringList& bccList)
         QString html = KPIMUtils::LinkLocator::convertToHtml(bccList.join(", "));
         m_bccLabel->setText(i18n("<style>%1</style><b>Bcc:</b> %2", m_stylesheet, html));
     }
+    //kDebug() << bccList;
     m_bcc = bccList;
+    updateHeader();
 }
 
 void EmailWidget::setNew(bool isnew)
 {
-    if (isnew) {
-        m_icon->setIcon("mail-mark-unread");
-    } else {
-        m_icon->setIcon("mail-mark-read");
-    }
     m_isNew = isnew;
-
     //if (m_applet) {
     //    kDebug() << "Setting popupicon";
         //m_applet->setPopupIcon("mail-mark-unread");

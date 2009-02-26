@@ -106,7 +106,7 @@ p, li { white-space: pre-wrap; }
     </layout>
    </item>
    <item row="4" column="0">
-    <widget class="QLabel" name="collectionoptionslabel">
+    <widget class="QLabel" name="clabel1">
      <property name="text">
       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
@@ -143,7 +143,7 @@ p, li { white-space: pre-wrap; }
     </layout>
    </item>
    <item row="7" column="0">
-    <widget class="QLabel" name="showlabel">
+    <widget class="QLabel" name="clabel3">
      <property name="text">
       <string>Show</string>
      </property>
@@ -158,7 +158,7 @@ p, li { white-space: pre-wrap; }
       <widget class="KIntSpinBox" name="maxEmails"/>
      </item>
      <item>
-      <widget class="QLabel" name="label_5">
+      <widget class="QLabel" name="clabel4">
        <property name="text">
         <string>emails</string>
        </property>
@@ -179,7 +179,7 @@ p, li { white-space: pre-wrap; }
      </item>
     </layout>
    </item>
-   <item row="9" column="1">
+   <item row="10" column="1">
     <widget class="QCheckBox" name="showUnreadOnly">
      <property name="text">
       <string>Only show unread emails</string>
@@ -187,13 +187,13 @@ p, li { white-space: pre-wrap; }
     </widget>
    </item>
    <item row="6" column="0">
-    <widget class="QLabel" name="labellabel">
+    <widget class="QLabel" name="clabel2">
      <property name="text">
       <string>Display</string>
      </property>
     </widget>
    </item>
-   <item row="10" column="1">
+   <item row="11" column="1">
     <widget class="KPushButton" name="saveCollection">
      <property name="layoutDirection">
       <enum>Qt::LeftToRight</enum>
@@ -207,6 +207,16 @@ p, li { white-space: pre-wrap; }
     <widget class="QLabel" name="collectionsStatus">
      <property name="text">
       <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="1">
+    <widget class="KComboBox" name="sizeCombo"/>
+   </item>
+   <item row="9" column="0">
+    <widget class="QLabel" name="clabel5">
+     <property name="text">
+      <string>Email Size</string>
      </property>
     </widget>
    </item>
@@ -224,11 +234,6 @@ p, li { white-space: pre-wrap; }
    <header>knuminput.h</header>
   </customwidget>
   <customwidget>
-   <class>KLineEdit</class>
-   <extends>QLineEdit</extends>
-   <header>klineedit.h</header>
-  </customwidget>
-  <customwidget>
    <class>KListWidget</class>
    <extends>QListWidget</extends>
    <header>klistwidget.h</header>
@@ -237,6 +242,16 @@ p, li { white-space: pre-wrap; }
    <class>KPushButton</class>
    <extends>QPushButton</extends>
    <header>kpushbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>klineedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KComboBox</class>
+   <extends>QComboBox</extends>
+   <header>kcombobox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
