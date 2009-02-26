@@ -145,22 +145,21 @@ void EmailWidget::setTiny()
     if (!m_expanded && m_appletSize == Tiny) {
         return;
     }
-    m_dateLabel->hide();
-    m_expandIcon->show();
     m_appletSize = Tiny;
-    m_expandIcon->setIcon("arrow-down-double");
+    
     m_subjectLabel->show();
     m_subjectLabel->setMinimumWidth(140);
+    m_expandIcon->show();
+    m_expandIcon->setIcon("arrow-down-double");
 
-    if (m_header && m_dateLabel) {
-        m_header->hide();
-        m_dateLabel->hide();
-        refreshFlags(false);
-    }
+    m_dateLabel->hide();
+    m_header->hide();
     m_bodyView->hide();
+
     int h = widgetHeight(m_appletSize);
     updateSize(h);
     resizeIcon(h);
+    refreshFlags(false);
 }
 
 void EmailWidget::updateSize(int h)
@@ -183,18 +182,17 @@ void EmailWidget::setSmall()
     m_appletSize = Small;
 
     m_subjectLabel->show();
-    m_expandIcon->show();
     m_subjectLabel->setMinimumWidth(140);
-    if (m_header && m_dateLabel) {
-        m_header->hide();
-        m_dateLabel->show();
-        refreshFlags(true);
-    }
+    m_expandIcon->show();
+    m_expandIcon->setIcon("arrow-down-double");
+    m_dateLabel->show();
+
+    m_header->hide();
     m_bodyView->hide();
     resizeIcon(22);
 
-    m_expandIcon->setIcon("arrow-down-double");
 
+    refreshFlags(true);
     int h = widgetHeight(m_appletSize);
     updateSize(h);
 }
@@ -214,6 +212,7 @@ void EmailWidget::setMedium()
     m_subjectLabel->show();
     m_header->show();
     m_dateLabel->show();
+
     m_bodyView->hide();
     kDebug() << "Medium ...";
 
