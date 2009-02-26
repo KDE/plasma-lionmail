@@ -172,10 +172,7 @@ class EmailWidget : public Plasma::Frame
         Plasma::IconWidget* m_expandIcon;
         Plasma::IconWidget* m_icon;
         Plasma::Label* m_subjectLabel;
-        Plasma::Label* m_toLabel; // TODO: get rid of this one
         Plasma::WebView* m_header;
-        Plasma::Label* m_ccLabel;
-        Plasma::Label* m_bccLabel;
         Plasma::Label* m_dateLabel;
 
         Plasma::IconWidget* m_newIcon;
@@ -184,7 +181,6 @@ class EmailWidget : public Plasma::Frame
         Plasma::IconWidget* m_unreadIcon;
 
         Plasma::WebView* m_bodyView;
-        Plasma::Label* m_abstractLabel;
 
         QPointF m_startPos;
 };

@@ -78,16 +78,12 @@ EmailWidget::EmailWidget(QGraphicsWidget *parent)
       m_showSmilies(true),
 
       // UI Items
-      m_toLabel(0),
       m_header(0),
-      m_ccLabel(0),
-      m_bccLabel(0),
       m_dateLabel(0),
       m_newIcon(0),
       m_importantIcon(0),
       m_taskIcon(0),
-      m_bodyView(0),
-      m_abstractLabel(0)
+      m_bodyView(0)
 {
     m_monitor = 0;
     m_expanded = false;
@@ -725,9 +721,9 @@ void EmailWidget::itemChanged(const Akonadi::Item* item)
 
 void EmailWidget::setAbstract(const QString& abstract)
 {
-    if (m_abstractLabel && abstract.isEmpty()) {
+    if (abstract.isEmpty()) {
         QString html = KPIMUtils::LinkLocator::convertToHtml(abstract);
-        m_abstractLabel->setText(html);
+        // TODO: something sensible ...
     }
     m_abstract = abstract;
 }
@@ -753,20 +749,12 @@ void EmailWidget::setFrom(const QString& from)
 
 void EmailWidget::setCc(const QStringList& ccList)
 {
-    if (m_ccLabel && ccList.count()) {
-        QString html = KPIMUtils::LinkLocator::convertToHtml(ccList.join(", "));
-        m_ccLabel->setText(i18n("<style>%1</style><b>Cc:</b> %2", m_stylesheet, html));
-    }
     m_cc = ccList;
     updateHeader();
 }
 
 void EmailWidget::setBcc(const QStringList& bccList)
 {
-    if (m_bccLabel && bccList.count()) {
-        QString html = KPIMUtils::LinkLocator::convertToHtml(bccList.join(", "));
-        m_bccLabel->setText(i18n("<style>%1</style><b>Bcc:</b> %2", m_stylesheet, html));
-    }
     m_bcc = bccList;
     updateHeader();
 }
