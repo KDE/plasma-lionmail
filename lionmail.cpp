@@ -20,8 +20,6 @@
 
 #include "lionmail.h"
 
-#include <QPainter>
-#include <QLayout>
 
 #include <KConfigDialog>
 

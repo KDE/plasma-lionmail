@@ -19,7 +19,6 @@
 
 //Qt
 #include <QGraphicsGridLayout>
-#include <QLabel>
 
 //KDE
 #include <KDebug>

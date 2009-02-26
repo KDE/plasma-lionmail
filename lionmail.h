@@ -21,7 +21,6 @@
 #ifndef LIONMAIL_H
 #define LIONMAIL_H
 
-#include <QPainter>
 #include <QGraphicsItem>
 
 #include <plasma/popupapplet.h>
@@ -30,7 +29,6 @@
 #include "ui_lionmailConfig.h"
 
 class MailExtender;
-class EmailMessage;
 namespace Plasma
 {
     class Svg;
