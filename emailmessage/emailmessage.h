@@ -47,17 +47,6 @@ class EmailMessage : public Plasma::PopupApplet
         // The dialog displaying the email
         EmailWidget* m_emailWidget;
 
-        void setTo(const QStringList& toList);
-        void setFrom(const QString& fromList);
-        void setCc(const QStringList& ccList);
-        void setBcc(const QStringList& bccList);
-        void setFlags(const QStringList& flagList);
-
-        void setSubject(const QString& subject);
-        void setBody(const QString& body);
-        void setAbstract(const QString& abstract);
-        void setDate(const QDateTime& date);
-
     protected:
         void popupEvent(bool show);
 

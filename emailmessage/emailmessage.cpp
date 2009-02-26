@@ -119,47 +119,6 @@ void EmailMessage::constraintsEvent(Plasma::Constraints constraints)
     }
 }
 
-void EmailMessage::setSubject(const QString& subject)
-{
-    m_emailWidget->setSubject(subject);
-}
-
-void EmailMessage::setTo(const QStringList& toList)
-{
-    m_emailWidget->setTo(toList);
-}
-
-void EmailMessage::setBody(const QString& body)
-{
-    m_emailWidget->setRawBody(body);
-}
-
-void EmailMessage::setAbstract(const QString& abstract)
-{
-    m_emailWidget->setAbstract(abstract);
-}
-
-void EmailMessage::setDate(const QDateTime& date)
-{
-    m_emailWidget->setDate(date);
-}
-
-void EmailMessage::setFrom(const QString& from)
-{
-    m_emailWidget->setFrom(from);
-}
-
-void EmailMessage::setCc(const QStringList& ccList)
-{
-    m_emailWidget->setCc(ccList);
-}
-
-void EmailMessage::setBcc(const QStringList& bccList)
-{
-    m_emailWidget->setBcc(bccList);
-}
-
-
 void EmailMessage::appear(bool show)
 {
     if (m_fadeIn == show) {
