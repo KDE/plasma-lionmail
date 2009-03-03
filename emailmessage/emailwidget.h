@@ -146,6 +146,7 @@ void updateColors();
         // The applet attached to this item
         EmailMessage* m_emailMessage;
         MessagePtr m_msg;
+        Akonadi::Item* m_item;
 
         int m_appletSize;
         // Email data

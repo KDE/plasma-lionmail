@@ -67,6 +67,7 @@ EmailWidget::EmailWidget(QGraphicsWidget *parent)
       m_applet(0),
       // Are we already fetching the data?
       m_fetching(false),
+      m_item(0),
 
       // Flags
       m_isNew(false),
@@ -369,9 +370,19 @@ void EmailWidget::refreshFlags()
 
 void EmailWidget::flagNewClicked()
 {
-    // TODO: sync to Akonadi
     kDebug() << "New clicked";
     m_isNew = !m_isNew;
+
+
+    // sync to Akonadi
+    if (!m_item) {
+        m_item = new Akonadi::Item(id);
+    }
+    if (m_isNew) {
+        m_item->clearFlag("\\Seen");
+    } else {
+        m_item->setFlag("\\Seen");
+    }
     refreshFlags();
 }
 
@@ -380,6 +391,16 @@ void EmailWidget::flagImportantClicked()
     // TODO: sync to Akonadi
     kDebug() << "Important clicked";
     m_isImportant = !m_isImportant;
+
+    // sync to Akonadi
+    if (!m_item) {
+        m_item = new Akonadi::Item(id);
+    }
+    if (m_isImportant) {
+        m_item->setFlag("important");
+    } else {
+        m_item->clearFlag("important");
+    }
     refreshFlags();
 }
 
@@ -388,6 +409,15 @@ void EmailWidget::flagTaskClicked()
     // TODO: sync to Akonadi
     kDebug() << "Task clicked";
     m_isTask = !m_isTask;
+    // sync to Akonadi
+    if (!m_item) {
+        m_item = new Akonadi::Item(id);
+    }
+    if (m_isTask) {
+        m_item->setFlag("\\Task");
+    } else {
+        m_item->clearFlag("\\Task");
+    }
     refreshFlags();
 }
 
@@ -410,13 +440,18 @@ void EmailWidget::refreshFlags(bool show)
 
     if (show) {
         m_newIcon->show();
+        m_newIcon->setPressed(m_isNew);
+        // As iconwidget doesn't provide a good visual clue for
+        // the activated flag, FIXME: remove
         m_newIcon->setDrawBackground(m_isNew);
+        setSubject(m_subject); // for updating font weight on the subject line
     } else {
         m_newIcon->hide();
     }
 
     if (show) {
         m_importantIcon->show();
+        m_importantIcon->setPressed(m_isImportant);
         m_importantIcon->setDrawBackground(m_isImportant);
     } else {
         m_importantIcon->hide();
@@ -424,6 +459,7 @@ void EmailWidget::refreshFlags(bool show)
 
     if (show) {
         m_taskIcon->show();
+        m_taskIcon->setPressed(m_isTask);
         m_taskIcon->setDrawBackground(m_isTask);
     } else {
         m_taskIcon->hide();
@@ -735,6 +771,8 @@ void EmailWidget::fetchDone(KJob* job)
 
 void EmailWidget::itemChanged(const Akonadi::Item* item)
 {
+    delete m_item;
+    m_item = new Akonadi::Item(item->id());
     if (item->hasPayload<MessagePtr>()) {
         MessagePtr msg = item->payload<MessagePtr>();
 
