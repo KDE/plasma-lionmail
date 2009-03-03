@@ -22,6 +22,7 @@
 #include "emailwidget.h"
 
 //Qt
+#include <QFile>
 
 //KDE
 
@@ -40,6 +41,7 @@ EmailMessage::EmailMessage(QObject *parent, const QVariantList &args)
     : Plasma::PopupApplet(parent, args),
       m_emailWidget(0),
       m_icon(0),
+      m_url(0),
       m_animId(-1),
       m_fadeIn(false)
 {
@@ -55,10 +57,29 @@ EmailMessage::EmailMessage(QObject *parent, const QVariantList &args)
     (void)graphicsWidget();
     m_emailWidget->m_applet = this;
     setPopupIcon("mail-mark-read");
+
+    QString argUrl;
+    if (args.count() > 0) {
+        kDebug() << args;
+        QFile f(args.at(0).toString());
+        if (f.open(QIODevice::ReadOnly)) {
+            kDebug() << "open::" << args.at(0).toString();
+            QTextStream t(&f);
+            argUrl = t.readAll();
+            kDebug() << argUrl;
+            f.close();
+        }
+        kDebug() << "URL found:" << argUrl;
+    }
+    if (!argUrl.isEmpty()) {
+        // TODO: input and error checking
+        m_url = new KUrl(argUrl);
+    }
 }
 
 EmailMessage::~EmailMessage()
 {
+    delete m_url;
 }
 
 void EmailMessage::init()
@@ -77,6 +98,9 @@ QGraphicsWidget* EmailMessage::graphicsWidget()
     if (!m_emailWidget) {
         //kDebug() << "new EmailWidget";
         m_emailWidget = new EmailWidget(this);
+    }
+    if (m_url) {
+        m_emailWidget->setUrl(KUrl(m_url->url()));
     }
     return m_emailWidget;
 }

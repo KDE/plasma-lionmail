@@ -72,6 +72,7 @@ class EmailWidget : public Plasma::Frame
         void setCc(const QStringList& ccList);
         void setBcc(const QStringList& bccList);
         void setFlags(const QStringList& flagList);
+        KUrl url();
         void setUrl(const KUrl);
 
         void setSubject(const QString& subject);
@@ -115,7 +116,7 @@ class EmailWidget : public Plasma::Frame
         void flagTaskClicked();
         void flagImportantClicked();
 
-void updateColors();
+        void updateColors();
 
         void fetchDone(KJob* job);
         void itemChanged(const Akonadi::Item* item);
@@ -135,7 +136,7 @@ void updateColors();
         void startDrag();
 
         bool m_fetching;
-        void fetchPayload();
+        void fetchPayload(bool full = true);
         bool m_expanded;
 
         void buildDialog();

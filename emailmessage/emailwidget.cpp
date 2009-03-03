@@ -42,6 +42,7 @@
 #include <kpimutils/email.h>
 #include <kpimutils/linklocator.h>
 #include <kmime/kmime_dateformatter.h>
+#include <akonadi/kmime/messageparts.h>
 
 // Plasma
 #include <Plasma/Theme>
@@ -658,8 +659,10 @@ void EmailWidget::updateHeader()
 
 void EmailWidget::setUrl(KUrl url)
 {
-    //kDebug() << url.url();
+    kDebug() << url.url() << url.queryItemValue("item");
+    id = url.queryItemValue("item").toLongLong();
     m_url = url;
+    fetchPayload(false);
 }
 
 void EmailWidget::setAllowHtml(bool allow)
@@ -755,7 +758,7 @@ void EmailWidget::setBody(MessagePtr msg)
     setRawBody(m_body);
 }
 
-void EmailWidget::fetchPayload()
+void EmailWidget::fetchPayload(bool full)
 {
     if (id == 0) {
         kDebug() << "id is 0";
@@ -763,10 +766,14 @@ void EmailWidget::fetchPayload()
     }
     m_bodyView->setMinimumHeight(30);
     updateSize(widgetHeight(Large)-50);
-    m_fetching = true;
     kDebug() << "Fetching payload for " << id;
     Akonadi::ItemFetchJob* fetchJob = new Akonadi::ItemFetchJob( Akonadi::Item( id ), this );
-    fetchJob->fetchScope().fetchFullPayload();
+    if (full) {
+        fetchJob->fetchScope().fetchFullPayload();
+        m_fetching = true;
+    } else {
+        fetchJob->fetchScope().fetchPayloadPart( Akonadi::MessagePart::Envelope );
+    }
     connect( fetchJob, SIGNAL(result(KJob*)), SLOT(fetchDone(KJob*)) );
 }
 
@@ -901,17 +908,30 @@ void EmailWidget::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
     }
 }
 
+KUrl EmailWidget::url()
+{
+    if (!m_item) {
+        m_item = new Akonadi::Item(id);
+    }
+    return m_item->url(Akonadi::Item::UrlWithMimeType);
+}
+
 void EmailWidget::startDrag()
 {
     //kDebug() << "Starting drag!";
     QMimeData* mimeData = new QMimeData();
-    QString url = m_url.url();
+    QString u = url().url();
 
-    mimeData->setData(QString("message/rfc822"), url.toUtf8());
+    mimeData->setData(QString("message/rfc822"), u.toUtf8());
     QList<QUrl> urls;
-    urls << m_url;
+    urls << url();
+    kDebug() << "url:" << u;
+    // FIXME: We want to pass a URL, and have it have our mimetype at the same time
+    // The applet should register with dropped content for the above mimetype, but receive
+    // an akonadi URL instead of this content.
     //mimeData->setUrls(urls);
-    mimeData->setText(QString("Email with URL: %1<br /><br />%2").arg(m_url.url()).arg(m_body));
+    mimeData->setText(u);
+    //mimeData->setText(QString("Email with URL: %1<br /><br />%2").arg(m_url.url()).arg(m_body));
 
     // This is a bit random, but we need a QWidget for the constructor
     QDrag* drag = new QDrag(m_subjectLabel->nativeWidget());

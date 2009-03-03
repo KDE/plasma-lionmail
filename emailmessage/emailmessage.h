@@ -57,7 +57,8 @@ class EmailMessage : public Plasma::PopupApplet
         int m_appletSize;
         ///the icon used when the applet is in the taskbar
         Plasma::IconWidget *m_icon;
-        
+        KUrl* m_url;
+
         void appear(bool show);
         int m_animId;
         bool m_fadeIn;
