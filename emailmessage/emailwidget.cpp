@@ -445,6 +445,11 @@ void EmailWidget::refreshFlags(bool show)
         // the activated flag, FIXME: remove
         m_newIcon->setDrawBackground(m_isNew);
         setSubject(m_subject); // for updating font weight on the subject line
+        if (m_isNew) {
+            m_newIcon->setToolTip(i18nc("flag new", "Message is marked as New, click to mark as Read"));
+        } else {
+            m_newIcon->setToolTip(i18nc("flag new", "Message is marked as Read, click to mark as New"));
+        }
     } else {
         m_newIcon->hide();
     }
@@ -453,6 +458,11 @@ void EmailWidget::refreshFlags(bool show)
         m_importantIcon->show();
         m_importantIcon->setPressed(m_isImportant);
         m_importantIcon->setDrawBackground(m_isImportant);
+        if (m_isImportant) {
+            m_importantIcon->setToolTip(i18nc("flag important", "Message is marked as Important, click to remove this flag"));
+        } else {
+            m_importantIcon->setToolTip(i18nc("flag important", "Click to mark message as Important"));
+        }
     } else {
         m_importantIcon->hide();
     }
@@ -461,7 +471,11 @@ void EmailWidget::refreshFlags(bool show)
         m_taskIcon->show();
         m_taskIcon->setPressed(m_isTask);
         m_taskIcon->setDrawBackground(m_isTask);
-    } else {
+        if (m_isTask) {
+            m_taskIcon->setToolTip(i18nc("flag Task", "Message is marked as Action Item, click to remove this flag"));
+        } else {
+            m_taskIcon->setToolTip(i18nc("flag Task", "Click to mark message as Action Item"));
+        }    } else {
         m_taskIcon->hide();
     }
 }
