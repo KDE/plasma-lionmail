@@ -58,7 +58,8 @@ EmailWidget::EmailWidget(QGraphicsWidget *parent)
     : Frame(parent),
       //id(61771), // more plain example
       //id(97160), // sample html email
-      id(168593), // sample email + image + pdf attached
+      //id(168593), // sample email + image + pdf attached
+      id(97881), // sample email + image + pdf attached
       //id(0), // what it's supposed to be
 
       //id(83964),
@@ -146,7 +147,7 @@ void EmailWidget::setTiny()
         return;
     }
     m_appletSize = Tiny;
-    
+
     m_subjectLabel->show();
     m_subjectLabel->setMinimumWidth(140);
     m_expandIcon->show();
@@ -288,10 +289,10 @@ void EmailWidget::buildDialog()
     m_dateLabel->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
     setDate(QDateTime());
 
-    m_flagsLayout = new QGraphicsLinearLayout(m_layout);
-    m_flagsLayout->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    m_actionsLayout = new QGraphicsLinearLayout(m_layout);
+    m_actionsLayout->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
-    m_flagsLayout->addItem(m_dateLabel);
+    m_actionsLayout->addItem(m_dateLabel);
 
     int s = KIconLoader::SizeSmall;
     m_newIcon = new IconWidget(this);
@@ -300,6 +301,7 @@ void EmailWidget::buildDialog()
     m_newIcon->setMinimumWidth(s);
     m_newIcon->setMaximumHeight(s);
     m_newIcon->setMaximumWidth(s);
+    connect(m_newIcon, SIGNAL(clicked()), this, SLOT(flagNewClicked()));
 
     m_importantIcon = new IconWidget(this);
     m_importantIcon->setIcon("mail-mark-important");
@@ -307,6 +309,7 @@ void EmailWidget::buildDialog()
     m_importantIcon->setMinimumWidth(s);
     m_importantIcon->setMaximumHeight(s);
     m_importantIcon->setMaximumWidth(s);
+    connect(m_importantIcon, SIGNAL(clicked()), this, SLOT(flagImportantClicked()));
 
     m_taskIcon = new IconWidget(this);
     m_taskIcon->setIcon("mail-mark-task");
@@ -314,12 +317,13 @@ void EmailWidget::buildDialog()
     m_taskIcon->setMinimumWidth(s);
     m_taskIcon->setMaximumHeight(s);
     m_taskIcon->setMaximumWidth(s);
+    connect(m_taskIcon, SIGNAL(clicked()), this, SLOT(flagTaskClicked()));
 
-    m_flagsLayout->addItem(m_newIcon);
-    m_flagsLayout->addItem(m_importantIcon);
-    m_flagsLayout->addItem(m_taskIcon);
+    m_actionsLayout->addItem(m_newIcon);
+    m_actionsLayout->addItem(m_importantIcon);
+    m_actionsLayout->addItem(m_taskIcon);
 
-    m_layout->addItem(m_flagsLayout, 1, 1, 1, 2, Qt::AlignTop | Qt::AlignRight);
+    m_layout->addItem(m_actionsLayout, 1, 1, 1, 2, Qt::AlignTop | Qt::AlignRight);
 
     // From and date
     m_header = new Plasma::WebView(this);
@@ -354,13 +358,37 @@ void EmailWidget::buildDialog()
     setNew(m_isNew);
     setTask(m_isTask);
     setImportant(m_isImportant);
-    
+
     updateColors();
 }
 
 void EmailWidget::refreshFlags()
 {
     refreshFlags(m_flagsShown);
+}
+
+void EmailWidget::flagNewClicked()
+{
+    // TODO: sync to Akonadi
+    kDebug() << "New clicked";
+    m_isNew = !m_isNew;
+    refreshFlags();
+}
+
+void EmailWidget::flagImportantClicked()
+{
+    // TODO: sync to Akonadi
+    kDebug() << "Important clicked";
+    m_isImportant = !m_isImportant;
+    refreshFlags();
+}
+
+void EmailWidget::flagTaskClicked()
+{
+    // TODO: sync to Akonadi
+    kDebug() << "Task clicked";
+    m_isTask = !m_isTask;
+    refreshFlags();
 }
 
 void EmailWidget::refreshFlags(bool show)
@@ -371,6 +399,7 @@ void EmailWidget::refreshFlags(bool show)
         return;
     }
 
+    // Update larger icon with most important flag
     if (m_isImportant) {
         m_icon->setIcon("mail-mark-important");
     } else if (m_isNew) {
@@ -379,20 +408,23 @@ void EmailWidget::refreshFlags(bool show)
         m_icon->setIcon("mail-mark-read");
     }
 
-    if (show && m_isNew) {
+    if (show) {
         m_newIcon->show();
+        m_newIcon->setDrawBackground(m_isNew);
     } else {
         m_newIcon->hide();
     }
 
-    if (show && m_isImportant) {
+    if (show) {
         m_importantIcon->show();
+        m_importantIcon->setDrawBackground(m_isImportant);
     } else {
         m_importantIcon->hide();
     }
 
-    if (show && m_isTask) {
+    if (show) {
         m_taskIcon->show();
+        m_taskIcon->setDrawBackground(m_isTask);
     } else {
         m_taskIcon->hide();
     }
@@ -519,25 +551,27 @@ void EmailWidget::updateHeader()
     if (!m_from.isEmpty()) {
         r++;
         table += QString("<tr><td class=\"headerlabel\">%1</td><td>%2</td></tr>").arg(
-                            i18n("From:"), 
+                            i18n("From:"),
                             KPIMUtils::LinkLocator::convertToHtml(m_from));
     }
     if (!m_to.isEmpty()) {
         r++;
         table += QString("<tr><td class=\"headerlabel\" valign=\"top\" >%1</td><td>%2</td></tr>").arg(
-                            i18n("To:"), 
+                            i18n("To:"),
                             KPIMUtils::LinkLocator::convertToHtml(m_to.join(", ")));
     }
     if (!m_cc.isEmpty()) {
+        kDebug() << "CC:" << m_cc;
         r++;
         table += QString("<tr><td class=\"headerlabel\">%1</td><td>%2</td></tr>").arg(
-                            i18n("CC:"), 
+                            i18n("CC:"),
                             KPIMUtils::LinkLocator::convertToHtml(m_cc.join(", ")));
     }
     if (!m_bcc.isEmpty()) {
+        kDebug() << "BCC:" << m_bcc;
         r++;
         table += QString("<tr><td class=\"headerlabel\">%1</td><td>%2</td></tr>").arg(
-                            i18n("BCC:"), 
+                            i18n("BCC:"),
                             KPIMUtils::LinkLocator::convertToHtml(m_bcc.join(", ")));
     }
 

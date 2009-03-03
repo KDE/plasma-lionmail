@@ -110,8 +110,12 @@ class EmailWidget : public Plasma::Frame
         void toggleMeta();
         void expand();
         void collapse();
-        //void sizeChanged();
-        void updateColors();
+
+        void flagNewClicked();
+        void flagTaskClicked();
+        void flagImportantClicked();
+
+void updateColors();
 
         void fetchDone(KJob* job);
         void itemChanged(const Akonadi::Item* item);
@@ -167,7 +171,7 @@ class EmailWidget : public Plasma::Frame
         bool m_showSmilies;
 
         QGraphicsGridLayout* m_layout;
-        QGraphicsLinearLayout* m_flagsLayout;
+        QGraphicsLinearLayout* m_actionsLayout;
 
         Plasma::IconWidget* m_expandIcon;
         Plasma::IconWidget* m_icon;
