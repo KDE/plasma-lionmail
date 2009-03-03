@@ -622,20 +622,20 @@ void EmailWidget::updateHeader()
                             i18n("Date:"),
                             KGlobal::locale()->formatDateTime(m_date, KLocale::FancyLongDate));
     }
-    if (!m_to.isEmpty()) {
+    if (!m_to.join("").isEmpty()) {
         r++;
         table += QString("<tr><td class=\"headerlabel\" valign=\"top\" >%1</td><td>%2</td></tr>").arg(
                             i18n("To:"),
                             KPIMUtils::LinkLocator::convertToHtml(m_to.join(", ")));
     }
-    if (!m_cc.isEmpty()) {
+    if (!m_cc.join("").isEmpty()) {
         kDebug() << "CC:" << m_cc;
         r++;
         table += QString("<tr><td class=\"headerlabel\">%1</td><td>%2</td></tr>").arg(
                             i18n("CC:"),
                             KPIMUtils::LinkLocator::convertToHtml(m_cc.join(", ")));
     }
-    if (!m_bcc.isEmpty()) {
+    if (!m_bcc.join("").isEmpty()) {
         kDebug() << "BCC:" << m_bcc;
         r++;
         table += QString("<tr><td class=\"headerlabel\">%1</td><td>%2</td></tr>").arg(
@@ -692,7 +692,11 @@ void EmailWidget::setRawBody(const QString& body)
 {
     if (m_bodyView) {
         QString html = i18n("<h3>Empty body loaded.</h3>");
-        html = i18n("<style type=\"text/css\">%1</style><body><h3>Empty body loaded.</h3></body>", m_stylesheet);
+        if (body.isEmpty() && !m_body.isEmpty()) {
+            QString html = i18n("<style type=\"text/css\">%1</style><body>%2</body>", m_stylesheet, m_body);
+        } else {
+            QString html = i18n("<style type=\"text/css\">%1</style><body><h3>Empty body loaded.</h3></body>", m_stylesheet);
+        }
         if (!body.isEmpty()) {
             html = QString("<style type=\"text/css\">%1</style><body>%2</body>").arg(m_stylesheet, body);
         }
