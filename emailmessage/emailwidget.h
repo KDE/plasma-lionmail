@@ -178,7 +178,7 @@ void updateColors();
         Plasma::IconWidget* m_icon;
         Plasma::Label* m_subjectLabel;
         Plasma::WebView* m_header;
-        Plasma::Label* m_dateLabel;
+        Plasma::Label* m_fromLabel;
 
         Plasma::IconWidget* m_newIcon;
         Plasma::IconWidget* m_importantIcon;

@@ -23,6 +23,7 @@
 #include <QMimeData>
 #include <QWebPage>
 #include <QLabel>
+#include <QTextDocument>
 #include <QApplication>
 
 //KDE
@@ -81,7 +82,7 @@ EmailWidget::EmailWidget(QGraphicsWidget *parent)
 
       // UI Items
       m_header(0),
-      m_dateLabel(0),
+      m_fromLabel(0),
       m_newIcon(0),
       m_importantIcon(0),
       m_taskIcon(0),
@@ -134,7 +135,7 @@ void EmailWidget::setIcon()
 
     if (m_header) {
         m_header->hide();
-        m_dateLabel->hide();
+        m_fromLabel->hide();
         m_expandIcon->hide();
         refreshFlags(false);
     }
@@ -154,7 +155,7 @@ void EmailWidget::setTiny()
     m_expandIcon->show();
     m_expandIcon->setIcon("arrow-down-double");
 
-    m_dateLabel->hide();
+    m_fromLabel->hide();
     m_header->hide();
     m_bodyView->hide();
 
@@ -187,7 +188,7 @@ void EmailWidget::setSmall()
     m_subjectLabel->setMinimumWidth(140);
     m_expandIcon->show();
     m_expandIcon->setIcon("arrow-down-double");
-    m_dateLabel->show();
+    m_fromLabel->show();
 
     m_header->hide();
     m_bodyView->hide();
@@ -213,7 +214,7 @@ void EmailWidget::setMedium()
     m_expandIcon->show();
     m_subjectLabel->show();
     m_header->show();
-    m_dateLabel->show();
+    m_fromLabel->show();
 
     m_bodyView->hide();
     kDebug() << "Medium ...";
@@ -241,7 +242,7 @@ void EmailWidget::setLarge(bool expanded)
     m_subjectLabel->show();
     m_expandIcon->show();
     m_header->show();
-    m_dateLabel->show();
+    m_fromLabel->show();
     m_bodyView->show();
 
     //m_layout->setRowMinimumHeight(3, 80);
@@ -285,20 +286,21 @@ void EmailWidget::buildDialog()
     m_layout->addItem(m_subjectLabel, 0, 1, 1, 1, Qt::AlignTop);
     setSubject("Re: sell me a beer, mon");
 
-    m_dateLabel = new Plasma::Label(this);
-    m_dateLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    m_dateLabel->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
-    setDate(QDateTime());
+    m_fromLabel = new Plasma::Label(this);
+    m_fromLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    m_fromLabel->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
+    m_fromLabel->setStyleSheet(m_stylesheet);
+    setFrom(m_from);
 
     m_actionsLayout = new QGraphicsLinearLayout(m_layout);
     m_actionsLayout->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
-    m_actionsLayout->addItem(m_dateLabel);
+    m_actionsLayout->addItem(m_fromLabel);
 
     int s = KIconLoader::SizeSmall;
     m_newIcon = new IconWidget(this);
     m_newIcon->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    m_newIcon->setIcon("mail-mark-unread");
+    m_newIcon->setIcon("mail-mark-unread-new");
     m_newIcon->setMinimumWidth(s);
     m_newIcon->setMaximumHeight(s);
     m_newIcon->setMaximumWidth(s);
@@ -433,7 +435,7 @@ void EmailWidget::refreshFlags(bool show)
     if (m_isImportant) {
         m_icon->setIcon("mail-mark-important");
     } else if (m_isNew) {
-        m_icon->setIcon("mail-mark-unread");
+        m_icon->setIcon("mail-mark-unread-new");
     } else {
         m_icon->setIcon("mail-mark-read");
     }
@@ -446,8 +448,10 @@ void EmailWidget::refreshFlags(bool show)
         m_newIcon->setDrawBackground(m_isNew);
         setSubject(m_subject); // for updating font weight on the subject line
         if (m_isNew) {
+            m_newIcon->setIcon("mail-mark-read");
             m_newIcon->setToolTip(i18nc("flag new", "Message is marked as New, click to mark as Read"));
         } else {
+            m_newIcon->setIcon("mail-mark-unread-new");
             m_newIcon->setToolTip(i18nc("flag new", "Message is marked as Read, click to mark as New"));
         }
     } else {
@@ -583,6 +587,11 @@ void EmailWidget::updateColors()
 \
     ").arg(text.name()).arg(link.name()).arg(linkvisited.name()).arg(fontsize);
 
+    if (m_fromLabel) {
+        // FIXME: links in fromLabel are still blue :/
+        m_fromLabel->setPalette(p);
+        m_fromLabel->setStyleSheet(m_stylesheet);
+    }
     if (m_bodyView) {
         m_header->page()->setPalette(p);
         m_bodyView->page()->setPalette(p);
@@ -598,11 +607,19 @@ void EmailWidget::updateHeader()
     }
     QString table = QString("<table class=\"header\">");
     int r = 0;
+    /*
     if (!m_from.isEmpty()) {
         r++;
         table += QString("<tr><td class=\"headerlabel\">%1</td><td>%2</td></tr>").arg(
                             i18n("From:"),
                             KPIMUtils::LinkLocator::convertToHtml(m_from));
+    }
+    */
+    if (m_date.isValid()) {
+        r++;
+        table += QString("<tr><td class=\"headerlabel\">%1</td><td>%2</td></tr>").arg(
+                            i18n("Date:"),
+                            KGlobal::locale()->formatDateTime(m_date, KLocale::FancyLongDate));
     }
     if (!m_to.isEmpty()) {
         r++;
@@ -815,21 +832,21 @@ void EmailWidget::setAbstract(const QString& abstract)
 
 void EmailWidget::setDate(const QDateTime& date)
 {
-    if (m_dateLabel) {
-        if (date.isValid() && !date.isNull()) {
-            m_date = date;
-            QString d = KGlobal::locale()->formatDateTime( m_date, KLocale::FancyLongDate );
-            m_dateLabel->setText(i18n("<b>Date:</b> %1", d));
-        } else {
-            m_dateLabel->setText(i18n("<b>Date:</b> unknown"));
-        }
-    }
+    m_date = date;
+    updateHeader();
 }
 
 void EmailWidget::setFrom(const QString& from)
 {
     m_from = from;
-    updateHeader();
+    if (m_fromLabel) {
+        if (!m_from.isEmpty()) {
+            //m_fromLabel->setText(KPIMUtils::LinkLocator::convertToHtml(from));
+            m_fromLabel->setText(Qt::escape(from));
+        } else {
+            m_fromLabel->setText(i18n("<i>Sender unkown</i>"));
+        }
+    }
 }
 
 void EmailWidget::setCc(const QStringList& ccList)
@@ -849,7 +866,7 @@ void EmailWidget::setNew(bool isnew)
     m_isNew = isnew;
     //if (m_applet) {
     //    kDebug() << "Setting popupicon";
-        //m_applet->setPopupIcon("mail-mark-unread");
+        //m_applet->setPopupIcon("mail-mark-unread-new");
     //}
     refreshFlags();
 }

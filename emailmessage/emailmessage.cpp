@@ -69,6 +69,7 @@ void EmailMessage::init()
     Plasma::ToolTipManager::self()->registerWidget(this);
     // TODO ...
     appear(true);
+    resize(240, 180);
 }
 
 QGraphicsWidget* EmailMessage::graphicsWidget()
