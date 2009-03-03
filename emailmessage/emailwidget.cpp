@@ -693,9 +693,9 @@ void EmailWidget::setRawBody(const QString& body)
     if (m_bodyView) {
         QString html = i18n("<h3>Empty body loaded.</h3>");
         if (body.isEmpty() && !m_body.isEmpty()) {
-            QString html = i18n("<style type=\"text/css\">%1</style><body>%2</body>", m_stylesheet, m_body);
+            html = i18n("<style type=\"text/css\">%1</style><body>%2</body>", m_stylesheet, m_body);
         } else {
-            QString html = i18n("<style type=\"text/css\">%1</style><body><h3>Empty body loaded.</h3></body>", m_stylesheet);
+            html = i18n("<style type=\"text/css\">%1</style><body><h3>Empty body loaded.</h3></body>", m_stylesheet);
         }
         if (!body.isEmpty()) {
             html = QString("<style type=\"text/css\">%1</style><body>%2</body>").arg(m_stylesheet, body);
