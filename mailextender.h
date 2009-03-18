@@ -27,7 +27,7 @@
 // Plasma
 #include <Plasma/Label>
 #include <Plasma/ExtenderItem>
-
+#include <Plasma/ScrollWidget>
 // own
 #include "lionmail.h"
 #include "emailmessage/emailwidget.h"
@@ -54,7 +54,7 @@ class MailExtender : public Plasma::ExtenderItem
         void setDescription(const QString& desc);
         QString description();
         void setInfo(const QString& info);
-        
+
 
         void addEmail(EmailWidget* email);
         void setName(const QString name);
@@ -62,6 +62,7 @@ class MailExtender : public Plasma::ExtenderItem
         bool showUnreadOnly();
         void setMaxEmails(int max);
         int maxEmails();
+        int unreadEmails();
 
     public Q_SLOTS:
         void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);
@@ -94,6 +95,8 @@ class MailExtender : public Plasma::ExtenderItem
         QGraphicsWidget* m_widget;
         Plasma::Label* m_label;
         Plasma::Label* m_infoLabel;
+        Plasma::ScrollWidget* m_emailScroll;
+        QGraphicsWidget* m_emailsWidget;
 };
 
 #endif

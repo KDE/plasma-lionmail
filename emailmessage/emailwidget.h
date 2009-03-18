@@ -86,6 +86,7 @@ class EmailWidget : public Plasma::Frame
         void setImportant(bool important);
         void setTask(bool task);
 
+        bool isNew();
         void setDate(const QDateTime& date);
 
         int widgetHeight(int size);

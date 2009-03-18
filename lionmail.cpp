@@ -43,6 +43,8 @@ LionMail::LionMail(QObject *parent, const QVariantList &args)
     m_subjectList[0] = QString("Hello CampKDE, hallo Jamaica!"); // ;-)
     setBackgroundHints(StandardBackground);
     setPassivePopup(true);
+    setMaximumHeight(600);
+    setMinimumWidth(300);
 
     m_fontFrom = Plasma::Theme::defaultTheme()->font(Plasma::Theme::DefaultFont);
     m_fontSubject = Plasma::Theme::defaultTheme()->font(Plasma::Theme::DefaultFont);
@@ -170,7 +172,7 @@ void LionMail::saveCurrentCollection()
         return;
     }
     QString collectionId = ui->collectionList->currentItem()->data(Qt::UserRole).toString();
-    
+
     // Create new collection if necessary
     saveCollection(collectionId);
 
@@ -185,9 +187,9 @@ void LionMail::saveCurrentCollection()
     ui->collectionList->currentItem()->setIcon(QIcon(ui->icon->icon()));
     ui->collectionList->currentItem()->setText(ui->labelEdit->text());
 }
- 
+
 void LionMail::saveCollection(const QString &collectionId)
-{ 
+{
     setConfigurationRequired(false);
     if (!m_extenders.keys().contains(collectionId)) {
         kDebug() << "New collection ... " << collectionId << collectionName(collectionId);
@@ -206,7 +208,7 @@ void LionMail::configFinished()
 void LionMail::configAccepted()
 {
     KConfigGroup cg = config();
-    
+
     if (ui->allowHtml->isChecked() != m_allowHtml) {
         m_allowHtml = !m_allowHtml;
         cg.writeEntry("allowHtml", m_allowHtml);

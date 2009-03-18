@@ -31,6 +31,8 @@
 #include <Plasma/Theme>
 #include <Plasma/IconWidget>
 #include <Plasma/Extender>
+#include <Plasma/ScrollWidget>
+
 //own
 #include "mailextender.h"
 #include "lionmail.h"
@@ -61,9 +63,7 @@ void MailExtender::load()
     engine = m_applet->dataEngine("akonadi");
     setCollection(m_id);
     kDebug() << "loading ...";
-    if (m_infoLabel) {
-        m_infoLabel->setText(i18n("Loading emails..."));
-    }
+    setInfo(i18n("Loading emails..."));
     setIcon(m_iconName);
 }
 
@@ -73,7 +73,9 @@ void MailExtender::setCollection(const QString id)
         //return; // FIXME: investigate
     }
     kDebug() << "Setting collection from to " << m_id << id;
-    disconnectCollection(m_id);
+    if (m_id != 0) {
+        disconnectCollection(m_id);
+    }
     m_id = id;
     connectCollection(m_id);
     connect(engine, SIGNAL(sourceAdded(QString)), this, SLOT(newSource(QString)));
@@ -118,6 +120,16 @@ void MailExtender::newSource(const QString & source)
     engine->connectSource(source, this);
 }
 
+int MailExtender::unreadEmails()
+{
+    int unread = 0;
+    foreach (EmailWidget* email, emails.values()) {
+        if (email->isNew()) {
+            unread++;
+        }
+    }
+    return unread;
+}
 
 void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
@@ -125,7 +137,13 @@ void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::
         // Apparently the signal ends up in here, while it should in these
         // cases happen in the applet, just pass it on for now
         m_applet->dataUpdated(source, data);
-        setDescription(m_applet->collectionName(m_id));
+        int unread = unreadEmails();
+        if (unread) {
+            QString desc = i18nc("title of the extenderitem", "<b>%1 (%2 unread)</b>", m_applet->collectionName(m_id), unread);
+            setTitle(desc);
+        } else {
+            setDescription(m_applet->collectionName(m_id));
+        }
         return;
     }
 
@@ -134,16 +152,21 @@ void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::
     }
 
     EmailWidget* email = 0;
-    
+
     if (!emails.keys().contains(source)) {
         //kDebug() << "New email:" << source;
         email = new EmailWidget(this);
         if (!m_showUnreadOnly || data["Flag-New"].toBool()) {
             addEmail(email);
             emails[source] = email;
-            setInfo(i18n("%1 emails", emails.count()));
+            int unread = unreadEmails();
+            if (!unread) {
+                setInfo(i18n("%1 emails", emails.count()));
+            } else {
+                setInfo(i18n("%1 emails (%2 new)", emails.count(), unread));
+            }
         }
-    } else {    
+    } else {
         // update the data on an existing one
         email = emails[source];
     }
@@ -221,14 +244,20 @@ QGraphicsWidget* MailExtender::graphicsWidget()
     m_infoLabel->nativeWidget()->setWordWrap(false);
     m_layout->addItem(m_infoLabel, 1, 1);
 
-    m_messageLayout = new QGraphicsLinearLayout(m_layout);
+
+    m_emailScroll = new Plasma::ScrollWidget(m_widget);
+    m_emailsWidget = new QGraphicsWidget(m_emailScroll);
+
+    m_messageLayout = new QGraphicsLinearLayout(m_emailsWidget);
     m_messageLayout->setSpacing(8);
     m_messageLayout->setOrientation(Qt::Vertical);
     m_messageLayout->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    m_layout->addItem(m_messageLayout, 3, 0, 1, 3);
-    m_messageLayout->addStretch(-1);
-    m_messageLayout->addStretch(-1);
+    m_emailsWidget->setLayout(m_messageLayout);
+    m_emailScroll->setWidget(m_emailsWidget);
+    m_layout->addItem(m_emailScroll, 3, 0, 1, 3);
+    //m_messageLayout->addStretch(-1);
+    //m_messageLayout->addStretch(-1);
     m_widget->setLayout(m_layout);
 
     setWidget(m_widget);
@@ -267,7 +296,7 @@ QString MailExtender::description()
 void MailExtender::addEmail(EmailWidget* email)
 {
     email->setParent(this);
-    email->setParentItem(m_widget);
+    email->setParentItem(m_emailScroll);
     email->setSmall();
     email->setAllowHtml(m_applet->allowHtml());
 

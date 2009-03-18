@@ -389,6 +389,11 @@ void EmailWidget::flagNewClicked()
     refreshFlags();
 }
 
+bool EmailWidget::isNew()
+{
+    return m_isNew;
+}
+
 void EmailWidget::flagImportantClicked()
 {
     // TODO: sync to Akonadi
