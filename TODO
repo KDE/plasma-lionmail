@@ -7,6 +7,7 @@ LionMail:
 - multiple collections:
     - config key (QStringList of ID's)
     - show loading emails in extenderitem's infolabel
+- getting collection list on startup is slow
 
 EmailMessage:
 - QDragging
@@ -16,7 +17,7 @@ EmailMessage:
 - parsing of the content to nicer HTML
 - security: in HTML mode, images are always loaded
 - putting "something sensible" info in the To field
-- merge cc, bcc in another webview
+- header webview should become Plasma::Label
 - test and fix monitoring
 - saving of config in extenderitem
 - collection icons in widgetlist
@@ -25,10 +26,15 @@ EmailMessage:
 
 General:
 - Retrieval of a contact based on an email address for example (not supported in Akonadi atm)
-- Mimetype / URL for akonadi items:
-    Item::fromUrl
-    Item::url()
+- Sorting of collectionfetchjobs, preferably by receiving order
 - Contact plasmoid?
+
+
+Questions:
+- Multiple flags in Akonadi?
+- Sorting of fetchJobs
+- custom collections ("virtual folders")
+
 
 flags example from mailody:
  http://websvn.kde.org/trunk/extragear/pim/mailody/src/messagedata.cpp?revision=868133&view=markup see requestBody()
