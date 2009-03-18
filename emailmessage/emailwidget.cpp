@@ -812,7 +812,7 @@ void EmailWidget::fetchDone(KJob* job)
         connect( m_monitor, SIGNAL(itemChanged(const Akonadi::Item&, const QSet<QByteArray>&)),
             this, SLOT(itemChanged(const Akonadi::Item&)) );
 
-        //itemChanged(&item);
+        itemChanged(item);
     }
 }
 
