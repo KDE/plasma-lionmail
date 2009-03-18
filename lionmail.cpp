@@ -75,11 +75,14 @@ void LionMail::init()
     //dataEngine("akonadi")->connectSource("ContactCollections", this); // FIXME: remove, only for testing the contacts in the dataengine
 
     KConfigGroup cg = config();
-    m_activeCollection = cg.readEntry("activeCollection", "EmailCollection-62"); // FIXME: empty default
+    m_activeCollection = cg.readEntry("activeCollection", QString());
+    kDebug() << "activeCollection" << m_activeCollection;
+
     m_allowHtml = cg.readEntry("allowHtml", false);
 
     if (m_activeCollection.isEmpty()) {
         setConfigurationRequired(true, i18n("Please select an Email Folder"));
+        kDebug() << "config needed ...";
     }
     kDebug() << "Active Collection" << m_activeCollection;
 
@@ -87,8 +90,10 @@ void LionMail::init()
     resize(300, 400);
     extender()->setEmptyExtenderMessage(i18n("empty..."));
 
-    initMailExtender(m_activeCollection);
-    m_extenders[m_activeCollection]->load();
+    if (!m_activeCollection.isEmpty()) {
+        initMailExtender(m_activeCollection);
+        m_extenders[m_activeCollection]->load();
+    }
 
     updateToolTip("", 0);
 }
@@ -197,6 +202,8 @@ void LionMail::saveCollection(const QString &collectionId)
         m_extenders[collectionId]->load();
     }
     kDebug() << ui->labelEdit->text() << ui->showUnreadOnly->isChecked() << ui->maxEmails->value() << ui->icon->icon();
+    config().writeEntry("activeCollection", collectionId);
+    config().sync();
 }
 
 void LionMail::configFinished()

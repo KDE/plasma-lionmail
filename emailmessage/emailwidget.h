@@ -120,7 +120,7 @@ class EmailWidget : public Plasma::Frame
         void updateColors();
 
         void fetchDone(KJob* job);
-        void itemChanged(const Akonadi::Item* item);
+        void itemChanged(const Akonadi::Item& item);
 
     Q_SIGNALS:
         void geometryChanged(QSizeF newSize);

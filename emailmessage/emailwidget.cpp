@@ -168,10 +168,10 @@ void EmailWidget::setTiny()
 
 void EmailWidget::updateSize(int h)
 {
-    setMinimumHeight(h+6);
-    setPreferredHeight(h);
-    updateGeometry();
+    setMinimumHeight(h);
+    setPreferredHeight(h+6);
     m_layout->updateGeometry();
+    updateGeometry();
 }
 
 void EmailWidget::setSmall()
@@ -809,21 +809,21 @@ void EmailWidget::fetchDone(KJob* job)
             m_monitor = new Akonadi::Monitor(this);
         }
         m_monitor->setItemMonitored(item);
-        connect( m_monitor, SIGNAL(itemChanged(Akonadi::Item, QSet<QByteArray>)),
-            this, SLOT(itemChanged(Akonadi::Item)) );
+        connect( m_monitor, SIGNAL(itemChanged(const Akonadi::Item&, const QSet<QByteArray>&)),
+            this, SLOT(itemChanged(const Akonadi::Item&)) );
 
-        itemChanged(&item);
+        //itemChanged(&item);
     }
 }
 
-void EmailWidget::itemChanged(const Akonadi::Item* item)
+void EmailWidget::itemChanged(const Akonadi::Item& item)
 {
     delete m_item;
-    m_item = new Akonadi::Item(item->id());
-    if (item->hasPayload<MessagePtr>()) {
-        MessagePtr msg = item->payload<MessagePtr>();
+    m_item = new Akonadi::Item(item.id());
+    if (item.hasPayload<MessagePtr>()) {
+        MessagePtr msg = item.payload<MessagePtr>();
 
-        id = item->id(); // This shouldn't change ... right?
+        id = item.id(); // This shouldn't change ... right?
         setSubject(msg->subject()->asUnicodeString());
         setFrom(msg->from()->asUnicodeString());
         setDate(msg->date()->dateTime().dateTime());
