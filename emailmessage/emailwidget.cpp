@@ -634,14 +634,12 @@ void EmailWidget::updateHeader()
                             KPIMUtils::LinkLocator::convertToHtml(m_to.join(", ")));
     }
     if (!m_cc.join("").isEmpty()) {
-        kDebug() << "CC:" << m_cc;
         r++;
         table += QString("<tr><td class=\"headerlabel\">%1</td><td>%2</td></tr>").arg(
                             i18n("CC:"),
                             KPIMUtils::LinkLocator::convertToHtml(m_cc.join(", ")));
     }
     if (!m_bcc.join("").isEmpty()) {
-        kDebug() << "BCC:" << m_bcc;
         r++;
         table += QString("<tr><td class=\"headerlabel\">%1</td><td>%2</td></tr>").arg(
                             i18n("BCC:"),

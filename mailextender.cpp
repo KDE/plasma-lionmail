@@ -33,6 +33,10 @@
 #include <Plasma/Extender>
 #include <Plasma/ScrollWidget>
 
+// Akonadi
+#include <akonadi/collectionstatistics.h>
+#include <akonadi/collectionstatisticsjob.h>
+
 //own
 #include "mailextender.h"
 #include "lionmail.h"
@@ -43,6 +47,8 @@ MailExtender::MailExtender(LionMail * applet, const QString collectionId, Plasma
       m_id(0),
       m_info(0),
       m_iconName(QString("mail-folder-inbox")),
+      m_unreadCount(0),
+      m_count(0),
       m_icon(0),
       m_widget(0),
       m_label(0)
@@ -79,6 +85,7 @@ void MailExtender::setCollection(const QString id)
     m_id = id;
     connectCollection(m_id);
     connect(engine, SIGNAL(sourceAdded(QString)), this, SLOT(newSource(QString)));
+    updateStatistics();
     setDescription(m_applet->collectionName(m_id));
     setInfo(i18n("Loading emails..."));
 }
@@ -107,6 +114,31 @@ void MailExtender::connectCollection(QString cid)
     engine->connectSource(cid, this); // pass collection ID as string
 }
 
+void MailExtender::updateStatistics()
+{
+    int _id = m_id.split("-")[1].toInt();
+    kDebug() << "Retrieving statistics for" << m_id << _id;
+    Akonadi::Collection collection = Akonadi::Collection(_id);
+    Akonadi::CollectionStatisticsJob *job = new Akonadi::CollectionStatisticsJob(collection);
+    connect( job, SIGNAL(result(KJob*)), SLOT(statisticsFetchDone(KJob*)) );
+}
+
+void MailExtender::statisticsFetchDone(KJob* job)
+{
+    Akonadi::CollectionStatisticsJob* statsjob = static_cast<Akonadi::CollectionStatisticsJob*>(job);
+    if ( job->exec() ) {
+        Akonadi::CollectionStatistics statistics = statsjob->statistics();
+        m_unreadCount = statistics.unreadCount();
+        m_count = statistics.count();
+        kDebug() << "stats are in: total (unread):" << m_count << "(" << m_unreadCount << ")";
+    }
+    if (job->error()) {
+        kDebug() << "statistics job failed" << job->errorString();
+    }
+    setInfo();
+    setDescription();
+}
+
 void MailExtender::disconnectCollection(QString cid)
 {
     kDebug() << "disconnectSource" << cid;
@@ -122,13 +154,7 @@ void MailExtender::newSource(const QString & source)
 
 int MailExtender::unreadEmails()
 {
-    int unread = 0;
-    foreach (EmailWidget* email, emails.values()) {
-        if (email->isNew()) {
-            unread++;
-        }
-    }
-    return unread;
+    return m_unreadCount;
 }
 
 void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
@@ -137,13 +163,6 @@ void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::
         // Apparently the signal ends up in here, while it should in these
         // cases happen in the applet, just pass it on for now
         m_applet->dataUpdated(source, data);
-        int unread = unreadEmails();
-        if (unread) {
-            QString desc = i18nc("title of the extenderitem", "<b>%1 (%2 unread)</b>", m_applet->collectionName(m_id), unread);
-            setTitle(desc);
-        } else {
-            setDescription(m_applet->collectionName(m_id));
-        }
         return;
     }
 
@@ -159,17 +178,14 @@ void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::
         if (!m_showUnreadOnly || data["Flag-New"].toBool()) {
             addEmail(email);
             emails[source] = email;
-            int unread = unreadEmails();
-            if (!unread) {
-                setInfo(i18n("%1 emails", emails.count()));
-            } else {
-                setInfo(i18n("%1 emails (%2 new)", emails.count(), unread));
-            }
         }
     } else {
         // update the data on an existing one
         email = emails[source];
     }
+    setInfo();
+    // Do we want to update the collectionstatistics here? It's an expensive operation ...
+
 
     if (email == 0) {
         kDebug() << "didn't load email" << source;
@@ -317,9 +333,21 @@ void MailExtender::setEmailSize(int appletsize)
 }
 
 
+void MailExtender::setDescription()
+{
+    QString desc;
+    QString cname = m_applet->collectionName(m_id);
+    if (m_unreadCount) {
+        desc = i18nc("title of the extenderitem", "%1 (%2 unread)", cname, m_unreadCount);
+    } else {
+        desc = cname;
+    }
+    setTitle(desc);
+    setDescription(cname);
+}
+
 void MailExtender::setDescription(const QString& desc)
 {
-    setTitle(desc);
     if (m_label) {
         QString html = "<b>" + desc + "</b>";
         m_label->setText(html);
@@ -347,6 +375,19 @@ void MailExtender::setInfo(const QString& info)
         m_infoLabel->setText(info);
     }
     m_info = info;
+}
+
+void MailExtender::setInfo()
+{
+    if (!m_unreadCount) {
+        m_info = i18n("%1 emails", m_count);
+    } else {
+        m_info = i18n("%1 emails (%2 new)", m_count, m_unreadCount);
+    }
+
+    if (m_infoLabel) {
+        m_infoLabel->setText(m_info);
+    }
 }
 
 void MailExtender::updateColors()

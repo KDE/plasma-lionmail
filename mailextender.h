@@ -52,8 +52,10 @@ class MailExtender : public Plasma::ExtenderItem
         QString icon();
 
         void setDescription(const QString& desc);
+        void setDescription();
         QString description();
         void setInfo(const QString& info);
+        void setInfo();
 
 
         void addEmail(EmailWidget* email);
@@ -70,13 +72,14 @@ class MailExtender : public Plasma::ExtenderItem
     private Q_SLOTS:
         void updateColors();
         void newSource( const QString &source );
+        void statisticsFetchDone(KJob* job);
 
     private:
         void buildDialog();
 
         void connectCollection(QString cid);
         void disconnectCollection(QString cid);
-
+        void updateStatistics();
         QString m_id;
         QString m_collection;
         QString m_description;
@@ -84,6 +87,8 @@ class MailExtender : public Plasma::ExtenderItem
         QString m_iconName;
         QHash<QString, EmailWidget*> emails;
 
+        int m_unreadCount;
+        int m_count;
         int m_maxEmails;
         bool m_showUnreadOnly;
 
