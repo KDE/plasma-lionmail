@@ -70,7 +70,6 @@ EmailWidget::EmailWidget(QGraphicsWidget *parent)
       // Are we already fetching the data?
       m_fetching(false),
       m_item(0),
-      m_emailMessage(0),
 
       // Flags
       m_isNew(false),
@@ -826,8 +825,8 @@ void EmailWidget::fetchDone(KJob* job)
             m_monitor = new Akonadi::Monitor(this);
         }
         m_monitor->setItemMonitored(item);
-        //connect( m_monitor, SIGNAL(itemChanged(const Akonadi::Item&, const QSet<QByteArray>&)),
-        //    this, SLOT(itemChanged(const Akonadi::Item&)) );
+        connect( m_monitor, SIGNAL(itemChanged(const Akonadi::Item&, const QSet<QByteArray>&)),
+            this, SLOT(itemChanged(const Akonadi::Item&)) );
 
         itemChanged(item);
     }
