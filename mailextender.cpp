@@ -84,7 +84,8 @@ void MailExtender::setCollection(const QString id)
     }
     m_id = id;
     connectCollection(m_id);
-    connect(engine, SIGNAL(sourceAdded(QString)), this, SLOT(newSource(QString)));
+    connect(engine, SIGNAL(sourceAdded(const QString&)), this, SLOT(sourceAdded(const QString&)));
+    connect(engine, SIGNAL(sourceRemoved(const QString&)), this, SLOT(sourceRemoved(const QString&)));
     updateStatistics();
     setDescription(m_applet->collectionName(m_id));
     setInfo(i18n("Loading emails..."));
@@ -145,11 +146,29 @@ void MailExtender::disconnectCollection(QString cid)
     engine->disconnectSource(cid, this); // pass collection ID as string
 }
 
-void MailExtender::newSource(const QString & source)
+void MailExtender::sourceAdded(const QString & source)
+{
+    // TODO: make sure we only connect to new emails
+    if (source.startsWith("EmailCollection-")) {
+        kDebug() << "------------- New source, connecting to:" << source;
+        engine->connectSource(source, this);
+
+    }
+    if (source.startsWith("Email-")) {
+        if (emails.count() < m_maxEmails) {
+            engine->connectSource(source, this);
+        }
+    }
+}
+
+void MailExtender::sourceRemoved(const QString & source)
 {
     // TODO: make sure we only connect to new emails
     //kDebug() << "------------- New:" << source;
-    engine->connectSource(source, this);
+    if (source.startsWith("EmailCollection-") || source.startsWith("Email-")) {
+        //kDebug() << "source removed, disconnecting from" << source;
+        engine->disconnectSource(source, this);
+    }
 }
 
 int MailExtender::unreadEmails()
@@ -207,6 +226,7 @@ void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::
     email->setCc(data["Cc"].toStringList());
     email->setBcc(data["Bcc"].toStringList());
 
+    setEmailSize(EmailWidget::Tiny);
     update();
 }
 
@@ -313,14 +333,17 @@ void MailExtender::addEmail(EmailWidget* email)
 {
     email->setParent(this);
     email->setParentItem(m_emailScroll);
-    email->setSmall();
+    email->setTiny();
     email->setAllowHtml(m_applet->allowHtml());
 
     m_messageLayout->addItem(email);
+    m_messageLayout->updateGeometry();
+    updateGeometry();
 }
 
 void MailExtender::setEmailSize(int appletsize)
 {
+    kDebug() << "Set applet size" << appletsize;
     foreach (EmailWidget* e, emails.values()) {
         if (appletsize == EmailWidget::Tiny) {
             e->setTiny();

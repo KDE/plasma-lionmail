@@ -122,8 +122,8 @@ void LionMail::createConfigurationInterface(KConfigDialog *parent)
     ui->removeCollection->setEnabled(ui->collectionList->count() != 0);
 
     ui->sizeCombo->addItem(i18n("Icon and subject"), EmailWidget::Tiny);
-    ui->sizeCombo->addItem(i18n("Icon, subject and date"), EmailWidget::Small);
-    ui->sizeCombo->addItem(i18n("Icon, subject, date and header"), EmailWidget::Medium);
+    ui->sizeCombo->addItem(i18n("Icon, subject and sender"), EmailWidget::Small);
+    ui->sizeCombo->addItem(i18n("Icon, subject, sender and header"), EmailWidget::Medium);
 
 
     connect(parent, SIGNAL(finished()), this, SLOT(configFinished()));

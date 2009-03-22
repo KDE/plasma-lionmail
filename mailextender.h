@@ -71,7 +71,8 @@ class MailExtender : public Plasma::ExtenderItem
 
     private Q_SLOTS:
         void updateColors();
-        void newSource( const QString &source );
+        void sourceAdded( const QString &source );
+        void sourceRemoved( const QString &source );
         void statisticsFetchDone(KJob* job);
 
     private:

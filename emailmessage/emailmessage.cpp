@@ -74,6 +74,7 @@ EmailMessage::EmailMessage(QObject *parent, const QVariantList &args)
     if (!argUrl.isEmpty()) {
         // TODO: input and error checking
         m_url = new KUrl(argUrl);
+        m_emailWidget->setUrl(KUrl(m_url->url()));
     }
 }
 
@@ -98,9 +99,7 @@ QGraphicsWidget* EmailMessage::graphicsWidget()
     if (!m_emailWidget) {
         //kDebug() << "new EmailWidget";
         m_emailWidget = new EmailWidget(this);
-    }
-    if (m_url) {
-        m_emailWidget->setUrl(KUrl(m_url->url()));
+        m_emailWidget->m_applet = this;
     }
     return m_emailWidget;
 }
@@ -140,6 +139,7 @@ void EmailMessage::constraintsEvent(Plasma::Constraints constraints)
                 m_emailWidget->setLarge();
             }
         }
+
         update();
     }
 }

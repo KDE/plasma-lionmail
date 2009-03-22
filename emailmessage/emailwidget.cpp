@@ -70,6 +70,7 @@ EmailWidget::EmailWidget(QGraphicsWidget *parent)
       // Are we already fetching the data?
       m_fetching(false),
       m_item(0),
+      m_emailMessage(0),
 
       // Flags
       m_isNew(false),
@@ -109,10 +110,10 @@ int EmailWidget::widgetHeight(int size)
             h = KIconLoader::SizeSmall;
             break;
         case Tiny:
-            h = qMax((int)KIconLoader::SizeSmall, (int)m_subjectLabel->minimumHeight());
+            h = qMax((int)KIconLoader::SizeSmall, (int)(m_subjectLabel->minimumHeight()));
             break;
         case Small:
-            return KIconLoader::SizeMedium; // 32
+            return KIconLoader::SizeMedium; // Hack ...
         case Medium:
             return (int)(KIconLoader::SizeHuge * 1.5); // 96
         case Large:
@@ -140,6 +141,7 @@ void EmailWidget::setIcon()
         m_expandIcon->hide();
         refreshFlags(false);
     }
+    setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     m_bodyView->hide();
     updateSize(widgetHeight(Icon));
 }
@@ -159,6 +161,7 @@ void EmailWidget::setTiny()
     m_fromLabel->hide();
     m_header->hide();
     m_bodyView->hide();
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 
     int h = widgetHeight(m_appletSize);
     updateSize(h);
@@ -170,6 +173,14 @@ void EmailWidget::updateSize(int h)
 {
     setMinimumHeight(h);
     setPreferredHeight(h+6);
+    // In Layouts, we want to restrict the appletsize as much as possible,
+    // on the desktop or more generally, in an applet, we let the applet
+    // itself manage the max size
+    if (m_appletSize != Large && !m_applet) {
+        setMaximumHeight(h);
+    } else {
+        setMaximumHeight(QWIDGETSIZE_MAX);
+    }
     m_layout->updateGeometry();
     updateGeometry();
 }
@@ -195,6 +206,7 @@ void EmailWidget::setSmall()
     m_bodyView->hide();
     resizeIcon(22);
 
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 
     refreshFlags(true);
     int h = widgetHeight(m_appletSize);
@@ -219,6 +231,7 @@ void EmailWidget::setMedium()
 
     m_bodyView->hide();
     kDebug() << "Medium ...";
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     refreshFlags(true);
     resizeIcon(32);
@@ -239,6 +252,7 @@ void EmailWidget::setLarge(bool expanded)
         m_appletSize = Large;
     }
 
+    m_appletSize = Large;
     m_expandIcon->setIcon("arrow-up-double");
     m_subjectLabel->show();
     m_expandIcon->show();
@@ -256,7 +270,6 @@ void EmailWidget::setLarge(bool expanded)
     resizeIcon(32);
     setMinimumHeight(m_layout->minimumSize().height());
     setMinimumWidth(m_layout->minimumSize().width());
-
     if (!m_fetching) {
         fetchPayload();
     }
@@ -364,6 +377,7 @@ void EmailWidget::buildDialog()
     setImportant(m_isImportant);
 
     updateColors();
+    setTiny();
 }
 
 void EmailWidget::refreshFlags()
@@ -694,7 +708,13 @@ void EmailWidget::setTo(const QStringList& toList)
 void EmailWidget::setRawBody(const QString& body)
 {
     if (m_bodyView) {
-        QString html = i18n("<h3>Empty body loaded.</h3>");
+        QString html;
+        if (m_fetching) {
+            html = i18n("<h3>Loading body...</h3>");
+        } else {
+            html = i18n("<h3>Empty body loaded.</h3>");
+        }
+
         if (body.isEmpty() && !m_body.isEmpty()) {
             html = i18n("<style type=\"text/css\">%1</style><body>%2</body>", m_stylesheet, m_body);
         } else {
@@ -706,7 +726,6 @@ void EmailWidget::setRawBody(const QString& body)
         //kDebug() << html;
         m_bodyView->setHtml(html);
     }
-    m_body = body;
 }
 
 void EmailWidget::setBody(MessagePtr msg)
@@ -807,8 +826,8 @@ void EmailWidget::fetchDone(KJob* job)
             m_monitor = new Akonadi::Monitor(this);
         }
         m_monitor->setItemMonitored(item);
-        connect( m_monitor, SIGNAL(itemChanged(const Akonadi::Item&, const QSet<QByteArray>&)),
-            this, SLOT(itemChanged(const Akonadi::Item&)) );
+        //connect( m_monitor, SIGNAL(itemChanged(const Akonadi::Item&, const QSet<QByteArray>&)),
+        //    this, SLOT(itemChanged(const Akonadi::Item&)) );
 
         itemChanged(item);
     }
@@ -820,7 +839,6 @@ void EmailWidget::itemChanged(const Akonadi::Item& item)
     m_item = new Akonadi::Item(item.id());
     if (item.hasPayload<MessagePtr>()) {
         MessagePtr msg = item.payload<MessagePtr>();
-
         id = item.id(); // This shouldn't change ... right?
         setSubject(msg->subject()->asUnicodeString());
         setFrom(msg->from()->asUnicodeString());
@@ -830,6 +848,7 @@ void EmailWidget::itemChanged(const Akonadi::Item& item)
         setBcc(QStringList(msg->bcc()->asUnicodeString()));
         updateHeader();
         setBody(msg);
+        kDebug() << "=== item changed" << id << msg;
     } else {
         setSubject(i18n("Couldn't fetch email payload"));
     }
