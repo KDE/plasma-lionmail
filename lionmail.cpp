@@ -112,7 +112,7 @@ void LionMail::createConfigurationInterface(KConfigDialog *parent)
     ui->saveCollection->setEnabled(false);
     kDebug() << m_extenders.keys();
     if (m_allCollections.count() == 0) {
-        ui->collectionsStatus->setText(i18n("Loading collection list. Hang on ..."));
+        ui->collectionsStatus->setText(i18n("Loading collection list, please wait...."));
     } else {
         ui->collectionsStatus->setText("");
     }

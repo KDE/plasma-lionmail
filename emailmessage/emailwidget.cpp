@@ -849,7 +849,7 @@ void EmailWidget::itemChanged(const Akonadi::Item& item)
         setBody(msg);
         kDebug() << "=== item changed" << id << msg;
     } else {
-        setSubject(i18n("Couldn't fetch email payload"));
+        setSubject(i18n("Could not fetch email payload"));
     }
 }
 

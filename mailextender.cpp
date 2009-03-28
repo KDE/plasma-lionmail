@@ -403,9 +403,9 @@ void MailExtender::setInfo(const QString& info)
 void MailExtender::setInfo()
 {
     if (!m_unreadCount) {
-        m_info = i18n("%1 emails", m_count);
+        m_info = i18np("1 email", "%1 emails", m_count);
     } else {
-        m_info = i18n("%1 emails (%2 new)", m_count, m_unreadCount);
+        m_info = i18np("1 email (%2 new)", "%1 emails (%2 new)", m_count, m_unreadCount);
     }
 
     if (m_infoLabel) {
