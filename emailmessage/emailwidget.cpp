@@ -446,6 +446,12 @@ void EmailWidget::flagTaskClicked()
 void EmailWidget::syncItemToAkonadi(Akonadi::Item &item)
 {
     Akonadi::ItemModifyJob* mjob = new Akonadi::ItemModifyJob(item);
+
+    // FIXME: pending revision conflict check in Akonadi, consult with Volker
+    // we're disabling it for now.
+    mjob->disableRevisionCheck();
+
+
     mjob->start(); // Fire and forget, we're assuming no conflicts
     kDebug() << "Sending modifications to Akonadi now ...";
 }
