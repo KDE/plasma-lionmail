@@ -41,3 +41,49 @@ flags example from mailody:
 
 decoding body:
  http://api.kde.org/4.x-api/kdepimlibs-apidocs/kmime/html/classKMime_1_1Content.html#5baf20f83dfd3e914096f887202fe5d9
+
+
+ drag and drop:
+
+ [01:20:26] <dfaure> sebas: yep (my normal bed time is 2am, although I don't always work until that time)
+[01:20:35] <dfaure> but 4.2.2 is coming and kio_http isn't sending all cookies...
+[01:21:34] <sebas> yay for me then :)
+[01:21:37] <jbrouault> when kregexpeditor was in kde trunk, its toolbar icons were bundled with kde packages, as it is now in playground, should i add again the pics dir in kregexpeditor source dir ?
+[01:22:02] <sebas> I've got a question about the mimetype resolving, let me quickly explain
+[01:22:14] <-- Dario_Andres (n=Dario_An@host126.201-252-64.telecom.net.ar) has left #kde-devel ("http://quassel-irc.org - Chat comfortably. Anywhere.")
+[01:22:33] <sebas> The goal is to be able to drop all sorts of content onto plasma, and let plasma do the right thing, usually loading the content into an applet that's appropriate for it
+[01:22:50] <sebas> famous usecases: dropping an image from a website onto plasma
+[01:23:07] <dfaure> reminds of the kde3 hacks for offering "set as wallpaper" ;)
+[01:23:47] <-- alediaferia (n=alediafe@kde/developer/adiaferia) has quit (Remote closed the connection)
+[01:24:02] <sebas> The dropped content is often a URL, and I don't see a way to find the mimetype of the content "behind" the url
+[01:24:15] <dfaure> right, can't be done synchronously.
+[01:24:24] <dfaure> you want to start a KIO::get, listen to the mimetype signal, and then decide.
+[01:25:01] <dfaure> and put the job on hold (see krun.cpp). Then whichever applet is then loaded for it, will do the same KIO::get and will be able to automatically get the same underlying slave.
+[01:25:02] <sebas> and KMimeType::findByUrl() is the sync version, that doesn't work for remote content?
+[01:25:08] <dfaure> right
+[01:25:17] <pinotree> KIO::mimeType()?
+[01:25:35] <-- tosky (n=tosky@94.37.26.224) has quit (Remote closed the connection)
+[01:25:36] <dfaure> the KIO::mimeType job would tell you the mimetype but you would then have to do another request to download the data
+[01:25:45] <dfaure> which isn't what you want, better do both in one (http) request
+[01:25:49] <-- cylmor_ (n=cylmor@cm173228.red91-116.mundo-r.com) has quit ("Konversation terminated!")
+[01:26:04] <pinotree> jbrouault: well depends, which icons?
+[01:26:22] <-- fredrikh (n=fredrik@kde/fredrik) has quit ("bbl")
+[01:27:06] <jbrouault> kregexpeditor specific icons
+[01:27:44] <sebas> I can assume that I also want the data when something is dropped onto the desktop
+[01:28:07] <dfaure> yep
+[01:28:13] <sebas> How would I go about akonadi URLs with this?
+[01:28:22] <dfaure> dunno, is there a kioslave for them?
+[01:28:34] <sebas> Not that I know
+[01:28:48] <sebas> Can I use that KIO stuff in kdelibs btw?
+[01:28:49] <dfaure> err... then there is no solution
+[01:28:50] <-> mpyne|away is now known as mpyne
+[01:29:00] <dfaure> depends where in kdelibs
+[01:29:10] <sebas> /plasma/containment.cpp
+[01:29:21] <dfaure> depends whether plasma links to kio ;)
+[01:29:29] <dfaure> yep it does
+[01:29:39] <dfaure> so no problem there
+[01:29:47] <sebas> Good :)
+[01:30:36] <sebas> I guess I need to save the data somewhere sensible, if I don't want to end up with empty picture frames pointing to /tmp/ after a reboot
+[01:31:09] <dfaure> yep
+[01:31:38] <sebas> OK, suddenly the whole thing makes a lot of sense
+[01:33:11] <sebas> thanks :)

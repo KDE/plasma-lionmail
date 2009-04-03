@@ -50,7 +50,7 @@ EmailMessage::EmailMessage(QObject *parent, const QVariantList &args)
     setAspectRatioMode(IgnoreAspectRatio);
     setHasConfigurationInterface(true);
     setAcceptsHoverEvents(true);
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setPassivePopup(true);
 
     //setMinimumSize(80, 48);
@@ -60,7 +60,12 @@ EmailMessage::EmailMessage(QObject *parent, const QVariantList &args)
 
     QString argUrl;
     if (args.count() > 0) {
-        kDebug() << args;
+        kDebug() << "EmailMessageArgs" << args;
+        // FIXME: error handling
+        kDebug() << args.at(0).toString();
+        m_url = new KUrl(args.at(0).toString());
+        m_emailWidget->setUrl(KUrl(m_url->url()));
+        /*
         QFile f(args.at(0).toString());
         if (f.open(QIODevice::ReadOnly)) {
             kDebug() << "open::" << args.at(0).toString();
@@ -69,6 +74,7 @@ EmailMessage::EmailMessage(QObject *parent, const QVariantList &args)
             kDebug() << argUrl;
             f.close();
         }
+        */
         kDebug() << "URL found:" << argUrl;
     }
     if (!argUrl.isEmpty()) {

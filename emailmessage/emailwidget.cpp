@@ -61,8 +61,8 @@ EmailWidget::EmailWidget(QGraphicsWidget *parent)
       //id(61771), // more plain example
       //id(97160), // sample html email
       //id(168593), // sample email + image + pdf attached
-      id(97881), // sample email + image + pdf attached
-      //id(0), // what it's supposed to be
+      //id(97881), // sample email + image + pdf attached
+      id(0), // what it's supposed to be
 
       //id(83964),
 
@@ -109,10 +109,10 @@ int EmailWidget::widgetHeight(int size)
             h = KIconLoader::SizeSmall;
             break;
         case Tiny:
-            h = qMax((int)KIconLoader::SizeSmall, (int)(m_subjectLabel->minimumHeight()));
+            h = qMax((int)KIconLoader::SizeSmall, (int)(m_subjectLabel->minimumHeight()*1.4));
             break;
         case Small:
-            return KIconLoader::SizeMedium; // Hack ...
+            return KIconLoader::SizeMedium*1.3; // 32 * 1.3
         case Medium:
             return (int)(KIconLoader::SizeHuge * 1.5); // 96
         case Large:
@@ -677,6 +677,7 @@ void EmailWidget::setUrl(KUrl url)
 {
     kDebug() << url.url() << url.queryItemValue("item");
     id = url.queryItemValue("item").toLongLong();
+    kDebug() << "Setting id from url:" << id << url.url();
     m_url = url;
     fetchPayload(false);
 }
@@ -947,16 +948,20 @@ void EmailWidget::startDrag()
     QMimeData* mimeData = new QMimeData();
     QString u = url().url();
 
-    mimeData->setData(QString("message/rfc822"), u.toUtf8());
-    QList<QUrl> urls;
-    urls << url();
-    kDebug() << "url:" << u;
     // FIXME: We want to pass a URL, and have it have our mimetype at the same time
     // The applet should register with dropped content for the above mimetype, but receive
     // an akonadi URL instead of this content.
-    //mimeData->setUrls(urls);
-    mimeData->setText(u);
-    //mimeData->setText(QString("Email with URL: %1<br /><br />%2").arg(m_url.url()).arg(m_body));
+    bool lie = false;
+    if (!lie) {
+        QList<QUrl> urls;
+        urls << url();
+        kDebug() << "url:" << u;
+        mimeData->setUrls(urls);
+    } else {
+        mimeData->setData(QString("message/rfc822"), u.toUtf8());
+        //mimeData->setText(u);
+        //mimeData->setText(QString("Email with URL: %1<br /><br />%2").arg(m_url.url()).arg(m_body));
+    }
 
     // This is a bit random, but we need a QWidget for the constructor
     QDrag* drag = new QDrag(m_subjectLabel->nativeWidget());
