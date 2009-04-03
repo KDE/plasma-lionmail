@@ -87,6 +87,13 @@ void MailExtender::setCollection(const QString id)
     connect(engine, SIGNAL(sourceAdded(const QString&)), this, SLOT(sourceAdded(const QString&)));
     connect(engine, SIGNAL(sourceRemoved(const QString&)), this, SLOT(sourceRemoved(const QString&)));
     updateStatistics();
+
+    // Keep collection stats updated
+    m_monitor = new Akonadi::Monitor(this);
+    m_monitor->fetchCollectionStatistics(true);
+    m_monitor->setCollectionMonitored(Akonadi::Collection(m_id.split("-")[1].toInt()));
+    connect(m_monitor, SIGNAL(collectionStatisticsChanged(Akonadi::Collection::Id, const Akonadi::CollectionStatistics &)),
+            this, SLOT(setStatistics(Akonadi::Collection::Id, const Akonadi::CollectionStatistics &)));
     setDescription(m_applet->collectionName(m_id));
     setInfo(i18n("Loading emails..."));
 }
@@ -128,16 +135,24 @@ void MailExtender::statisticsFetchDone(KJob* job)
 {
     Akonadi::CollectionStatisticsJob* statsjob = static_cast<Akonadi::CollectionStatisticsJob*>(job);
     if ( job->exec() ) {
-        Akonadi::CollectionStatistics statistics = statsjob->statistics();
-        m_unreadCount = statistics.unreadCount();
-        m_count = statistics.count();
-        kDebug() << "stats are in: total (unread):" << m_count << "(" << m_unreadCount << ")";
+        // We're passing 0 as id since we don't have anything better handy,
+        // and since it's thrown away anyway, only to match the signature of the slot
+        setStatistics(0, statsjob->statistics());
     }
     if (job->error()) {
         kDebug() << "statistics job failed" << job->errorString();
     }
+}
+
+void MailExtender::setStatistics(Akonadi::Collection::Id id, const Akonadi::CollectionStatistics &statistics)
+{
+    Q_UNUSED( id );
+    m_unreadCount = statistics.unreadCount();
+    m_count = statistics.count();
+    kDebug() << "stats are updated: total (unread):" << m_count << "(" << m_unreadCount << ")";
     setInfo();
     setDescription();
+
 }
 
 void MailExtender::disconnectCollection(QString cid)
@@ -343,7 +358,7 @@ void MailExtender::addEmail(EmailWidget* email)
 
 void MailExtender::setEmailSize(int appletsize)
 {
-    kDebug() << "Set applet size" << appletsize;
+    kDebug() << "------------ Set applet size" << appletsize;
     foreach (EmailWidget* e, emails.values()) {
         if (appletsize == EmailWidget::Tiny) {
             e->setTiny();
@@ -402,12 +417,16 @@ void MailExtender::setInfo(const QString& info)
 
 void MailExtender::setInfo()
 {
-    if (!m_unreadCount) {
-        m_info = i18np("1 email", "%1 emails", m_count);
+    if (m_unreadCount + m_count == 0) {
+        m_info = i18nc("Label for stats in the collection", "Loading statistics...");
     } else {
-        m_info = i18np("1 email (%2 new)", "%1 emails (%2 new)", m_count, m_unreadCount);
-    }
 
+        if (!m_unreadCount) {
+            m_info = i18np("1 email", "%1 emails", m_count);
+        } else {
+            m_info = i18np("1 email (%2 new)", "%1 emails (%2 new)", m_count, m_unreadCount);
+        }
+    }
     if (m_infoLabel) {
         m_infoLabel->setText(m_info);
     }

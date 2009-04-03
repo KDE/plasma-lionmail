@@ -74,6 +74,7 @@ class MailExtender : public Plasma::ExtenderItem
         void sourceAdded( const QString &source );
         void sourceRemoved( const QString &source );
         void statisticsFetchDone(KJob* job);
+        void setStatistics(Akonadi::Collection::Id id, const Akonadi::CollectionStatistics &statistics);
 
     private:
         void buildDialog();
@@ -103,6 +104,8 @@ class MailExtender : public Plasma::ExtenderItem
         Plasma::Label* m_infoLabel;
         Plasma::ScrollWidget* m_emailScroll;
         QGraphicsWidget* m_emailsWidget;
+
+        Akonadi::Monitor* m_monitor;
 };
 
 #endif
