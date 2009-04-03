@@ -130,6 +130,7 @@ class EmailWidget : public Plasma::Frame
         void mouseMoveEvent(QGraphicsSceneMouseEvent * event);
 
     private :
+        void syncItemToAkonadi(Akonadi::Item &item);
         Akonadi::Monitor* m_monitor;
 
         void updateSize(int h);
@@ -147,7 +148,7 @@ class EmailWidget : public Plasma::Frame
 
         // The applet attached to this item
         MessagePtr m_msg;
-        Akonadi::Item* m_item;
+        Akonadi::Item m_item;
 
         int m_appletSize;
         // Email data
@@ -178,7 +179,7 @@ class EmailWidget : public Plasma::Frame
         Plasma::IconWidget* m_expandIcon;
         Plasma::IconWidget* m_icon;
         Plasma::Label* m_subjectLabel;
-        Plasma::WebView* m_header;
+        Plasma::Label* m_header;
         Plasma::Label* m_fromLabel;
 
         Plasma::IconWidget* m_newIcon;

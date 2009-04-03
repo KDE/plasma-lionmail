@@ -38,6 +38,7 @@
 #include <Akonadi/Collection>
 #include <Akonadi/ItemFetchJob>
 #include <Akonadi/Monitor>
+#include <Akonadi/ItemModifyJob>
 
 #include <kpimutils/email.h>
 #include <kpimutils/linklocator.h>
@@ -342,7 +343,7 @@ void EmailWidget::buildDialog()
     m_layout->addItem(m_actionsLayout, 1, 1, 1, 2, Qt::AlignTop | Qt::AlignRight);
 
     // From and date
-    m_header = new Plasma::WebView(this);
+    m_header = new Plasma::Label(this);
     m_header->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     m_header->setPreferredHeight(48);
     //m_header->page()->setFont(KGlobalSettings::smallestReadableFont());
@@ -391,14 +392,15 @@ void EmailWidget::flagNewClicked()
 
 
     // sync to Akonadi
-    if (!m_item) {
-        m_item = new Akonadi::Item(id);
+    if (!m_item.isValid()) {
+        m_item = Akonadi::Item(id);
     }
     if (m_isNew) {
-        m_item->clearFlag("\\Seen");
+        m_item.clearFlag("\\Seen");
     } else {
-        m_item->setFlag("\\Seen");
+        m_item.setFlag("\\Seen");
     }
+    syncItemToAkonadi(m_item);
     refreshFlags();
 }
 
@@ -409,37 +411,43 @@ bool EmailWidget::isNew()
 
 void EmailWidget::flagImportantClicked()
 {
-    // TODO: sync to Akonadi
     kDebug() << "Important clicked";
-    m_isImportant = !m_isImportant;
 
-    // sync to Akonadi
-    if (!m_item) {
-        m_item = new Akonadi::Item(id);
+    if (!m_item.isValid()) {
+        m_item = Akonadi::Item(id);
     }
+    m_isImportant = !m_isImportant;
     if (m_isImportant) {
-        m_item->setFlag("important");
+        m_item.setFlag("important");
     } else {
-        m_item->clearFlag("important");
+        m_item.clearFlag("important");
     }
+    syncItemToAkonadi(m_item);
     refreshFlags();
 }
 
 void EmailWidget::flagTaskClicked()
 {
-    // TODO: sync to Akonadi
     kDebug() << "Task clicked";
     m_isTask = !m_isTask;
     // sync to Akonadi
-    if (!m_item) {
-        m_item = new Akonadi::Item(id);
+    if (!m_item.isValid()) {
+        m_item = Akonadi::Item(id);
     }
     if (m_isTask) {
-        m_item->setFlag("\\Task");
+        m_item.setFlag("\\Task");
     } else {
-        m_item->clearFlag("\\Task");
+        m_item.clearFlag("\\Task");
     }
+    syncItemToAkonadi(m_item);
     refreshFlags();
+}
+
+void EmailWidget::syncItemToAkonadi(Akonadi::Item &item)
+{
+    Akonadi::ItemModifyJob* mjob = new Akonadi::ItemModifyJob(item);
+    mjob->start(); // Fire and forget, we're assuming no conflicts
+    kDebug() << "Sending modifications to Akonadi now ...";
 }
 
 void EmailWidget::refreshFlags(bool show)
@@ -612,7 +620,7 @@ void EmailWidget::updateColors()
         m_fromLabel->setStyleSheet(m_stylesheet);
     }
     if (m_bodyView) {
-        m_header->page()->setPalette(p);
+        m_header->nativeWidget()->setPalette(p);
         m_bodyView->page()->setPalette(p);
         m_subjectLabel->setStyleSheet(m_stylesheet);
     }
@@ -666,7 +674,7 @@ void EmailWidget::updateHeader()
     m_header->setMaximumHeight(header_height);
 
     table += "</table>";
-    m_header->setHtml(QString("<style>%1 %2</style>%3").arg("body { overflow: hidden; }", m_stylesheet, table));
+    m_header->setText(QString("<style>%1 %2</style>%3").arg("body { overflow: hidden; }", m_stylesheet, table));
     updateGeometry();
     // TODO: attachments
     //kDebug() << QString("<style>%1</style>%2").arg(m_stylesheet, table);
@@ -835,8 +843,7 @@ void EmailWidget::fetchDone(KJob* job)
 
 void EmailWidget::itemChanged(const Akonadi::Item& item)
 {
-    delete m_item;
-    m_item = new Akonadi::Item(item.id());
+    m_item = Akonadi::Item(item.id());
     if (item.hasPayload<MessagePtr>()) {
         MessagePtr msg = item.payload<MessagePtr>();
         id = item.id(); // This shouldn't change ... right?
@@ -936,10 +943,10 @@ void EmailWidget::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
 KUrl EmailWidget::url()
 {
-    if (!m_item) {
-        m_item = new Akonadi::Item(id);
+    if (!m_item.isValid()) {
+        m_item = Akonadi::Item(id);
     }
-    return m_item->url(Akonadi::Item::UrlWithMimeType);
+    return m_item.url(Akonadi::Item::UrlWithMimeType);
 }
 
 void EmailWidget::startDrag()
