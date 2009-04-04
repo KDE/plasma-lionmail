@@ -1,6 +1,8 @@
 project(plasma-emailmessage)
 
 
+include_directories( ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR} )
+
 set(emailmessage_SRCS
     emailmessage.cpp
     emailwidget.cpp

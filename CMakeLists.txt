@@ -4,6 +4,15 @@ find_package(KDE4 REQUIRED)
 find_package(Akonadi REQUIRED)
 find_package(KdepimLibs REQUIRED)
 
+include_directories(
+  ${AKONADI_INCLUDE_DIR}
+  ${KDE4_INCLUDES}
+  ${KDEPIMLIBS_INCLUDE_DIR}
+  ${QT_INCLUDES}
+  ${PROJECT_BINARY_DIR}
+  ${PROJECT_SOURCE_DIR}
+)
+
 add_subdirectory(emailmessage)
 
 set(lionmail_SRCS
