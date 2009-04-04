@@ -1,5 +1,9 @@
 project(lionmail)
 
+find_package(KDE4 REQUIRED)
+find_package(Akonadi REQUIRED)
+find_package(KdepimLibs REQUIRED)
+
 add_subdirectory(emailmessage)
 
 set(lionmail_SRCS
