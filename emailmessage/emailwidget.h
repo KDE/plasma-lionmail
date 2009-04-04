@@ -125,9 +125,11 @@ class EmailWidget : public Plasma::Frame
     Q_SIGNALS:
         void geometryChanged(QSizeF newSize);
 
-    protected:
+    protected Q_SLOTS:
         void mousePressEvent(QGraphicsSceneMouseEvent * event);
         void mouseMoveEvent(QGraphicsSceneMouseEvent * event);
+        void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+        void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
     private :
         void syncItemToAkonadi(Akonadi::Item &item);

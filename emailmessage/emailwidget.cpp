@@ -90,6 +90,8 @@ EmailWidget::EmailWidget(QGraphicsWidget *parent)
       m_taskIcon(0),
       m_bodyView(0)
 {
+    setAcceptHoverEvents(true);
+
     m_monitor = 0;
     m_expanded = false;
     buildDialog();
@@ -474,7 +476,6 @@ void EmailWidget::refreshFlags(bool show)
     }
 
     if (show) {
-        m_newIcon->show();
         m_newIcon->setPressed(m_isNew);
         // As iconwidget doesn't provide a good visual clue for
         // the activated flag, FIXME: remove
@@ -492,7 +493,6 @@ void EmailWidget::refreshFlags(bool show)
     }
 
     if (show) {
-        m_importantIcon->show();
         m_importantIcon->setPressed(m_isImportant);
         m_importantIcon->setDrawBackground(m_isImportant);
         if (m_isImportant) {
@@ -505,7 +505,6 @@ void EmailWidget::refreshFlags(bool show)
     }
 
     if (show) {
-        m_taskIcon->show();
         m_taskIcon->setPressed(m_isTask);
         m_taskIcon->setDrawBackground(m_isTask);
         if (m_isTask) {
@@ -946,6 +945,26 @@ void EmailWidget::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
         }
     }
 }
+
+void EmailWidget::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
+    Q_UNUSED( event );
+    if (m_appletSize > Tiny) {
+        m_newIcon->show();
+        m_importantIcon->show();
+        m_taskIcon->show();
+    }
+}
+
+void EmailWidget::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
+    Q_UNUSED( event );
+    m_newIcon->hide();
+    m_importantIcon->hide();
+    m_taskIcon->hide();
+}
+
+
 
 KUrl EmailWidget::url()
 {
