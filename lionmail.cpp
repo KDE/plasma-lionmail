@@ -33,6 +33,7 @@
 
 LionMail::LionMail(QObject *parent, const QVariantList &args)
   : Plasma::PopupApplet(parent, args),
+    m_theme(0),
     ui(0)
 {
     m_theme = new Plasma::Svg(this);
@@ -50,6 +51,17 @@ LionMail::LionMail(QObject *parent, const QVariantList &args)
     m_fontSubject = Plasma::Theme::defaultTheme()->font(Plasma::Theme::DefaultFont);
     setPopupIcon("akonadi");
     m_allowHtml = false;
+
+    if (args.count() > 0) {
+        kDebug() << "LionmailArgs" << args;
+        kDebug() << args.at(0).toString();
+        if (args.at(0).toString().startsWith("EmailCollection-")) {
+            m_activeCollection = args.at(0).toString();
+            kDebug() << "Loading EmailCollection from commandline argument (" << m_activeCollection << ").";
+        } else {
+            kDebug() << "argument has to start with EmailCollection, but it doesn't (" << args.at(0).toString() << ").";
+        }
+    }
 }
 
 LionMail::~LionMail()
@@ -75,7 +87,10 @@ void LionMail::init()
     //dataEngine("akonadi")->connectSource("ContactCollections", this); // FIXME: remove, only for testing the contacts in the dataengine
 
     KConfigGroup cg = config();
-    m_activeCollection = cg.readEntry("activeCollection", QString());
+    if (m_activeCollection.isEmpty()) {
+        m_activeCollection = cg.readEntry("activeCollection", QString());
+        kDebug() << "reading m_activeCollection from config";
+    }
     kDebug() << "activeCollection" << m_activeCollection;
 
     m_allowHtml = cg.readEntry("allowHtml", false);
