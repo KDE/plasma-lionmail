@@ -52,14 +52,15 @@ LionMail::LionMail(QObject *parent, const QVariantList &args)
     setPopupIcon("akonadi");
     m_allowHtml = false;
 
-    if (args.count() > 0) {
-        kDebug() << "LionmailArgs" << args;
-        kDebug() << args.at(0).toString();
-        if (args.at(0).toString().startsWith("EmailCollection-")) {
-            m_activeCollection = args.at(0).toString();
+    kDebug() << "LionmailArgs" << args;
+    foreach (QVariant a, args) {
+        kDebug() << args.at(0).toString() << a.toString();
+        QString firstarg = a.toString();
+        if (firstarg.startsWith("EmailCollection-")) {
+            m_activeCollection = firstarg;
             kDebug() << "Loading EmailCollection from commandline argument (" << m_activeCollection << ").";
         } else {
-            kDebug() << "argument has to start with EmailCollection, but it doesn't (" << args.at(0).toString() << ").";
+            kWarning() << "argument has to be in the form \"EmailCollection-<id>\", but it doesn't (" << firstarg << ")";
         }
     }
 }
