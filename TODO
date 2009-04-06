@@ -5,33 +5,38 @@ TODO and Notes for LionMail and EmailMessage applets:
 LionMail:
 - test and fix switching collection (clear list?)
 - multiple collections:
-    - config key (QStringList of ID's)
-    - show loading emails in extenderitem's infolabel
-- getting collection list on startup is slow
+    o config key (QStringList of ID's)
+    o show loading emails in extenderitem's infolabel
+o getting collection list on startup is slow
 
 EmailMessage:
 - QDragging
     - proper URL / Mimetype mixture in QMimeData
     - How do we load the dropped data?
-    - fix dragging from inside Lion Mail after email has been expanded
-- parsing of the content to nicer HTML
+        o urls to email items
+        - urls for collections
+    - make dragging areas more apparent, use the icon?
+o parsing of the content to nicer HTML
 - security: in HTML mode, images are always loaded
 - putting "something sensible" info in the To field
-- header webview should become Plasma::Label
+o header webview should become Plasma::Label
 - test and fix monitoring
 - saving of config in extenderitem
 - collection icons in widgetlist
-- Are multiple flags in Akonadi possible?
 - clearing and reloading the MailExtender's content on config changes
 
 General:
 - Retrieval of a contact based on an email address for example (not supported in Akonadi atm)
+- Saving multiple collections to kconfig
+- add the collection ID to the email data from the akonadiengine
+- based on the collection ID of the email, put the email into the corresponging extender
 - Sorting of collectionfetchjobs, preferably by receiving order
 - Contact plasmoid?
 
 
+
 Questions:
-- Multiple flags in Akonadi?
+- Multiple flags in Akonadi? Yes, possible.
 - Sorting of fetchJobs
 - custom collections ("virtual folders")
 
@@ -43,7 +48,7 @@ decoding body:
  http://api.kde.org/4.x-api/kdepimlibs-apidocs/kmime/html/classKMime_1_1Content.html#5baf20f83dfd3e914096f887202fe5d9
 
 
- drag and drop:
+OT: drag and drop notes from a chat with dfaure for making asynchronous receiving of mimetypes possible for dropping content onto plasma:
 
  [01:20:26] <dfaure> sebas: yep (my normal bed time is 2am, although I don't always work until that time)
 [01:20:35] <dfaure> but 4.2.2 is coming and kio_http isn't sending all cookies...
