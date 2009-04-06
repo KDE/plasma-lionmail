@@ -72,7 +72,8 @@ class LionMail : public Plasma::PopupApplet
         void enableCollectionWidgets(bool enable);
 
         QHash<QString, QVariant> m_allCollections;
-        QString m_activeCollection;
+        //QString m_activeCollection;
+        QStringList m_collections;
         QHash<QString, MailExtender*> m_extenders;
         Plasma::Svg* m_theme;
         Plasma::ToolTipContent m_toolTip;

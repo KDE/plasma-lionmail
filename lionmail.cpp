@@ -57,8 +57,8 @@ LionMail::LionMail(QObject *parent, const QVariantList &args)
         kDebug() << args.at(0).toString() << a.toString();
         QString firstarg = a.toString();
         if (firstarg.startsWith("EmailCollection-")) {
-            m_activeCollection = firstarg;
-            kDebug() << "Loading EmailCollection from commandline argument (" << m_activeCollection << ").";
+            m_collections << firstarg;
+            kDebug() << "Loading EmailCollection from commandline argument (" << firstarg << ").";
         } else {
             kWarning() << "argument has to be in the form \"EmailCollection-<id>\", but it doesn't (" << firstarg << ")";
         }
@@ -85,32 +85,31 @@ bool LionMail::allowHtml()
 void LionMail::init()
 {
     dataEngine("akonadi")->connectSource("EmailCollections", this);
-    //dataEngine("akonadi")->connectSource("ContactCollections", this); // FIXME: remove, only for testing the contacts in the dataengine
 
     KConfigGroup cg = config();
-    if (m_activeCollection.isEmpty()) {
-        m_activeCollection = cg.readEntry("activeCollection", QString());
-        kDebug() << "reading m_activeCollection from config";
+    if (m_collections.isEmpty()) { // it's not set from the command line, read configuration file
+        m_collections = cg.readEntry("collections", QStringList());
+        kDebug() << "using m_collections from applet configuration" << m_collections;
     }
-    kDebug() << "activeCollection" << m_activeCollection;
 
     m_allowHtml = cg.readEntry("allowHtml", false);
 
-    if (m_activeCollection.isEmpty()) {
+    if (!m_collections.count()) {
         setConfigurationRequired(true, i18n("Please select an Email Folder"));
         kDebug() << "config needed ...";
     }
-    kDebug() << "Active Collection" << m_activeCollection;
 
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     resize(300, 400);
-    extender()->setEmptyExtenderMessage(i18n("empty..."));
+    extender()->setEmptyExtenderMessage(i18n("Nothing to display. Please set up Lion Mail."));
 
-    if (!m_activeCollection.isEmpty()) {
-        initMailExtender(m_activeCollection);
-        m_extenders[m_activeCollection]->load();
+    kDebug() << "Loading the following collections:" << m_collections;
+    foreach (const QString c, m_collections) {
+        if (!c.isEmpty()) {
+            initMailExtender(c);
+            m_extenders[c]->load();
+        }
     }
-
     updateToolTip("", 0);
 }
 
@@ -140,6 +139,7 @@ void LionMail::createConfigurationInterface(KConfigDialog *parent)
     ui->sizeCombo->addItem(i18n("Icon and subject"), EmailWidget::Tiny);
     ui->sizeCombo->addItem(i18n("Icon, subject and sender"), EmailWidget::Small);
     ui->sizeCombo->addItem(i18n("Icon, subject, sender and header"), EmailWidget::Medium);
+    ui->sizeCombo->addItem(i18n("Full email"), EmailWidget::Large);
 
 
     connect(parent, SIGNAL(finished()), this, SLOT(configFinished()));
@@ -238,8 +238,8 @@ void LionMail::configAccepted()
     }
 
     int c = ui->collectionList->count();
-    if (ui->collectionList->selectedItems().count()) {
-        saveCurrentCollection();
+    if (ui->collectionList->count()) {
+        // FIXME: save collections from listview to config
     }
     for (int i = 0; i < c; i++) {
         setConfigurationRequired(false);
