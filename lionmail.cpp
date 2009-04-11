@@ -94,10 +94,6 @@ void LionMail::init()
 
     m_allowHtml = cg.readEntry("allowHtml", false);
 
-    if (!m_collections.count()) {
-        setConfigurationRequired(true, i18n("Please select an Email Folder"));
-        kDebug() << "config needed ...";
-    }
 
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     resize(300, 400);
@@ -111,6 +107,11 @@ void LionMail::init()
         }
     }
     updateToolTip("", 0);
+
+    if (!m_collections.count()) {
+        setConfigurationRequired(true, i18n("Please select an Email Folder"));
+        kDebug() << "config needed ...";
+    }
 }
 
 

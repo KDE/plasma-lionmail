@@ -53,7 +53,6 @@ MailExtender::MailExtender(LionMail * applet, const QString collectionId, Plasma
       m_widget(0),
       m_label(0)
 {
-    m_id = collectionId;
     kDebug() << "ctr" << m_id;
     m_applet = applet;
     setTitle("Lion Mail");
@@ -61,13 +60,13 @@ MailExtender::MailExtender(LionMail * applet, const QString collectionId, Plasma
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     setDescription("Some description");
     m_maxEmails = 12;
+    engine = m_applet->dataEngine("akonadi");
+    (void)graphicsWidget();
+    setCollection(collectionId);
 }
 
 void MailExtender::load()
 {
-    (void)graphicsWidget();
-    engine = m_applet->dataEngine("akonadi");
-    setCollection(m_id);
     kDebug() << "loading ...";
     setInfo(i18n("Loading emails..."));
     setIcon(m_iconName);
@@ -75,8 +74,8 @@ void MailExtender::load()
 
 void MailExtender::setCollection(const QString id)
 {
-    if (id != 0 && id == m_id) {
-        //return; // FIXME: investigate
+    if (id.isEmpty() || id == m_id) {
+        kDebug() << "id empty or m_id" << id << m_id; //return; // FIXME: investigate
     }
     kDebug() << "Setting collection from to " << m_id << id;
     if (m_id != 0) {
@@ -218,8 +217,6 @@ void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::
         email = emails[source];
     }
     setInfo();
-    // Do we want to update the collectionstatistics here? It's an expensive operation ...
-
 
     if (email == 0) {
         kDebug() << "didn't load email" << source;
@@ -348,7 +345,7 @@ void MailExtender::addEmail(EmailWidget* email)
 {
     email->setParent(this);
     email->setParentItem(m_emailScroll);
-    email->setTiny();
+    email->setSmall();
     email->setAllowHtml(m_applet->allowHtml());
 
     m_messageLayout->addItem(email);

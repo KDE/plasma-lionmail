@@ -163,7 +163,7 @@ void EmailWidget::setTiny()
     m_fromLabel->hide();
     m_header->hide();
     m_bodyView->hide();
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     int h = widgetHeight(m_appletSize);
     updateSize(h);
@@ -179,9 +179,11 @@ void EmailWidget::updateSize(int h)
     // on the desktop or more generally, in an applet, we let the applet
     // itself manage the max size
     if (m_appletSize != Large && !m_applet) {
-        setMaximumHeight(h);
+        //setMaximumHeight(h);
+        kDebug() << "MAX HEIGHT" << h;
     } else {
         setMaximumHeight(QWIDGETSIZE_MAX);
+        kDebug() << "MAX HEIGHT INF" << h;
     }
     m_layout->updateGeometry();
     updateGeometry();
@@ -208,7 +210,7 @@ void EmailWidget::setSmall()
     m_bodyView->hide();
     resizeIcon(22);
 
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     refreshFlags(true);
     int h = widgetHeight(m_appletSize);
