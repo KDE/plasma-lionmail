@@ -105,6 +105,11 @@ class MailExtender : public Plasma::ExtenderItem
         Plasma::ScrollWidget* m_emailScroll;
         QGraphicsWidget* m_emailsWidget;
 
+        QGraphicsLinearLayout* m_actionsLayout;
+        Plasma::IconWidget* m_zoomIn;
+        Plasma::IconWidget* m_zoomOut;
+        Plasma::IconWidget* m_refresh;
+
         Akonadi::Monitor* m_monitor;
 };
 

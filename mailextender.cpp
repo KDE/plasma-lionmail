@@ -280,10 +280,44 @@ QGraphicsWidget* MailExtender::graphicsWidget()
     m_icon->setAcceptHoverEvents(false);
     m_layout->addItem(m_icon, 0, 0, 2, 1);
 
-    // top label
+    // top label and actions
+    m_actionsLayout = new QGraphicsLinearLayout(m_layout);
+    m_actionsLayout->setOrientation(Qt::Horizontal);
+    m_actionsLayout->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+
     m_label = new Plasma::Label(m_widget);
     setDescription(m_id);
-    m_layout->addItem(m_label, 0, 1);
+    m_actionsLayout->addItem(m_label);
+
+    int s = KIconLoader::SizeSmall;
+    m_zoomIn = new Plasma::IconWidget(m_widget);
+    m_zoomIn->setIcon("zoom-in");
+    m_zoomIn->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    m_zoomIn->setMaximumHeight(s);
+    m_zoomIn->setMaximumWidth(s);
+    m_zoomIn->setMinimumWidth(s);
+    m_actionsLayout->addItem(m_zoomIn);
+
+    m_zoomOut = new Plasma::IconWidget(m_widget);
+    m_zoomOut->setIcon("zoom-out");
+    m_zoomOut->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    m_zoomOut->setMaximumHeight(22);
+    m_zoomOut->setMaximumHeight(s);
+    m_zoomOut->setMaximumWidth(s);
+    m_zoomOut->setMinimumWidth(s);
+    m_actionsLayout->addItem(m_zoomOut);
+
+    m_refresh = new Plasma::IconWidget(m_widget);
+    m_refresh->setIcon("view-refresh");
+    m_refresh->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    m_refresh->setMaximumHeight(22);
+    m_refresh->setMaximumHeight(s);
+    m_refresh->setMaximumWidth(s);
+    m_refresh->setMinimumWidth(s);
+    m_actionsLayout->addItem(m_refresh);
+
+
+    m_layout->addItem(m_actionsLayout, 0, 1);
 
     // smaller label
     m_infoLabel = new Plasma::Label(m_widget);
