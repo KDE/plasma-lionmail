@@ -124,6 +124,22 @@ int EmailWidget::widgetHeight(int size)
     return h;
 }
 
+void EmailWidget::setSize(int appletsize)
+{
+    kDebug() << "setting widgetsize" << appletsize;
+    if (appletsize == EmailWidget::Tiny) {
+        setTiny();
+    } else if (appletsize == EmailWidget::Small) {
+        setSmall();
+    } else if (appletsize == EmailWidget::Medium) {
+        setMedium();
+    } else if (appletsize == EmailWidget::Large) {
+        setLarge();
+    } else {
+        kDebug() << "Don't understand appletsize" << appletsize;
+    }
+}
+
 void EmailWidget::setIcon()
 {
     if (m_appletSize == Icon) {

@@ -60,6 +60,7 @@ MailExtender::MailExtender(LionMail * applet, const QString collectionId, Plasma
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     setDescription("Some description");
     m_maxEmails = 12;
+    m_emailSize = EmailWidget::Small;
     engine = m_applet->dataEngine("akonadi");
     (void)graphicsWidget();
     setCollection(collectionId);
@@ -316,6 +317,10 @@ QGraphicsWidget* MailExtender::graphicsWidget()
     m_refresh->setMinimumWidth(s);
     m_actionsLayout->addItem(m_refresh);
 
+    connect(m_zoomIn, SIGNAL(clicked()), this, SLOT(zoomIn()));
+    connect(m_zoomOut, SIGNAL(clicked()), this, SLOT(zoomOut()));
+    connect(m_refresh, SIGNAL(clicked()), this, SLOT(refresh()));
+
 
     m_layout->addItem(m_actionsLayout, 0, 1);
 
@@ -348,6 +353,61 @@ QGraphicsWidget* MailExtender::graphicsWidget()
     updateColors();
     //resize(200, 400);
     return m_widget;
+}
+
+void MailExtender::refresh()
+{
+    kDebug() << "Refresh";
+}
+
+void MailExtender::zoomIn()
+{
+    kDebug() << "zooming in";
+    switch (m_emailSize) {
+        case EmailWidget::Icon:
+        case EmailWidget::Tiny:
+            kDebug() << "setting small";
+            setEmailSize(EmailWidget::Small);
+            break;
+        case EmailWidget::Small:
+            kDebug() << "setting medium";
+            setEmailSize(EmailWidget::Medium);
+            break;
+        case EmailWidget::Medium:
+            kDebug() << "setting large";
+            setEmailSize(EmailWidget::Large);
+            break;
+        case EmailWidget::Large:
+            kDebug() << "Already large";
+            break;
+        default:
+            kDebug() << "hmz.";
+            break;
+    }
+    //emit configNeedsSaving();
+}
+
+void MailExtender::zoomOut()
+{
+    kDebug() << "zooming out";
+    switch (m_emailSize) {
+        case EmailWidget::Icon:
+        case EmailWidget::Tiny:
+            kDebug() << "Already tiny";
+            break;
+        case EmailWidget::Small:
+            setEmailSize(EmailWidget::Tiny);
+            break;
+        case EmailWidget::Medium:
+            setEmailSize(EmailWidget::Small);
+            break;
+        case EmailWidget::Large:
+            setEmailSize(EmailWidget::Medium);
+            break;
+        default:
+            break;
+    }
+    //emit configNeedsSaving();
 }
 
 void MailExtender::setShowUnreadOnly(bool show)
@@ -390,15 +450,12 @@ void MailExtender::addEmail(EmailWidget* email)
 void MailExtender::setEmailSize(int appletsize)
 {
     kDebug() << "------------ Set applet size" << appletsize;
+    m_emailSize = appletsize;
     foreach (EmailWidget* e, emails.values()) {
-        if (appletsize == EmailWidget::Tiny) {
-            e->setTiny();
-        } else if (appletsize == EmailWidget::Small) {
-            e->setSmall();
-        } else {
-            e->setMedium();
-        }
+        e->setSize(appletsize);
     }
+    m_messageLayout->updateGeometry();
+    m_layout->updateGeometry();
 }
 
 

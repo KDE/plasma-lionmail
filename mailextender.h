@@ -75,6 +75,9 @@ class MailExtender : public Plasma::ExtenderItem
         void sourceRemoved( const QString &source );
         void statisticsFetchDone(KJob* job);
         void setStatistics(Akonadi::Collection::Id id, const Akonadi::CollectionStatistics &statistics);
+        void zoomIn();
+        void zoomOut();
+        void refresh();
 
     private:
         void buildDialog();
@@ -88,6 +91,7 @@ class MailExtender : public Plasma::ExtenderItem
         QString m_info;
         QString m_iconName;
         QHash<QString, EmailWidget*> emails;
+        int m_emailSize;
 
         int m_unreadCount;
         int m_count;
