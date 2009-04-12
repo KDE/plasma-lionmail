@@ -117,7 +117,7 @@ int EmailWidget::widgetHeight(int size)
         case Small:
             return KIconLoader::SizeMedium*1.3; // 32 * 1.3
         case Medium:
-            return (int)(KIconLoader::SizeHuge * 1.5); // 96
+            return (int)(KIconLoader::SizeHuge * 1.5); // 96  FIXME: header is not always that big
         case Large:
             return (int)(KIconLoader::SizeEnormous * 1.5); // 192
     }
@@ -163,7 +163,7 @@ void EmailWidget::setTiny()
     m_fromLabel->hide();
     m_header->hide();
     m_bodyView->hide();
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
 
     int h = widgetHeight(m_appletSize);
     updateSize(h);
@@ -207,6 +207,8 @@ void EmailWidget::setSmall()
     m_fromLabel->show();
 
     m_header->hide();
+    //m_header->setMaximumHeight(0);
+    //m_bodyView->setMaximumHeight(0);
     m_bodyView->hide();
     resizeIcon(22);
 
@@ -236,6 +238,7 @@ void EmailWidget::setMedium()
     m_bodyView->hide();
     kDebug() << "Medium ...";
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    setPreferredSize(minimumSize());
 
     refreshFlags(true);
     resizeIcon(32);
@@ -272,7 +275,7 @@ void EmailWidget::setLarge(bool expanded)
     kDebug() << "Large ...";
     refreshFlags(true);
     resizeIcon(32);
-    setMinimumHeight(m_layout->minimumSize().height());
+    //setMinimumHeight(m_layout->minimumSize().height());
     setMinimumWidth(m_layout->minimumSize().width());
     if (!m_fetching) {
         fetchPayload();
@@ -350,7 +353,7 @@ void EmailWidget::buildDialog()
     m_header = new Plasma::Label(this);
     m_header->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     m_header->setPreferredHeight(48);
-    //m_header->page()->setFont(KGlobalSettings::smallestReadableFont());
+    m_header->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
     setFrom(i18n("Unknown Sender"));
     m_layout->addItem(m_header, 2, 0, 1, 3, Qt::AlignTop);
 
@@ -458,6 +461,16 @@ void EmailWidget::syncItemToAkonadi(Akonadi::Item &item)
 
     mjob->start(); // Fire and forget, we're assuming no conflicts
     kDebug() << "Sending modifications to Akonadi now ...";
+    connect(mjob, SIGNAL(result(KJob*)), SLOT(syncItemResult(KJob*)));
+}
+
+void EmailWidget::syncItemResult(KJob* job)
+{
+    if (job->error()) {
+        kDebug() << "SyncJob Failed:" << job->errorString();
+    } else {
+        kDebug() << "SyncJob Success!";
+    }
 }
 
 void EmailWidget::refreshFlags(bool show)
@@ -806,7 +819,7 @@ void EmailWidget::fetchPayload(bool full)
         return;
     }
     m_bodyView->setMinimumHeight(30);
-    updateSize(widgetHeight(Large)-50);
+    //updateSize(widgetHeight(Large)-50);
     kDebug() << "Fetching payload for " << id;
     Akonadi::ItemFetchJob* fetchJob = new Akonadi::ItemFetchJob( Akonadi::Item( id ), this );
     if (full) {
@@ -864,7 +877,7 @@ void EmailWidget::itemChanged(const Akonadi::Item& item)
         setBody(msg);
         kDebug() << "=== item changed" << id << msg;
     } else {
-        setSubject(i18n("Could not fetch email payload"));
+        //setSubject(i18n("Could not fetch email payload"));
     }
 }
 

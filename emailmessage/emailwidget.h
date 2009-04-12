@@ -131,6 +131,9 @@ class EmailWidget : public Plasma::Frame
         void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
         void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
+    private Q_SLOTS:
+        void syncItemResult(KJob* job);
+
     private :
         void syncItemToAkonadi(Akonadi::Item &item);
         Akonadi::Monitor* m_monitor;

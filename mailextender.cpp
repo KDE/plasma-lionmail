@@ -238,7 +238,7 @@ void MailExtender::dataUpdated(const QString &source, const Plasma::DataEngine::
     email->setCc(data["Cc"].toStringList());
     email->setBcc(data["Bcc"].toStringList());
 
-    setEmailSize(EmailWidget::Tiny);
+    //setEmailSize(EmailWidget::Small);
     update();
 }
 
@@ -303,7 +303,7 @@ QGraphicsWidget* MailExtender::graphicsWidget()
 
     m_emailsWidget->setLayout(m_messageLayout);
     m_emailScroll->setWidget(m_emailsWidget);
-    m_layout->addItem(m_emailScroll, 3, 0, 1, 3);
+    m_layout->addItem(m_emailScroll, 3, 0, 1, 2);
     //m_messageLayout->addStretch(-1);
     //m_messageLayout->addStretch(-1);
     m_widget->setLayout(m_layout);
