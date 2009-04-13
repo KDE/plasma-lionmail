@@ -69,6 +69,10 @@ class MailExtender : public Plasma::ExtenderItem
     public Q_SLOTS:
         void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);
 
+    protected Q_SLOTS:
+        void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+        void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+
     private Q_SLOTS:
         void updateColors();
         void sourceAdded( const QString &source );

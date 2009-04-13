@@ -41,7 +41,6 @@
 #include "mailextender.h"
 #include "lionmail.h"
 
-
 MailExtender::MailExtender(LionMail * applet, const QString collectionId, Plasma::Extender *ext)
     : Plasma::ExtenderItem(ext),
       m_id(0),
@@ -49,9 +48,20 @@ MailExtender::MailExtender(LionMail * applet, const QString collectionId, Plasma
       m_iconName(QString("mail-folder-inbox")),
       m_unreadCount(0),
       m_count(0),
+      m_applet(0),
+      engine(0),
+      m_messageLayout(0),
+      m_layout(0),
       m_icon(0),
       m_widget(0),
-      m_label(0)
+      m_label(0),
+      m_infoLabel(0),
+      m_emailScroll(0),
+      m_emailsWidget(0),
+      m_zoomIn(0),
+      m_zoomOut(0),
+      m_refresh(0),
+      m_monitor(0)
 {
     kDebug() << "ctr" << m_id;
     m_applet = applet;
@@ -291,6 +301,15 @@ QGraphicsWidget* MailExtender::graphicsWidget()
     m_actionsLayout->addItem(m_label);
 
     int s = KIconLoader::SizeSmall;
+
+    m_zoomOut = new Plasma::IconWidget(m_widget);
+    m_zoomOut->setIcon("zoom-out");
+    m_zoomOut->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    m_zoomOut->setMaximumHeight(s);
+    m_zoomOut->setMaximumWidth(s);
+    m_zoomOut->setMinimumWidth(s);
+    m_actionsLayout->addItem(m_zoomOut);
+
     m_zoomIn = new Plasma::IconWidget(m_widget);
     m_zoomIn->setIcon("zoom-in");
     m_zoomIn->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -299,19 +318,9 @@ QGraphicsWidget* MailExtender::graphicsWidget()
     m_zoomIn->setMinimumWidth(s);
     m_actionsLayout->addItem(m_zoomIn);
 
-    m_zoomOut = new Plasma::IconWidget(m_widget);
-    m_zoomOut->setIcon("zoom-out");
-    m_zoomOut->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    m_zoomOut->setMaximumHeight(22);
-    m_zoomOut->setMaximumHeight(s);
-    m_zoomOut->setMaximumWidth(s);
-    m_zoomOut->setMinimumWidth(s);
-    m_actionsLayout->addItem(m_zoomOut);
-
     m_refresh = new Plasma::IconWidget(m_widget);
     m_refresh->setIcon("view-refresh");
     m_refresh->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    m_refresh->setMaximumHeight(22);
     m_refresh->setMaximumHeight(s);
     m_refresh->setMaximumWidth(s);
     m_refresh->setMinimumWidth(s);
@@ -410,6 +419,22 @@ void MailExtender::zoomOut()
     //emit configNeedsSaving();
 }
 
+void MailExtender::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
+    Q_UNUSED( event );
+    m_zoomOut->show();
+    m_zoomIn->show();
+    m_refresh->show();
+}
+
+void MailExtender::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
+    Q_UNUSED( event );
+    m_zoomIn->hide();
+    m_zoomOut->hide();
+    m_refresh->hide();
+}
+
 void MailExtender::setShowUnreadOnly(bool show)
 {
     m_showUnreadOnly = show;
@@ -450,6 +475,17 @@ void MailExtender::addEmail(EmailWidget* email)
 void MailExtender::setEmailSize(int appletsize)
 {
     kDebug() << "------------ Set applet size" << appletsize;
+
+    if (appletsize == EmailWidget::Large) {
+        m_zoomIn->setEnabled(false);
+    } else {
+        m_zoomIn->setEnabled(true);
+    }
+    if (appletsize == EmailWidget::Tiny || appletsize == EmailWidget::Icon) {
+        m_zoomOut->setEnabled(false);
+    } else {
+        m_zoomOut->setEnabled(true);
+    }
     m_emailSize = appletsize;
     foreach (EmailWidget* e, emails.values()) {
         e->setSize(appletsize);
