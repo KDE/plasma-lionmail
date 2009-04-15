@@ -82,6 +82,9 @@ class MailExtender : public Plasma::ExtenderItem
         void zoomIn();
         void zoomOut();
         void refresh();
+        void synchronized();
+        void synchronizeError(const QString &error);
+        void percentSynchronized(int progress);
 
     private:
         void buildDialog();

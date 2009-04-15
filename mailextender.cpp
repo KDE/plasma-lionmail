@@ -36,6 +36,10 @@
 // Akonadi
 #include <akonadi/collectionstatistics.h>
 #include <akonadi/collectionstatisticsjob.h>
+#include <akonadi/agentinstance.h>
+#include <akonadi/agentmanager.h>
+//#include <Akonadi/ResourceBase>
+#include <akonadi/resourcebase.h>
 
 //own
 #include "mailextender.h"
@@ -366,7 +370,48 @@ QGraphicsWidget* MailExtender::graphicsWidget()
 
 void MailExtender::refresh()
 {
-    kDebug() << "Refresh";
+    qint64 _id = m_id.split("-")[1].toLongLong();
+    Akonadi::Collection col = Akonadi::Collection(_id);
+    // First problem: col.resource()  returns an empty string
+    //const QString identifier = col.resource();
+    const QString identifier = "akonadi_maildir_resource_0"; // so set it manually for now
+    kDebug() << "Refresh" << _id << identifier << col.id() << col.resource();
+    Akonadi::AgentInstance agent = Akonadi::AgentManager::self()->instance( identifier );
+    if (agent.isValid()) {
+        /*
+        // Need something deriving from ResourceBase here
+        if (rbase.isValid()) {
+            rbase.synchronizeCollection(_id);
+            connect(rbase, SIGNAL(percent(int progress)), SLOT(percentSynchronized(int progress)));
+            connect(rbase, SIGNAL(synchronized()), SLOT(synchronized()));
+            connect(rbase, SIGNAL(error(const QString&)), SLOT(synchronizeError(const QString&)));
+        }
+        */
+        // on the agent, we can only all synchronizeCollectionTree or synchronize
+        agent.synchronize();
+    }
+
+    // This works, however
+    Akonadi::AgentInstance::List instances = Akonadi::AgentManager::self()->instances();
+    foreach ( const Akonadi::AgentInstance &instance, instances ) {
+        qDebug() << "Name:" << instance.name() << "(" << instance.identifier() << ")";
+    }
+
+}
+
+void MailExtender::synchronized()
+{
+    kDebug() << "Collection synched";
+}
+
+void MailExtender::synchronizeError(const QString &error)
+{
+    kDebug() << "Synching Error:" << error;
+}
+
+void MailExtender::percentSynchronized(int progress)
+{
+    kDebug() << "percentage synched:" << progress;
 }
 
 void MailExtender::zoomIn()
