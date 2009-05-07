@@ -284,6 +284,8 @@ QGraphicsWidget* MailExtender::graphicsWidget()
     m_layout->setColumnMinimumWidth(1, 100);
     m_layout->setHorizontalSpacing(4);
     m_layout->setVerticalSpacing(4);
+    m_layout->setRowFixedHeight(0, 12);
+    m_layout->setRowFixedHeight(1, 12);
 
     // larger icon on the left
     m_icon = new Plasma::IconWidget(m_widget);
@@ -302,6 +304,7 @@ QGraphicsWidget* MailExtender::graphicsWidget()
 
     m_label = new Plasma::Label(m_widget);
     setDescription(m_id);
+    m_label->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
     m_actionsLayout->addItem(m_label);
 
     int s = KIconLoader::SizeSmall;
@@ -341,6 +344,7 @@ QGraphicsWidget* MailExtender::graphicsWidget()
     m_infoLabel = new Plasma::Label(m_widget);
     m_infoLabel->setText(i18n("No emails found"));
     m_infoLabel->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
+    m_infoLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
     m_infoLabel->nativeWidget()->setWordWrap(false);
     m_layout->addItem(m_infoLabel, 1, 1);
 
