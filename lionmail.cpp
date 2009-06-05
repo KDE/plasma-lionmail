@@ -46,6 +46,7 @@ LionMail::LionMail(QObject *parent, const QVariantList &args)
     setPassivePopup(true);
     setMaximumHeight(600);
     setMinimumWidth(300);
+    resize(300, 400);
 
     m_fontFrom = Plasma::Theme::defaultTheme()->font(Plasma::Theme::DefaultFont);
     m_fontSubject = Plasma::Theme::defaultTheme()->font(Plasma::Theme::DefaultFont);
@@ -82,6 +83,7 @@ bool LionMail::allowHtml()
 {
     return m_allowHtml;
 }
+
 void LionMail::init()
 {
     dataEngine("akonadi")->connectSource("EmailCollections", this);
@@ -94,9 +96,7 @@ void LionMail::init()
 
     m_allowHtml = cg.readEntry("allowHtml", false);
 
-
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    resize(300, 400);
     extender()->setEmptyExtenderMessage(i18n("Nothing to display. Please set up Lion Mail."));
 
     kDebug() << "Loading the following collections:" << m_collections;
