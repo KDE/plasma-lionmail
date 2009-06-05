@@ -108,7 +108,7 @@ void LionMail::init()
     }
     updateToolTip("", 0);
 
-    if (!m_collections.count()) {
+    if (m_collections.isEmpty()) {
         setConfigurationRequired(true, i18n("Please select an Email Folder"));
         kDebug() << "config needed ...";
     }
@@ -127,7 +127,7 @@ void LionMail::createConfigurationInterface(KConfigDialog *parent)
     ui->saveCollection->setIcon(KIcon("document-save"));
     ui->saveCollection->setEnabled(false);
     kDebug() << m_extenders.keys();
-    if (m_allCollections.count() == 0) {
+    if (m_allCollections.isEmpty()) {
         ui->collectionsStatus->setText(i18n("Loading collection list, please wait...."));
     } else {
         ui->collectionsStatus->setText("");
@@ -160,9 +160,11 @@ void LionMail::addConfigCollections()
     if (!ui) {
         return;
     }
+
     if (m_allCollections.count()) {
         ui->collectionsStatus->setText("");
     }
+
     if (ui->collectionCombo) {
         foreach ( QString cid, m_allCollections.keys() ) {
             if (m_extenders.keys().contains(cid)) {
@@ -180,6 +182,7 @@ void LionMail::addConfigCollections()
                 ui->addCollection->setEnabled(true);
             }
         }
+
         if (ui->collectionList->count()) {
             ui->collectionList->setCurrentRow(0);
             listItemChanged();
@@ -342,16 +345,6 @@ void LionMail::updateToolTip(const QString query, const int matches)
                     KIcon("akonadi").pixmap(IconSize(KIconLoader::Desktop))
                 );
     Plasma::ToolTipManager::self()->setContent(this, m_toolTip);
-}
-
-void LionMail::popupEvent(bool show)
-{
-    //kDebug() << "POPUP" << show;
-    if (show) {
-        Plasma::ToolTipManager::self()->setState(Plasma::ToolTipManager::Inhibited);
-    } else {
-        Plasma::ToolTipManager::self()->setState(Plasma::ToolTipManager::Activated);
-    }
 }
 
 void LionMail::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
