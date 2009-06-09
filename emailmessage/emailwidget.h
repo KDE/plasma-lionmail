@@ -25,6 +25,7 @@
 #include <QGraphicsLinearLayout>
 #include <QGraphicsWidget>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsSceneWheelEvent>
 
 // KDE
 #include <KPushButton>
@@ -126,6 +127,9 @@ class EmailWidget : public Plasma::Frame
     Q_SIGNALS:
         void geometryChanged(QSizeF newSize);
 
+    protected:
+        void wheelEvent (QGraphicsSceneWheelEvent * event);
+
     protected Q_SLOTS:
         void mousePressEvent(QGraphicsSceneMouseEvent * event);
         void mouseMoveEvent(QGraphicsSceneMouseEvent * event);
@@ -196,6 +200,7 @@ class EmailWidget : public Plasma::Frame
         Plasma::WebView* m_bodyView;
 
         QPointF m_startPos;
+        int m_fontAdjust; // wheel adjustment of the font size
 };
 
 #endif

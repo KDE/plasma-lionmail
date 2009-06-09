@@ -88,7 +88,8 @@ EmailWidget::EmailWidget(QGraphicsWidget *parent)
       m_newIcon(0),
       m_importantIcon(0),
       m_taskIcon(0),
-      m_bodyView(0)
+      m_bodyView(0),
+      m_fontAdjust(0)
 {
     setAcceptHoverEvents(true);
 
@@ -615,6 +616,7 @@ void EmailWidget::updateColors()
     setPalette(p);
 
     qreal fontsize = KGlobalSettings::smallestReadableFont().pointSize();
+    fontsize = qMax(4.0, fontsize+m_fontAdjust);
     m_stylesheet = QString("\
                 body { \
                     color: %1; \
@@ -629,7 +631,6 @@ void EmailWidget::updateColors()
                 } \
                 .header { \
                     overflow: hidden; \
-                    font-size: 1em; \
                     opacity: .9; \
                     cell-padding: 0; \
                     cell-spacing: 0; \
@@ -995,7 +996,20 @@ void EmailWidget::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     m_taskIcon->hide();
 }
 
-
+void EmailWidget::wheelEvent (QGraphicsSceneWheelEvent * event)
+{
+    if (event->modifiers() & Qt::ControlModifier) {
+        if (event->delta() < 0) {
+            kDebug() << "-Decrease size";
+            m_fontAdjust--;
+        } else {
+            kDebug() << "+Increase size";
+            m_fontAdjust++;
+        }
+        updateColors();
+        setRawBody(QString());
+    }
+}
 
 KUrl EmailWidget::url()
 {
