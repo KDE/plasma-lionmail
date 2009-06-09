@@ -350,7 +350,10 @@ QGraphicsWidget* MailExtender::graphicsWidget()
 
 
     m_emailScroll = new Plasma::ScrollWidget(m_widget);
+    m_emailScroll->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    m_emailScroll->resize(300, 400);
     m_emailsWidget = new QGraphicsWidget(m_emailScroll);
+    m_emailsWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     m_messageLayout = new QGraphicsLinearLayout(m_emailsWidget);
     m_messageLayout->setSpacing(8);

@@ -28,6 +28,7 @@
 #include <Plasma/Extender>
 #include <Plasma/DataEngine>
 
+#include <Akonadi/ServerManager>
 #include "mailextender.h"
 #include "emailmessage/emailmessage.h"
 
@@ -86,6 +87,7 @@ bool LionMail::allowHtml()
 
 void LionMail::init()
 {
+    Akonadi::ServerManager::start();
     dataEngine("akonadi")->connectSource("EmailCollections", this);
 
     KConfigGroup cg = config();
