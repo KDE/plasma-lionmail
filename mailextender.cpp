@@ -539,7 +539,7 @@ void MailExtender::setEmailSize(int appletsize)
         m_zoomOut->setEnabled(true);
     }
     m_emailSize = appletsize;
-    foreach (EmailWidget* e, emails.values()) {
+    foreach (EmailWidget* e, emails) {
         e->setSize(appletsize);
     }
     m_messageLayout->updateGeometry();
