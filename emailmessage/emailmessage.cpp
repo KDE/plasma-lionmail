@@ -79,6 +79,7 @@ EmailMessage::EmailMessage(QObject *parent, const QVariantList &args)
     }
     if (!argUrl.isEmpty()) {
         // TODO: input and error checking
+        delete m_url;
         m_url = new KUrl(argUrl);
         m_emailWidget->setUrl(KUrl(m_url->url()));
     }
