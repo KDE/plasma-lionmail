@@ -616,7 +616,7 @@ void EmailWidget::updateColors()
     setPalette(p);
 
     qreal fontsize = KGlobalSettings::smallestReadableFont().pointSize();
-    fontsize = qMax(4.0, fontsize+m_fontAdjust);
+    fontsize = qMax(qreal(4.0), fontsize+m_fontAdjust);
     m_stylesheet = QString("\
                 body { \
                     color: %1; \
