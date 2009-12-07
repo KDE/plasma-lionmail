@@ -107,7 +107,7 @@ EmailWidget::~EmailWidget()
 int EmailWidget::widgetHeight(int size)
 {
     //kDebug() << "minwidth:" << m_layout->minimumWidth() << m_toLabel->minimumSize().width();
-    int h;
+    int h = 0;
     switch (size) {
         case Icon:
             h = KIconLoader::SizeSmall;
@@ -116,11 +116,11 @@ int EmailWidget::widgetHeight(int size)
             h = qMax((int)KIconLoader::SizeSmall, (int)(m_subjectLabel->minimumHeight()*1.4));
             break;
         case Small:
-            return KIconLoader::SizeMedium*1.3; // 32 * 1.3
+            h = KIconLoader::SizeMedium*1.3; // 32 * 1.3
         case Medium:
-            return (int)(KIconLoader::SizeHuge * 1.5); // 96  FIXME: header is not always that big
+            h = (int)(KIconLoader::SizeHuge * 1.5); // 96  FIXME: header is not always that big
         case Large:
-            return (int)(KIconLoader::SizeEnormous * 1.5); // 192
+            h = (int)(KIconLoader::SizeEnormous * 1.5); // 192
     }
     return h;
 }
