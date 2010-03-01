@@ -47,8 +47,6 @@
 
 MailExtender::MailExtender(LionMail * applet, const QString collectionId, Plasma::Extender *ext)
     : Plasma::ExtenderItem(ext),
-      m_id(0),
-      m_info(0),
       m_iconName(QString("mail-folder-inbox")),
       m_unreadCount(0),
       m_count(0),
