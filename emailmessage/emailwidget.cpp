@@ -1035,17 +1035,7 @@ void EmailWidget::wheelEvent (QGraphicsSceneWheelEvent * event)
 
 KUrl EmailWidget::url()
 {
-    if (!m_item.isValid()) {
-        m_item = Akonadi::Item(id);
-        kDebug() << "item invalid" << id;
-    }
-    KUrl _url = m_item.url(Akonadi::Item::UrlWithMimeType);
-    if (_url.queryItem("item") == "0" && _url.queryItem("type").isEmpty()) {
-        // the url is bogus, this happens when the Akonadi::Item hasn't received its data yet
-        // provide a basic fallback URL so we can already drag emails that haven't loaded
-        _url = KUrl(QString("akonadi:?item=%1").arg(id));
-    }
-    return _url;
+    return KUrl(QString("akonadi:?item=%1").arg(id));
 }
 
 void EmailWidget::startDrag()
