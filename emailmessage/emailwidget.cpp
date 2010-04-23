@@ -117,11 +117,15 @@ int EmailWidget::widgetHeight(int size)
             break;
         case Small:
             h = KIconLoader::SizeMedium*1.3; // 32 * 1.3
+            break;
         case Medium:
             h = (int)(KIconLoader::SizeHuge * 1.5); // 96  FIXME: header is not always that big
+            break;
         case Large:
             h = (int)(KIconLoader::SizeEnormous * 1.5); // 192
+            break;
     }
+    kDebug() << "size for" << size << h;
     return h;
 }
 
