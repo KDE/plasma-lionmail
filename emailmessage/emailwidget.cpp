@@ -160,7 +160,7 @@ void EmailWidget::setIcon()
         m_expandIcon->hide();
         refreshFlags(false);
     }
-    setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    //setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     m_bodyView->hide();
     updateSize(widgetHeight(Icon));
 }
@@ -168,8 +168,11 @@ void EmailWidget::setIcon()
 void EmailWidget::setTiny()
 {
     if (!m_expanded && m_appletSize == Tiny) {
+        kDebug() << "return" << minimumSize();
+        setMinimumHeight(-1);
         return;
     }
+    kDebug() << "making tiny" << Tiny;
     m_appletSize = Tiny;
 
     m_subjectLabel->show();
@@ -180,7 +183,7 @@ void EmailWidget::setTiny()
     m_fromLabel->hide();
     m_header->hide();
     m_bodyView->hide();
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
+    //setSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
 
     int h = widgetHeight(m_appletSize);
     updateSize(h);
@@ -230,7 +233,7 @@ void EmailWidget::setSmall()
     m_bodyView->hide();
     resizeIcon(22);
 
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    //setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     refreshFlags(true);
     int h = widgetHeight(m_appletSize);
@@ -255,7 +258,7 @@ void EmailWidget::setMedium()
 
     m_bodyView->hide();
     kDebug() << "Medium ...";
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    //setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setPreferredSize(minimumSize());
 
     refreshFlags(true);
@@ -288,8 +291,8 @@ void EmailWidget::setLarge(bool expanded)
     //m_layout->setRowMinimumHeight(3, 80);
     //m_bodyView->setMinimumHeight(80);
 
-    m_layout->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    //m_layout->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    //setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     kDebug() << "Large ...";
     refreshFlags(true);
     resizeIcon(32);
@@ -306,7 +309,7 @@ void EmailWidget::buildDialog()
     updateColors();
 
     m_layout = new QGraphicsGridLayout(this);
-    m_layout->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    //m_layout->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     m_layout->setColumnFixedWidth(0, 40); // This could probably be a bit more dynamic should be dynamic
     m_layout->setColumnPreferredWidth(1, 180);
     m_layout->setColumnFixedWidth(2, 22);
@@ -377,9 +380,9 @@ void EmailWidget::buildDialog()
 
     // The Body
     m_bodyView = new Plasma::WebView(this);
-    //m_bodyView->setMinimumSize(20, 40);
+    m_bodyView->setMinimumSize(20, 40);
 
-    m_bodyView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    //m_bodyView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     setRawBody("<b>Fetching data ...</b>");
 

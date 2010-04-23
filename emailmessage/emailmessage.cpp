@@ -130,13 +130,18 @@ void EmailMessage::constraintsEvent(Plasma::Constraints constraints)
         } else {
             setMinimumSize(m_emailWidget->minimumWidth(), tiny);
             if (contentsRect().height() < m_emailWidget->widgetHeight(EmailWidget::Small)+proximity) {
+                kDebug() << "==>setTiny(Medium)" << contentsRect().height() << m_emailWidget->widgetHeight(EmailWidget::Small)+proximity;
                 m_emailWidget->setTiny();
             } else if (contentsRect().height() < m_emailWidget->widgetHeight(EmailWidget::Medium)+proximity) { // We can fit date, recipient, attachment and such in
+                kDebug() << "==>setSmall(Medium)" << contentsRect().height() << m_emailWidget->widgetHeight(EmailWidget::Medium)+proximity;
                 m_emailWidget->setSmall();
             } else if (contentsRect().height() < m_emailWidget->widgetHeight(EmailWidget::Large)+proximity) { // $even_more_info
+                kDebug() << "==>setMedium(Large)" << contentsRect().height() << m_emailWidget->widgetHeight(EmailWidget::Large)+proximity;
                 m_emailWidget->setMedium();
             } else {  // Enough space to include the body
+                kDebug() << "==>setLarge";
                 m_emailWidget->setLarge();
+                
             }
         }
 
