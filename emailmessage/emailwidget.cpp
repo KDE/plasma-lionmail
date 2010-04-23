@@ -190,7 +190,8 @@ void EmailWidget::setTiny()
 
 void EmailWidget::updateSize(int h)
 {
-    setMinimumHeight(h);
+    setMinimumHeight(-1);
+    //setMinimumHeight(h);
     setPreferredHeight(h+6);
     // In Layouts, we want to restrict the appletsize as much as possible,
     // on the desktop or more generally, in an applet, we let the applet
@@ -285,7 +286,7 @@ void EmailWidget::setLarge(bool expanded)
     m_bodyView->show();
 
     //m_layout->setRowMinimumHeight(3, 80);
-    m_bodyView->setMinimumHeight(80);
+    //m_bodyView->setMinimumHeight(80);
 
     m_layout->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -835,7 +836,7 @@ void EmailWidget::fetchPayload(bool full)
         kDebug() << "id is 0";
         return;
     }
-    m_bodyView->setMinimumHeight(30);
+    //m_bodyView->setMinimumHeight(30);
     //updateSize(widgetHeight(Large)-50);
     kDebug() << "Fetching payload for " << id;
     Akonadi::ItemFetchJob* fetchJob = new Akonadi::ItemFetchJob( Akonadi::Item( id ), this );

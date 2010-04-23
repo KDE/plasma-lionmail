@@ -50,7 +50,7 @@ EmailMessage::EmailMessage(QObject *parent, const QVariantList &args)
     setAspectRatioMode(IgnoreAspectRatio);
     setHasConfigurationInterface(true);
     setAcceptsHoverEvents(true);
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    //setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setPassivePopup(true);
 
     //setMinimumSize(80, 48);
@@ -58,30 +58,23 @@ EmailMessage::EmailMessage(QObject *parent, const QVariantList &args)
     m_emailWidget->m_applet = this;
     setPopupIcon("mail-mark-read");
 
-    QString argUrl;
     if (args.count() > 0) {
         kDebug() << "EmailMessageArgs" << args;
         // FIXME: error handling
         kDebug() << args.at(0).toString();
-        m_url = new KUrl(args.at(0).toString());
-        m_emailWidget->setUrl(KUrl(m_url->url()));
-        /*
-        QFile f(args.at(0).toString());
-        if (f.open(QIODevice::ReadOnly)) {
-            kDebug() << "open::" << args.at(0).toString();
-            QTextStream t(&f);
-            argUrl = t.readAll();
-            kDebug() << argUrl;
-            f.close();
+        QString arg0 = args.at(0).toString();
+        if (arg0.toInt()) {
+            QString _u = QString("akonadi:?item=%1").arg(arg0);
+            m_url = new KUrl(_u);
+            m_emailWidget->setUrl(KUrl(m_url->url()));
+        } else {
+            if (arg0.startsWith("akonadi:")) {
+                m_url = new KUrl(args.at(0).toString());
+                m_emailWidget->setUrl(KUrl(m_url->url()));
+            } else {
+                kWarning() << "I don't understand what you mean, try using the akonadi ID as simple number or an akonadi URL in the style of akonadi:?item=<id>";
+            }
         }
-        */
-        kDebug() << "URL found:" << argUrl;
-    }
-    if (!argUrl.isEmpty()) {
-        // TODO: input and error checking
-        delete m_url;
-        m_url = new KUrl(argUrl);
-        m_emailWidget->setUrl(KUrl(m_url->url()));
     }
 }
 
@@ -98,7 +91,7 @@ void EmailMessage::init()
     Plasma::ToolTipManager::self()->registerWidget(this);
     // TODO ...
     appear(true);
-    resize(240, 180);
+    //setPreferredSize(240, 180);
 }
 
 QGraphicsWidget* EmailMessage::graphicsWidget()
@@ -132,7 +125,7 @@ void EmailMessage::constraintsEvent(Plasma::Constraints constraints)
         if (contentsRect().width() < 180 ) {
             // not wide enough, only show the icon
             int small = m_emailWidget->widgetHeight(EmailWidget::Small);
-            setMinimumSize(small, small);
+            //setMinimumSize(small, small);
             m_emailWidget->setIcon();
         } else {
             setMinimumSize(m_emailWidget->minimumWidth(), tiny);
