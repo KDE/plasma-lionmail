@@ -11,19 +11,20 @@ o getting collection list on startup is slow
 
 EmailMessage:
 - QDragging
-    - proper URL / Mimetype mixture in QMimeData
+    o proper URL / Mimetype mixture in QMimeData
     - How do we load the dropped data?
         o urls to email items
         - urls for collections
     - make dragging areas more apparent, use the icon?
 o parsing of the content to nicer HTML
-- security: in HTML mode, images are always loaded
+- security: in HTML mode, images are always loaded: tom has a "disable external images" trick
 - putting "something sensible" info in the To field
 o header webview should become Plasma::Label
-- test and fix monitoring
+o test and fix monitoring
 - saving of config in extenderitem
 - collection icons in widgetlist
 - clearing and reloading the MailExtender's content on config changes
+- fetching email contents is slow (payload definition wrong?)
 
 General:
 - Retrieval of a contact based on an email address for example (not supported in Akonadi atm)
@@ -37,8 +38,8 @@ General:
 
 Questions:
 - Multiple flags in Akonadi? Yes, possible.
-- Sorting of fetchJobs
-- custom collections ("virtual folders")
+- Sorting of fetchJobs: use entitytreemodel
+- custom collections ("virtual folders"): use entitytreemodel
 
 
 flags example from mailody:
