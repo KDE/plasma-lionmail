@@ -42,6 +42,7 @@ Icon=view-pim-mail
 Type=Service
 X-KDE-ServiceTypes=Plasma/Applet
 X-Plasma-DropMimeTypes=message/rfc822
+X-Plasma-DropUrlPatterns=akonadi:*
 
 X-KDE-Library=plasma_applet_emailmessage
 X-KDE-PluginInfo-Author=Sebastian Kügler
