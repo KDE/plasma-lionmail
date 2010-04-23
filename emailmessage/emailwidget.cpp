@@ -1,5 +1,5 @@
 /*
-    Copyright 2008-2009 by Sebastian Kügler <sebas@kde.org>
+    Copyright 2008-2010 by Sebastian Kügler <sebas@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -784,7 +784,7 @@ void EmailWidget::setRawBody(const QString& body)
         if (body.isEmpty() && !m_body.isEmpty()) {
             html = i18n("<style type=\"text/css\">%1</style><body>%2</body>", m_stylesheet, m_body);
         } else {
-            html = i18n("<style type=\"text/css\">%1</style><body><h3>Empty body loaded.</h3></body>", m_stylesheet);
+            html = i18n("<style type=\"text/css\">%1</style><body><h3>%2.</h3></body>", m_stylesheet, html);
         }
         if (!body.isEmpty()) {
             html = QString("<style type=\"text/css\">%1</style><body>%2</body>").arg(m_stylesheet, body);
@@ -1040,7 +1040,9 @@ KUrl EmailWidget::url()
         kDebug() << "item invalid" << id;
     }
     KUrl _url = m_item.url(Akonadi::Item::UrlWithMimeType);
-    if (_url.queryItem("type").isEmpty() && _url.queryItem("type").isEmpty()) {
+    if (_url.queryItem("item") == "0" && _url.queryItem("type").isEmpty()) {
+        // the url is bogus, this happens when the Akonadi::Item hasn't received its data yet
+        // provide a basic fallback URL so we can already drag emails that haven't loaded
         _url = KUrl(QString("akonadi:?item=%1").arg(id));
     }
     return _url;
