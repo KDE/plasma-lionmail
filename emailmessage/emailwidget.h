@@ -138,6 +138,7 @@ class EmailWidget : public Plasma::Frame
 
     private Q_SLOTS:
         void syncItemResult(KJob* job);
+        void showBody(bool show);
 
     private :
         void syncItemToAkonadi(Akonadi::Item &item);

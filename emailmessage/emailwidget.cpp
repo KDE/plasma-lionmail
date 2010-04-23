@@ -161,7 +161,7 @@ void EmailWidget::setIcon()
         refreshFlags(false);
     }
     //setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    m_bodyView->hide();
+    showBody(false);
     updateSize(widgetHeight(Icon));
 }
 
@@ -182,7 +182,7 @@ void EmailWidget::setTiny()
 
     m_fromLabel->hide();
     m_header->hide();
-    m_bodyView->hide();
+    showBody(false);
     //setSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
 
     int h = widgetHeight(m_appletSize);
@@ -230,7 +230,7 @@ void EmailWidget::setSmall()
     m_header->hide();
     //m_header->setMaximumHeight(0);
     //m_bodyView->setMaximumHeight(0);
-    m_bodyView->hide();
+    showBody(false);
     resizeIcon(22);
 
     //setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -256,7 +256,7 @@ void EmailWidget::setMedium()
     m_header->show();
     m_fromLabel->show();
 
-    m_bodyView->hide();
+    showBody(false);
     kDebug() << "Medium ...";
     //setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setPreferredSize(minimumSize());
@@ -266,6 +266,25 @@ void EmailWidget::setMedium()
     int h = widgetHeight(m_appletSize);
     updateSize(h);
     kDebug() << m_layout->geometry().size() << preferredSize() << minimumSize();
+}
+
+void EmailWidget::showBody(bool show)
+{
+    if (m_bodyView && !show) {
+        kDebug() << "body deleting";
+        delete m_bodyView;
+        m_bodyView = 0;
+    }
+    if (!m_bodyView && show) {
+        // The Body
+        kDebug() << "new body";
+        m_bodyView = new Plasma::WebView(this);
+        m_bodyView->setMinimumSize(20, 40);
+        //m_bodyView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        setRawBody(m_body);
+        m_layout->addItem(m_bodyView, 3, 0, 1, 3);
+
+    }
 }
 
 void EmailWidget::setLarge(bool expanded)
@@ -286,7 +305,7 @@ void EmailWidget::setLarge(bool expanded)
     m_expandIcon->show();
     m_header->show();
     m_fromLabel->show();
-    m_bodyView->show();
+    showBody(true);
 
     //m_layout->setRowMinimumHeight(3, 80);
     //m_bodyView->setMinimumHeight(80);

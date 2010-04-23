@@ -119,7 +119,7 @@ void EmailMessage::constraintsEvent(Plasma::Constraints constraints)
         int tiny = m_emailWidget->widgetHeight(EmailWidget::Small);
         //setMinimumSize(tiny, m_emailWidget->minimumWidth());
         //kDebug() << contentsRect();
-
+        kDebug() << "emailwidget minheight" << m_emailWidget->minimumHeight();
         int proximity = 8; // How close can we get to the minimumSize before we change appearance?
         //if (m_emailWidget->minimumSize().width()+proximity > m_emailWidget->geometry().width() ) {
         if (contentsRect().width() < 180 ) {
@@ -128,7 +128,7 @@ void EmailMessage::constraintsEvent(Plasma::Constraints constraints)
             //setMinimumSize(small, small);
             m_emailWidget->setIcon();
         } else {
-            setMinimumSize(m_emailWidget->minimumWidth(), tiny);
+            //setMinimumSize(m_emailWidget->minimumWidth(), tiny);
             if (contentsRect().height() < m_emailWidget->widgetHeight(EmailWidget::Small)+proximity) {
                 kDebug() << "==>setTiny(Medium)" << contentsRect().height() << m_emailWidget->widgetHeight(EmailWidget::Small)+proximity;
                 m_emailWidget->setTiny();
@@ -141,7 +141,6 @@ void EmailMessage::constraintsEvent(Plasma::Constraints constraints)
             } else {  // Enough space to include the body
                 kDebug() << "==>setLarge";
                 m_emailWidget->setLarge();
-                
             }
         }
 
