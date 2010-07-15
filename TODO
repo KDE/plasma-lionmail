@@ -93,3 +93,35 @@ OT: drag and drop notes from a chat with dfaure for making asynchronous receivin
 [01:31:09] <dfaure> yep
 [01:31:38] <sebas> OK, suddenly the whole thing makes a lot of sense
 [01:33:11] <sebas> thanks :)
+
+
+
+Notes from Akademy 2010
+
+Lion Mail / Akonadi
+
+Needed in Dataengine
+- unread emails in all folders
+- unread email in folder X
+- unread email in folder X & Y & Z
+- email tagged important
+- sorted
+- only the last N emails
+
+Features Lion Mail
+- unread emails as lion mail list from panel
+- panel icon shows synching, otherwise email icon + number
+- actions: read/unread, important, trash
+- default for inbox, other folders configurable
+- no notifications by default, some animation when new email arrived
+- emails accessible from panel, d+d'able
+- possibly tabs for important as well (todo list use case)
+- resizing goes away (at least for in-list mode), expanding stays
+
+Technical Stuff
+- checkboxes in treeviews: CheckableItemProxyModel (kdepim/akonadi/akonadi-next)
+- build kdelibs w/ tests, kdelibs/kdeui/tests/proxymodeltestapp
+- KViewStateSaver as base, ETMStateSaver as implementation (akonadi-next; copy)
+- KJots has akonotes_*
+
+
