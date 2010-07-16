@@ -993,19 +993,20 @@ void EmailWidget::itemChanged(const Akonadi::Item& item)
     if (item.hasPayload<MessagePtr>()) {
         MessagePtr msg = item.payload<MessagePtr>();
         id = item.id(); // This shouldn't change ... right?
+        m_isImportant = (item.hasFlag("\\FLAGGED") || item.hasFlag("\\Flagged"));
+        m_isNew = !(item.hasFlag("\\SEEN") || item.hasFlag("\\Seen"));
+        m_isTask = (item.hasFlag("\\Task") || item.hasFlag("$TODO") || item.hasFlag("\\TASK"));
+        
         setSubject(msg->subject()->asUnicodeString());
         setFrom(msg->from()->asUnicodeString());
         setDate(msg->date()->dateTime().dateTime());
         setTo(QStringList(msg->to()->asUnicodeString()));
         setCc(QStringList(msg->cc()->asUnicodeString()));
         setBcc(QStringList(msg->bcc()->asUnicodeString()));
-        m_isImportant = (item.hasFlag("\\FLAGGED") || item.hasFlag("\\Flagged"));
-        m_isNew = !(item.hasFlag("\\SEEN"));
-        m_isTask = item.hasFlag("\\Task");
         updateHeader();
         setBody(msg);
         refreshFlags();
-        kDebug() << "=== item changed" << id << msg << item.flags();
+        kDebug() << "=== item changed" << id << msg->subject()->asUnicodeString() << item.flags();
         kDebug() << "new:" << m_isNew << "important:" << m_isImportant << "task:" << m_isTask;
     } else {
         //setSubject(i18n("Could not fetch email payload"));

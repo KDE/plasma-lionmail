@@ -99,7 +99,7 @@ void EmailList::initETM()
     
     //changeRecorder->setCollectionMonitored( Collection(201) );
     // // 201 is lion mail local, 191 is INBOX, 111 is lion mail imap
-    changeRecorder->setCollectionMonitored( Collection(111) ); 
+    changeRecorder->setCollectionMonitored( Collection(201) ); 
     //changeRecorder->setMimeTypeMonitored("inode/directory");
     changeRecorder->itemFetchScope().fetchPayloadPart(MessagePart::Header);
     changeRecorder->setMimeTypeMonitored("message/rfc822");
