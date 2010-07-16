@@ -126,7 +126,7 @@ int EmailWidget::widgetHeight(int size)
             h = (int)(KIconLoader::SizeEnormous * 1.5); // 192
             break;
     }
-    kDebug() << "size for" << size << h;
+    //kDebug() << "size for" << size << h;
     return h;
 }
 
@@ -183,7 +183,7 @@ void EmailWidget::setTiny()
     m_subjectLabel->show();
     m_subjectLabel->setMinimumWidth(140);
     m_expandIcon->show();
-    m_expandIcon->setIcon("arrow-down-double");
+    m_expandIcon->setIcon("arrow-down");
 
     m_fromLabel->hide();
     //m_header->hide();
@@ -206,10 +206,10 @@ void EmailWidget::updateSize(int h)
     // itself manage the max size
     if (m_appletSize != Large && !m_applet) {
         //setMaximumHeight(h);
-        kDebug() << "MAX HEIGHT" << h;
+        //kDebug() << "MAX HEIGHT" << h;
     } else {
         setMaximumHeight(QWIDGETSIZE_MAX);
-        kDebug() << "MAX HEIGHT INF" << h;
+        //kDebug() << "MAX HEIGHT INF" << h;
     }
     m_layout->updateGeometry();
     updateGeometry();
@@ -221,13 +221,13 @@ void EmailWidget::setSmall()
         return;
     }
 
-    kDebug() << "Small ...";
+    //kDebug() << "Small ...";
     m_appletSize = Small;
 
     m_subjectLabel->show();
     m_subjectLabel->setMinimumWidth(140);
     //m_expandIcon->show();
-    m_expandIcon->setIcon("arrow-down-double");
+    m_expandIcon->setIcon("arrow-down");
     m_fromLabel->show();
 
     //m_header->hide();
@@ -253,12 +253,12 @@ void EmailWidget::setMedium()
     }
 
     m_appletSize = Medium;
-    m_expandIcon->setIcon("arrow-down-double");
+    m_expandIcon->setIcon("arrow-down");
     //m_expandIcon->show();
     m_subjectLabel->show();
-    m_header->show();
+    //m_header->show();
     m_fromLabel->show();
-
+    //showBody(true)
     //showBody(false);
     kDebug() << "Medium ...";
     //setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -268,13 +268,13 @@ void EmailWidget::setMedium()
     resizeIcon(32);
     int h = widgetHeight(m_appletSize);
     updateSize(h);
-    kDebug() << m_layout->geometry().size() << preferredSize() << minimumSize();
+    //kDebug() << m_layout->geometry().size() << preferredSize() << minimumSize();
 }
 
 /*
 void EmailWidget::showBody(bool show)
 {
-    /*
+    / *
     if (m_bodyView && !show) {
         kDebug() << "body deleting";
         delete m_bodyView;
@@ -370,7 +370,7 @@ void EmailWidget::setLarge(bool expanded)
     }
 
     m_appletSize = Large;
-    m_expandIcon->setIcon("arrow-up-double");
+    m_expandIcon->setIcon("arrow-up");
     m_subjectLabel->show();
     //m_expandIcon->show();
     //m_header->show();
@@ -383,7 +383,7 @@ void EmailWidget::setLarge(bool expanded)
 
     //m_layout->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     //setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    kDebug() << "Large ...";
+    //kDebug() << "Large ...";
     refreshFlags(true);
     resizeIcon(32);
     //setMinimumHeight(m_layout->minimumSize().height());
@@ -412,6 +412,7 @@ void EmailWidget::buildDialog()
     m_icon->setAcceptHoverEvents(false);
     resizeIcon(32);
     m_layout->addItem(m_icon, 0, 0, 2, 1, Qt::AlignTop);
+    connect(m_icon, SIGNAL(clicked()), SLOT(itemActivated()));
 
     m_subjectLabel = new Plasma::Label(this);
     m_subjectLabel->nativeWidget()->setWordWrap(false);
@@ -487,7 +488,7 @@ void EmailWidget::buildDialog()
 
     m_expandIcon = new Plasma::IconWidget(this);
     m_expandIcon->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    m_expandIcon->setIcon("arrow-down-double");
+    m_expandIcon->setIcon("arrow-down");
     m_expandIcon->setMinimumSize(16, 16);
     m_expandIcon->setMaximumSize(16, 16);
     connect(m_expandIcon, SIGNAL(clicked()), this, SLOT(toggleBody()));
@@ -504,7 +505,7 @@ void EmailWidget::buildDialog()
     setImportant(m_isImportant);
 
     updateColors();
-    setMedium();
+    //setMedium();
 }
 
 void EmailWidget::refreshFlags()
@@ -523,9 +524,9 @@ void EmailWidget::flagNewClicked()
         m_item = Akonadi::Item(id);
     }
     if (m_isNew) {
-        m_item.clearFlag("\\Seen");
+        m_item.clearFlag("\\SEEN");
     } else {
-        m_item.setFlag("\\Seen");
+        m_item.setFlag("\\SEEN");
     }
     syncItemToAkonadi(m_item);
     refreshFlags();
@@ -545,9 +546,9 @@ void EmailWidget::flagImportantClicked()
     }
     m_isImportant = !m_isImportant;
     if (m_isImportant) {
-        m_item.setFlag("important");
+        m_item.setFlag("\\FLAGGED");
     } else {
-        m_item.clearFlag("important");
+        m_item.clearFlag("\\FLAGGED");
     }
     syncItemToAkonadi(m_item);
     refreshFlags();
@@ -659,7 +660,7 @@ void EmailWidget::resizeIcon(int iconsize)
 
 void EmailWidget::toggleBody()
 {
-    kDebug() << preferredSize() << minimumSize();
+    //kDebug() << preferredSize() << minimumSize();
     if (!m_expanded) {
         expand();
     } else {
@@ -679,18 +680,18 @@ void EmailWidget::toggleMeta()
 
 void EmailWidget::collapse()
 {
-    kDebug() << "hiding body";
-    m_expandIcon->setIcon("arrow-down-double");
+    //kDebug() << "hiding body";
+    m_expandIcon->setIcon("arrow-down");
     setSmall();
     showActions(false);
-    m_expanded = false;
+    m_expanded = false; // needs to be unset last, otherwise animations won't trigger
 }
 
 
 void EmailWidget::expand()
 {
-    kDebug() << "showing body";
-    m_expanded = true;
+    //kDebug() << "showing body";
+    m_expanded = true;  // needs to be set first, otherwise animations won't trigger
     setLarge(true);
 }
 
@@ -728,6 +729,7 @@ void EmailWidget::updateColors()
                     margin-right: 0px; \
                     margin-bottom: 0px; \
                     padding: 0px; \
+                    opacity: 0.8; \
                 } \
                 .header { \
                     overflow: hidden; \
@@ -753,8 +755,10 @@ void EmailWidget::updateColors()
 
     if (m_fromLabel) {
         // FIXME: links in fromLabel are still blue :/
-        m_fromLabel->setPalette(p);
+        //m_fromLabel->setPalette(p);
         //m_fromLabel->setStyleSheet(m_stylesheet);
+        //kDebug() << "Setting palette, text:" << text;
+        m_fromLabel->nativeWidget()->setPalette(p);
     }
     /*
     if (m_bodyView) {
@@ -871,7 +875,7 @@ void EmailWidget::setRawBody(const QString& body)
             
         html = i18n("<style type=\"text/css\">%1</style><body>%2</body>", m_stylesheet, html);
         html.replace("<br />\n<br />", "<br />\n");
-        kDebug() << html;
+        //kDebug() << html;
         m_header->setText(html); // works?
         //m_bodyView->setHtml(html);
     }
@@ -995,9 +999,14 @@ void EmailWidget::itemChanged(const Akonadi::Item& item)
         setTo(QStringList(msg->to()->asUnicodeString()));
         setCc(QStringList(msg->cc()->asUnicodeString()));
         setBcc(QStringList(msg->bcc()->asUnicodeString()));
+        m_isImportant = (item.hasFlag("\\FLAGGED") || item.hasFlag("\\Flagged"));
+        m_isNew = !(item.hasFlag("\\SEEN"));
+        m_isTask = item.hasFlag("\\Task");
         updateHeader();
         setBody(msg);
-        kDebug() << "=== item changed" << id << msg;
+        refreshFlags();
+        kDebug() << "=== item changed" << id << msg << item.flags();
+        kDebug() << "new:" << m_isNew << "important:" << m_isImportant << "task:" << m_isTask;
     } else {
         //setSubject(i18n("Could not fetch email payload"));
     }
@@ -1026,11 +1035,15 @@ void EmailWidget::setFrom(const QString& from)
             QString label = from;
             //m_fromLabel->setText(KPIMUtils::LinkLocator::convertToHtml(from));
             QStringList p = from.split("<");
-            kDebug() << "FROM:" << from << p.count();
+            //kDebug() << "FROM:" << from << p.count();
             if (p.count()) {
-                label = p[0];                
+                label = p[0].trimmed();                
             }
-            label = i18nc("sender and date", "%1, %2", label, KGlobal::locale()->formatDateTime(m_date, KLocale::FancyLongDate));
+            if (m_date.isNull()) {
+                label = i18nc("sender", "%1", label);
+            } else {
+                label = i18nc("sender and date", "%1, %2", label, KGlobal::locale()->formatDateTime(m_date, KLocale::FancyShortDate));
+            }
             m_fromLabel->setText(Qt::escape(label));
         } else {
             m_fromLabel->setText(i18n("<i>Sender unkown</i>"));
@@ -1140,6 +1153,13 @@ void EmailWidget::hideLater()
         if (w) {
             w->hide();
         }
+    }
+}
+
+void EmailWidget::itemActivated()
+{
+    if (m_item.isValid()) {
+        emit activated(m_item.url());        
     }
 }
 

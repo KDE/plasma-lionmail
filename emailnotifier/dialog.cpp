@@ -72,6 +72,7 @@ void Dialog::buildDialog()
     //m_resultsView = new Crystal::ResultWebView(this);
     //m_resultsView = new Crystal::ResultWidget(m_tabBar);
     m_unreadList = new EmailList(this);
+    connect(m_unreadList, SIGNAL(activated(const QUrl)), SLOT(openUrl(const QUrl)));
     m_tabBar->addTab(KIcon("mail-unread-new"), i18n("Unread"), m_unreadList);
     m_tabBar->setTabBarShown(false);
 
@@ -115,6 +116,12 @@ void Dialog::toggleTab()
     } else {
         m_tabBar->setCurrentIndex(0);
     }
+}
+
+void Dialog::openUrl(const QUrl url)
+{
+    kDebug() << "Opening ..." << url;
+    KRun::runUrl(url, "message/rfc822", 0);
 }
 
 #include "dialog.moc"

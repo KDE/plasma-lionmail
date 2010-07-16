@@ -130,6 +130,7 @@ class EmailWidget : public Plasma::Frame
 
     Q_SIGNALS:
         void geometryChanged(QSizeF newSize);
+        void activated(const QUrl);
 
     protected:
         void wheelEvent (QGraphicsSceneWheelEvent * event);
@@ -145,6 +146,7 @@ class EmailWidget : public Plasma::Frame
         void showBody(bool show = true);
         void showActions(bool show = true);
         void hideLater();
+        void itemActivated();
 
     private :
         void syncItemToAkonadi(Akonadi::Item &item);

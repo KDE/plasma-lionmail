@@ -93,15 +93,15 @@ void EmailList::initETM()
     monitor->itemFetchScope().fetchPayloadPart( MessagePart::Envelope );
     */
     
-    Session *session = new Session( QByteArray( "PlasmaAkonadiDataEngine-" ) + QByteArray::number( qrand() ), this );
+    Session *session = new Session( QByteArray( "PlasmaEmailNotifier-" ) + QByteArray::number( qrand() ), this );
  
     ChangeRecorder *changeRecorder = new ChangeRecorder( this );
     
     //changeRecorder->setCollectionMonitored( Collection(201) );
-    //
-    changeRecorder->setCollectionMonitored( Collection(201) ); // 191 is INBOX
+    // // 201 is lion mail local, 191 is INBOX, 111 is lion mail imap
+    changeRecorder->setCollectionMonitored( Collection(111) ); 
     //changeRecorder->setMimeTypeMonitored("inode/directory");
-    changeRecorder->itemFetchScope().fetchPayloadPart(MessagePart::Envelope);
+    changeRecorder->itemFetchScope().fetchPayloadPart(MessagePart::Header);
     changeRecorder->setMimeTypeMonitored("message/rfc822");
     changeRecorder->setSession( session );
     
@@ -123,6 +123,7 @@ void EmailList::rowAdded(const QModelIndex &index, int start, int end)
         QModelIndex itemindex =  m_model->index(i, 0, index);
         Akonadi::Item item = itemindex.data(EntityTreeModel::ItemRole).value<Akonadi::Item>();
         EmailWidget* ew = new EmailWidget(this);
+        connect(ew, SIGNAL(activated(const QUrl)), SIGNAL(activated(const QUrl)));
         m_emailWidgets[item.url()] = ew;
         ew->setSmall();
         ew->itemChanged(item);

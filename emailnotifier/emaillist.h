@@ -60,6 +60,7 @@ namespace Akonadi {
 
     Q_SIGNALS:
         void updateToolTip(const QString&, int);
+        void activated(const QUrl);
         
     private Q_SLOTS:
         void rowAdded(const QModelIndex &index, int start, int end);

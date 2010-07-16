@@ -61,6 +61,8 @@ namespace Plasma
 
     private Q_SLOTS:
         void toggleTab();
+        void openUrl(const QUrl url);
+        void updateNavIcon(int tabIndex);
 
     Q_SIGNALS:
         void updateToolTip(const QString&, int);
@@ -70,7 +72,6 @@ namespace Plasma
         * @internal build the dialog
         **/
         void buildDialog();
-        void updateNavIcon(int tabIndex);
         void updateStatus(const QString status);
 
         Plasma::IconWidget *m_navIcon;
