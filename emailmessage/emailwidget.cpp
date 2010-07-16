@@ -940,8 +940,14 @@ void EmailWidget::setFrom(const QString& from)
     m_from = from;
     if (m_fromLabel) {
         if (!m_from.isEmpty()) {
+            QString label = from;
             //m_fromLabel->setText(KPIMUtils::LinkLocator::convertToHtml(from));
-            m_fromLabel->setText(Qt::escape(from));
+            QStringList p = from.split("<");
+            kDebug() << "FROM:" << from << p.count();
+            if (p.count()) {
+                label = p[0];                
+            }
+            m_fromLabel->setText(Qt::escape(label));
         } else {
             m_fromLabel->setText(i18n("<i>Sender unkown</i>"));
         }
