@@ -186,7 +186,7 @@ void EmailWidget::setTiny()
     m_expandIcon->setIcon("arrow-down-double");
 
     m_fromLabel->hide();
-    m_header->hide();
+    //m_header->hide();
     //showBody(false);
     //setSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
 
@@ -230,7 +230,7 @@ void EmailWidget::setSmall()
     m_expandIcon->setIcon("arrow-down-double");
     m_fromLabel->show();
 
-    m_header->hide();
+    //m_header->hide();
     //m_header->setMaximumHeight(0);
     //m_bodyView->setMaximumHeight(0);
     showBody(false);
@@ -474,8 +474,8 @@ void EmailWidget::buildDialog()
     m_header = new Plasma::Label(this);
     m_header->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     m_header->setMinimumHeight(80);
-    m_header->setOpacity(.8);
-    //QFont sf = KGlobalSettings::smallestReadableFont();
+    //m_header->setOpacity(.8);
+    m_header->hide();
     
     m_header->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
     setFrom(i18n("Unknown Sender"));
@@ -861,7 +861,7 @@ void EmailWidget::setRawBody(const QString& body)
         if (m_fetching) {
             html = i18n("<h3>Loading body...</h3>");
         } else {
-            html = i18n("<h3>Empty body loaded.</h3>");
+            //html = i18n("<h3>Empty body loaded.</h3>");
         }
 
         if (body.isEmpty() && !m_body.isEmpty()) {
@@ -871,7 +871,7 @@ void EmailWidget::setRawBody(const QString& body)
         }
             
         html = i18n("<style type=\"text/css\">%1</style><body>%2</body>", m_stylesheet, html);
-        //html.replace("<br />", "");
+        html.replace("<br />\n<br />", "<br />\n");
         kDebug() << html;
         m_header->setText(html); // works?
         //m_bodyView->setHtml(html);
@@ -1134,14 +1134,11 @@ void EmailWidget::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 
 void EmailWidget::hideLater()
 {
-    //kDebug() << "hiding";
-    //QObject *s = sender();
+    // Used as endpoint for a hide animation
     Plasma::Animation* a = dynamic_cast<Plasma::Animation*>(sender());
     if (a) {
-        //kDebug() << "Hiding animation finished";
         QGraphicsWidget* w = a->targetWidget();
         if (w) {
-            //kDebug() << "Hiding some QGW";
             w->hide();
         }
     }
