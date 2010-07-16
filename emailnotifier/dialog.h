@@ -34,7 +34,6 @@
 #include <Plasma/TabBar>
 
 //own
-#include "../emailmessage/emailmessage.h"
 #include "emaillist.h"
 
 namespace Plasma

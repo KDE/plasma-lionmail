@@ -34,7 +34,6 @@
 
 //own
 #include "dialog.h"
-//#include "helpers.cpp"
 
 
 Dialog::Dialog(QGraphicsWidget *parent)

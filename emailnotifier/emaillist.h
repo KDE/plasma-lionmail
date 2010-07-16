@@ -34,7 +34,7 @@
 #include <Plasma/ScrollWidget>
 
 //own
-#include "../emailmessage/emailmessage.h"
+#include "emailwidget.h"
 
 namespace Plasma
 {

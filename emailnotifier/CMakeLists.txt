@@ -21,7 +21,7 @@ set(emailnotifier_SRCS
     emailnotifier.cpp
     dialog.cpp
     emaillist.cpp
-    ../emailmessage/emailwidget.cpp
+    emailwidget.cpp
     )
 
 kde4_add_ui_files(emailnotifier_SRCS emailnotifierConfig.ui )
