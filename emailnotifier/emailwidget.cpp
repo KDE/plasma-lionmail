@@ -354,7 +354,6 @@ void EmailWidget::showBody(bool show)
         connect(fadeAnimation, SIGNAL(finished()), SLOT(hideLater()));
         //kDebug() << "starting fade out";
         fadeAnimation->start();
-        
     }
 }
 

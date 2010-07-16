@@ -107,7 +107,8 @@ void EmailList::initETM()
     
     m_model = new Akonadi::EntityTreeModel(changeRecorder, this);
     //m_model->setItemPopulationStrategy( EntityTreeModel::NoItemPopulation );
-    connect(m_model, SIGNAL(rowsInserted ( const QModelIndex&, int, int)), this, SLOT(rowAdded(const QModelIndex&, int, int)));
+    connect(m_model, SIGNAL(rowsInserted(const QModelIndex&, int, int)), this, SLOT(rowAdded(const QModelIndex&, int, int)));
+    connect(m_model, SIGNAL(rowsRemoved(const QModelIndex&, int, int)), this, SLOT(rowsRemoved(const QModelIndex&, int, int)));
     kDebug() << "Model created and connected. :)";
 }
 
@@ -122,13 +123,35 @@ void EmailList::rowAdded(const QModelIndex &index, int start, int end)
         QModelIndex itemindex =  m_model->index(i, 0, index);
         Akonadi::Item item = itemindex.data(EntityTreeModel::ItemRole).value<Akonadi::Item>();
         EmailWidget* ew = new EmailWidget(this);
+        m_emailWidgets[item.url()] = ew;
         ew->setSmall();
         ew->itemChanged(item);
         m_listLayout->addItem(ew);
         kDebug() << "Item URL:" << item.url();
     }
+}
+
+void EmailList::rowsRemoved(const QModelIndex &index, int start, int end)
+{
+    kDebug() << "ROWs Removed!!!!" << start << end;
+    kDebug() << "Total rows:" << m_model->rowCount() << m_model->columnCount();
+    kDebug() << index.data(EntityTreeModel::MimeTypeRole).value<QString>();
+    kDebug() << index.data(EntityTreeModel::ItemIdRole).value<int>();
     
-    
+    for (int i = start; i <= end; i++) {
+        QModelIndex itemindex =  m_model->index(i, 0, index);
+        Akonadi::Item item = itemindex.data(EntityTreeModel::ItemRole).value<Akonadi::Item>();
+        //EmailWidget* ew = new EmailWidget(this);
+        if (m_emailWidgets.keys().contains(item.url())) {
+            QGraphicsWidget* ew = m_emailWidgets[item.url()];
+            m_listLayout->removeItem(ew);
+            delete ew;
+            m_emailWidgets.remove(item.url());
+        }
+        //ew->setSmall();
+        //ew->itemChanged(item);
+        kDebug() << "Item gone URL:" << item.url();
+    }
 }
 
 

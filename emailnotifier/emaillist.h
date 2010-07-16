@@ -63,6 +63,7 @@ namespace Akonadi {
         
     private Q_SLOTS:
         void rowAdded(const QModelIndex &index, int start, int end);
+        void rowsRemoved(const QModelIndex &index, int start, int end);
 
 
     private :
@@ -75,6 +76,8 @@ namespace Akonadi {
         Akonadi::EntityTreeModel* m_model;
         QGraphicsWidget* m_innerWidget;
         QGraphicsLinearLayout* m_listLayout;
+        
+        QHash<QUrl, EmailWidget*> m_emailWidgets;
   };
 
 #endif
