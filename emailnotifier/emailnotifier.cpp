@@ -41,7 +41,7 @@ EmailNotifier::EmailNotifier(QObject *parent, const QVariantList &args)
     setPopupIcon("mail-unread-new");
     setHasConfigurationInterface(true);
     setBackgroundHints(StandardBackground);
-    
+    setAspectRatioMode(Plasma::IgnoreAspectRatio);
     setPassivePopup(true);
     setStatus(Plasma::ActiveStatus);
     
