@@ -46,9 +46,11 @@
 #include <akonadi/kmime/messageparts.h>
 
 // Plasma
+#include <Plasma/Animation>
 #include <Plasma/Theme>
 #include <Plasma/IconWidget>
 #include <Plasma/Label>
+#include <Plasma/PushButton>
 #include <Plasma/WebView>
 
 // own
@@ -112,10 +114,10 @@ int EmailWidget::widgetHeight(int size)
             h = KIconLoader::SizeSmall;
             break;
         case Tiny:
-            h = qMax((int)KIconLoader::SizeSmall, (int)(m_subjectLabel->minimumHeight()*1.4));
+            h = qMax((int)KIconLoader::SizeSmall, (int)(m_subjectLabel->minimumHeight()*1.5));
             break;
         case Small:
-            h = KIconLoader::SizeMedium*1.3; // 32 * 1.3
+            h = KIconLoader::SizeMedium*1.5; // 32 * 1.3
             break;
         case Medium:
             h = (int)(KIconLoader::SizeHuge * 1.5); // 96  FIXME: header is not always that big
@@ -158,13 +160,13 @@ void EmailWidget::setIcon()
     m_subjectLabel->setMinimumWidth(0);
 
     if (m_header) {
-        m_header->hide();
+        //m_header->hide();
         m_fromLabel->hide();
-        m_expandIcon->hide();
+        showBody(false);
+        //m_expandIcon->hide();
         refreshFlags(false);
     }
     //setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    showBody(false);
     updateSize(widgetHeight(Icon));
 }
 
@@ -185,7 +187,7 @@ void EmailWidget::setTiny()
 
     m_fromLabel->hide();
     m_header->hide();
-    showBody(false);
+    //showBody(false);
     //setSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
 
     int h = widgetHeight(m_appletSize);
@@ -218,15 +220,13 @@ void EmailWidget::setSmall()
     if (m_appletSize == Small) {
         return;
     }
-    if (m_expanded) {
-        return;
-    }
+
     kDebug() << "Small ...";
     m_appletSize = Small;
 
     m_subjectLabel->show();
     m_subjectLabel->setMinimumWidth(140);
-    m_expandIcon->show();
+    //m_expandIcon->show();
     m_expandIcon->setIcon("arrow-down-double");
     m_fromLabel->show();
 
@@ -254,12 +254,12 @@ void EmailWidget::setMedium()
 
     m_appletSize = Medium;
     m_expandIcon->setIcon("arrow-down-double");
-    m_expandIcon->show();
+    //m_expandIcon->show();
     m_subjectLabel->show();
     m_header->show();
     m_fromLabel->show();
 
-    showBody(false);
+    //showBody(false);
     kDebug() << "Medium ...";
     //setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setPreferredSize(minimumSize());
@@ -271,6 +271,7 @@ void EmailWidget::setMedium()
     kDebug() << m_layout->geometry().size() << preferredSize() << minimumSize();
 }
 
+/*
 void EmailWidget::showBody(bool show)
 {
     /*
@@ -290,7 +291,71 @@ void EmailWidget::showBody(bool show)
 
     }
     
-    */
+    * /
+}
+*/
+void EmailWidget::showActions(bool show)
+{
+    if (!m_expanded) {
+        return;
+    }
+    if (show) {
+        //kDebug() << "starting fade in";
+        m_actionsWidget->show();
+        
+        // Fade in when this widget appears
+        Plasma::Animation* fadeAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
+        fadeAnimation->setTargetWidget(m_actionsWidget);
+        fadeAnimation->setProperty("startOpacity", 0.0);
+        fadeAnimation->setProperty("targetOpacity", 1.0);
+        fadeAnimation->setProperty("Duration", 300);
+
+        fadeAnimation->start();
+        
+    } else {
+        // Fade in when this widget appears
+        Plasma::Animation* fadeAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
+        fadeAnimation->setTargetWidget(m_actionsWidget);
+        fadeAnimation->setProperty("startOpacity", 1.0);
+        fadeAnimation->setProperty("targetOpacity", 0.0);
+        fadeAnimation->setProperty("Duration", 300);
+        connect(fadeAnimation, SIGNAL(finished()), SLOT(hideLater()));
+        //kDebug() << "starting fade out";
+        fadeAnimation->start();
+        
+    }
+}
+
+void EmailWidget::showBody(bool show)
+{
+    if (!m_expanded) {
+        return;
+    }
+    if (show) {
+        //kDebug() << "starting fade in";
+        m_header->show();
+        
+        // Fade in when this widget appears
+        Plasma::Animation* fadeAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
+        fadeAnimation->setTargetWidget(m_header);
+        fadeAnimation->setProperty("startOpacity", 0.0);
+        fadeAnimation->setProperty("targetOpacity", 1.0);
+        fadeAnimation->setProperty("Duration", 300);
+
+        fadeAnimation->start();
+        
+    } else {
+        // Fade in when this widget appears
+        Plasma::Animation* fadeAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
+        fadeAnimation->setTargetWidget(m_header);
+        fadeAnimation->setProperty("startOpacity", 1.0);
+        fadeAnimation->setProperty("targetOpacity", 0.0);
+        fadeAnimation->setProperty("Duration", 300);
+        connect(fadeAnimation, SIGNAL(finished()), SLOT(hideLater()));
+        //kDebug() << "starting fade out";
+        fadeAnimation->start();
+        
+    }
 }
 
 void EmailWidget::setLarge(bool expanded)
@@ -308,11 +373,12 @@ void EmailWidget::setLarge(bool expanded)
     m_appletSize = Large;
     m_expandIcon->setIcon("arrow-up-double");
     m_subjectLabel->show();
-    m_expandIcon->show();
-    m_header->show();
+    //m_expandIcon->show();
+    //m_header->show();
     m_fromLabel->show();
     showBody(true);
 
+    showActions(true);
     //m_layout->setRowMinimumHeight(3, 80);
     //m_bodyView->setMinimumHeight(80);
 
@@ -338,6 +404,8 @@ void EmailWidget::buildDialog()
     m_layout->setColumnFixedWidth(0, 40); // This could probably be a bit more dynamic should be dynamic
     m_layout->setColumnPreferredWidth(1, 180);
     m_layout->setColumnFixedWidth(2, 22);
+    m_layout->setRowFixedHeight(0, 16);
+    m_layout->setRowFixedHeight(1, 16);
     m_layout->setHorizontalSpacing(4);
 
     m_icon = new Plasma::IconWidget(this);
@@ -357,48 +425,58 @@ void EmailWidget::buildDialog()
     m_fromLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     m_fromLabel->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
     m_fromLabel->setStyleSheet(m_stylesheet);
+    m_fromLabel->setOpacity(.8);
     setFrom(m_from);
 
-    m_actionsLayout = new QGraphicsLinearLayout(m_layout);
+    m_actionsWidget = new QGraphicsWidget(this);
+    m_actionsWidget->setZValue(10);
+    m_actionsLayout = new QGraphicsLinearLayout(m_actionsWidget);
     m_actionsLayout->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
-    m_actionsLayout->addItem(m_fromLabel);
+    //m_actionsLayout->addItem(m_fromLabel);
 
-    int s = KIconLoader::SizeSmall;
-    m_newIcon = new IconWidget(this);
+    int s = KIconLoader::SizeSmall * 1.5;
+    m_newIcon = new PushButton(this);
     m_newIcon->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    m_newIcon->setIcon("mail-mark-unread-new");
+    m_newIcon->setIcon(KIcon("mail-mark-unread-new"));
     m_newIcon->setMinimumWidth(s);
     m_newIcon->setMaximumHeight(s);
     m_newIcon->setMaximumWidth(s);
+    m_newIcon->setCheckable(true);
     connect(m_newIcon, SIGNAL(clicked()), this, SLOT(flagNewClicked()));
 
-    m_importantIcon = new IconWidget(this);
-    m_importantIcon->setIcon("mail-mark-important");
+    m_importantIcon = new PushButton(this);
+    m_importantIcon->setIcon(KIcon("mail-mark-important"));
     m_importantIcon->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     m_importantIcon->setMinimumWidth(s);
     m_importantIcon->setMaximumHeight(s);
     m_importantIcon->setMaximumWidth(s);
+    m_importantIcon->setCheckable(true);
     connect(m_importantIcon, SIGNAL(clicked()), this, SLOT(flagImportantClicked()));
 
-    m_taskIcon = new IconWidget(this);
-    m_taskIcon->setIcon("mail-mark-task");
+    m_taskIcon = new PushButton(this);
+    m_taskIcon->setIcon(KIcon("mail-mark-task"));
     m_taskIcon->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     m_taskIcon->setMinimumWidth(s);
     m_taskIcon->setMaximumHeight(s);
     m_taskIcon->setMaximumWidth(s);
+    m_taskIcon->setCheckable(true);
     connect(m_taskIcon, SIGNAL(clicked()), this, SLOT(flagTaskClicked()));
 
     m_actionsLayout->addItem(m_newIcon);
     m_actionsLayout->addItem(m_importantIcon);
     m_actionsLayout->addItem(m_taskIcon);
+    m_actionsWidget->hide(); // for now
 
-    m_layout->addItem(m_actionsLayout, 1, 1, 1, 2, Qt::AlignTop | Qt::AlignRight);
+    m_layout->addItem(m_fromLabel, 1, 1, 1, 2, Qt::AlignTop | Qt::AlignRight);
 
     // From and date
     m_header = new Plasma::Label(this);
     m_header->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    //m_header->setPreferredHeight(48);
+    m_header->setMinimumHeight(80);
+    m_header->setOpacity(.8);
+    //QFont sf = KGlobalSettings::smallestReadableFont();
+    
     m_header->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
     setFrom(i18n("Unknown Sender"));
     m_layout->addItem(m_header, 2, 0, 1, 3, Qt::AlignTop);
@@ -406,6 +484,7 @@ void EmailWidget::buildDialog()
     // The Body is only added on demand in showBody() to save some memory
 
     //m_layout->addItem(m_bodyView, 3, 0, 1, 3);
+    m_layout->addItem(m_actionsWidget, 3, 0, 1, 3, Qt::AlignTop | Qt::AlignRight);
 
     m_expandIcon = new Plasma::IconWidget(this);
     m_expandIcon->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -415,6 +494,8 @@ void EmailWidget::buildDialog()
     connect(m_expandIcon, SIGNAL(clicked()), this, SLOT(toggleBody()));
     connect(m_icon, SIGNAL(clicked()), this, SLOT(toggleMeta()));
     m_layout->addItem(m_expandIcon, 0, 2, 1, 1, Qt::AlignRight | Qt::AlignTop);
+    m_expandIcon->setOpacity(0);
+    //sm_expandIcon->hide(); // only shown on hover
 
     setLayout(m_layout);
 
@@ -530,44 +611,39 @@ void EmailWidget::refreshFlags(bool show)
         m_icon->setIcon("mail-mark-read");
     }
 
-    if (show) {
-        m_newIcon->setPressed(m_isNew);
-        // As iconwidget doesn't provide a good visual clue for
-        // the activated flag, FIXME: remove
-        m_newIcon->setDrawBackground(m_isNew);
+    if (m_expanded && show) {
+        m_newIcon->setChecked(m_isNew);
         setSubject(m_subject); // for updating font weight on the subject line
         if (m_isNew) {
-            m_newIcon->setIcon("mail-mark-read");
+            m_newIcon->setIcon(KIcon("mail-mark-read"));
             m_newIcon->setToolTip(i18nc("flag new", "Message is marked as New, click to mark as Read"));
         } else {
-            m_newIcon->setIcon("mail-mark-unread-new");
+            m_newIcon->setIcon(KIcon("mail-mark-unread-new"));
             m_newIcon->setToolTip(i18nc("flag new", "Message is marked as Read, click to mark as New"));
         }
     } else {
-        m_newIcon->hide();
+        //m_newIcon->hide();
     }
 
-    if (show) {
-        m_importantIcon->setPressed(m_isImportant);
-        m_importantIcon->setDrawBackground(m_isImportant);
+    if (m_expanded && show) {
+        m_importantIcon->setChecked(m_isImportant);
         if (m_isImportant) {
             m_importantIcon->setToolTip(i18nc("flag important", "Message is marked as Important, click to remove this flag"));
         } else {
             m_importantIcon->setToolTip(i18nc("flag important", "Click to mark message as Important"));
         }
     } else {
-        m_importantIcon->hide();
+        //m_importantIcon->hide();
     }
 
-    if (show) {
-        m_taskIcon->setPressed(m_isTask);
-        m_taskIcon->setDrawBackground(m_isTask);
+    if (m_expanded && show) {
+        m_taskIcon->setChecked(m_isTask);
         if (m_isTask) {
             m_taskIcon->setToolTip(i18nc("flag Task", "Message is marked as Action Item, click to remove this flag"));
         } else {
             m_taskIcon->setToolTip(i18nc("flag Task", "Click to mark message as Action Item"));
         }    } else {
-        m_taskIcon->hide();
+        //m_taskIcon->hide();
     }
 }
 
@@ -607,6 +683,7 @@ void EmailWidget::collapse()
     kDebug() << "hiding body";
     m_expandIcon->setIcon("arrow-down-double");
     setSmall();
+    showActions(false);
     m_expanded = false;
 }
 
@@ -627,6 +704,7 @@ void EmailWidget::updateColors()
     p.setColor(QPalette::Window, Qt::transparent); // For Qt 4.4, remove when we depend on 4.5
 
     QColor text = Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor);
+    text.setAlphaF(.8);
     QColor link = Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor);
     link.setAlphaF(qreal(.8));
     QColor linkvisited = Plasma::Theme::defaultTheme()->color(Plasma::Theme::TextColor);
@@ -677,7 +755,7 @@ void EmailWidget::updateColors()
     if (m_fromLabel) {
         // FIXME: links in fromLabel are still blue :/
         m_fromLabel->setPalette(p);
-        m_fromLabel->setStyleSheet(m_stylesheet);
+        //m_fromLabel->setStyleSheet(m_stylesheet);
     }
     /*
     if (m_bodyView) {
@@ -691,6 +769,7 @@ void EmailWidget::updateColors()
 
 void EmailWidget::updateHeader()
 {
+    return; // no op, we're using this widget for the body now
     if (!m_header) {
         return;
     }
@@ -792,7 +871,7 @@ void EmailWidget::setRawBody(const QString& body)
         }
             
         html = i18n("<style type=\"text/css\">%1</style><body>%2</body>", m_stylesheet, html);
-        html.replace("<br />", "");
+        //html.replace("<br />", "");
         kDebug() << html;
         m_header->setText(html); // works?
         //m_bodyView->setHtml(html);
@@ -952,6 +1031,7 @@ void EmailWidget::setFrom(const QString& from)
             if (p.count()) {
                 label = p[0];                
             }
+            label = i18nc("sender and date", "%1, %2", label, KGlobal::locale()->formatDateTime(m_date, KLocale::FancyLongDate));
             m_fromLabel->setText(Qt::escape(label));
         } else {
             m_fromLabel->setText(i18n("<i>Sender unkown</i>"));
@@ -1014,19 +1094,57 @@ void EmailWidget::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 void EmailWidget::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     Q_UNUSED( event );
-    if (m_appletSize > Tiny) {
-        m_newIcon->show();
-        m_importantIcon->show();
-        m_taskIcon->show();
+    if (m_appletSize > Tiny && m_expanded) {
+        //m_newIcon->show();
+        //m_importantIcon->show();
+        //m_taskIcon->show();
+        showActions(true);
     }
+    m_expandIcon->show();
+    // Fade in when this widget appears
+    Plasma::Animation* fadeAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
+    fadeAnimation->setTargetWidget(m_expandIcon);
+    fadeAnimation->setProperty("startOpacity", 0.0);
+    fadeAnimation->setProperty("targetOpacity", 1.0);
+    fadeAnimation->setProperty("Duration", 300);
+
+    fadeAnimation->start();
 }
 
 void EmailWidget::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     Q_UNUSED( event );
+    /*
     m_newIcon->hide();
     m_importantIcon->hide();
     m_taskIcon->hide();
+    m_expandIcon->hide();
+    */
+    showActions(false);
+    // Fade in when this widget appears
+    Plasma::Animation* fadeAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
+    fadeAnimation->setTargetWidget(m_expandIcon);
+    fadeAnimation->setProperty("startOpacity", 1.0);
+    fadeAnimation->setProperty("targetOpacity", 0.0);
+    fadeAnimation->setProperty("Duration", 300);
+    connect(fadeAnimation, SIGNAL(finished()), SLOT(hideLater()));
+    fadeAnimation->start();
+
+}
+
+void EmailWidget::hideLater()
+{
+    //kDebug() << "hiding";
+    //QObject *s = sender();
+    Plasma::Animation* a = dynamic_cast<Plasma::Animation*>(sender());
+    if (a) {
+        //kDebug() << "Hiding animation finished";
+        QGraphicsWidget* w = a->targetWidget();
+        if (w) {
+            //kDebug() << "Hiding some QGW";
+            w->hide();
+        }
+    }
 }
 
 void EmailWidget::wheelEvent (QGraphicsSceneWheelEvent * event)

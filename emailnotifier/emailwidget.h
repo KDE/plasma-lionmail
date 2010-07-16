@@ -49,6 +49,7 @@ namespace Plasma
     class Dialog;
     class Label;
     class PopupApplet;
+    class PushButton;
     class WebView;
     class Frame;
 }
@@ -141,7 +142,9 @@ class EmailWidget : public Plasma::Frame
 
     private Q_SLOTS:
         void syncItemResult(KJob* job);
-        void showBody(bool show);
+        void showBody(bool show = true);
+        void showActions(bool show = true);
+        void hideLater();
 
     private :
         void syncItemToAkonadi(Akonadi::Item &item);
@@ -188,6 +191,7 @@ class EmailWidget : public Plasma::Frame
         bool m_showSmilies;
 
         QGraphicsGridLayout* m_layout;
+        QGraphicsWidget* m_actionsWidget;
         QGraphicsLinearLayout* m_actionsLayout;
 
         Plasma::IconWidget* m_expandIcon;
@@ -196,10 +200,10 @@ class EmailWidget : public Plasma::Frame
         Plasma::Label* m_header;
         Plasma::Label* m_fromLabel;
 
-        Plasma::IconWidget* m_newIcon;
-        Plasma::IconWidget* m_importantIcon;
-        Plasma::IconWidget* m_taskIcon;
-        Plasma::IconWidget* m_unreadIcon;
+        Plasma::PushButton* m_newIcon;
+        Plasma::PushButton* m_importantIcon;
+        Plasma::PushButton* m_taskIcon;
+        Plasma::PushButton* m_unreadIcon;
 
         //Plasma::WebView* m_bodyView;
 

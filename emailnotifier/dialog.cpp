@@ -58,6 +58,7 @@ void Dialog::buildDialog()
     m_navIcon->setIcon("go-next");
     m_navIcon->setMaximumSize(22, 22);
     m_navIcon->setMinimumSize(22, 22);
+    m_navIcon->hide(); // for now until we need it
     gridLayout->addItem(m_navIcon, 0, 0);
     
     m_titleBar = new Plasma::Label(this);
