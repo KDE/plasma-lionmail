@@ -38,13 +38,19 @@ EmailNotifier::EmailNotifier(QObject *parent, const QVariantList &args)
     ui(0),
     m_dialog(0)
 {
+    /*
     m_theme = new Plasma::Svg(this);
     m_theme->setImagePath("widgets/akonadi");
     m_theme->setContainsMultipleImages(false);
+    */
+    setPopupIcon("mail-unread-new");
     setHasConfigurationInterface(true);
     setAspectRatioMode(Plasma::IgnoreAspectRatio);
     setBackgroundHints(StandardBackground);
+    
     setPassivePopup(true);
+    setStatus(Plasma::ActiveStatus);
+    
     setMaximumHeight(600);
     setMinimumWidth(300);
     resize(300, 400);
