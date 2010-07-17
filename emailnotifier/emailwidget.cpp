@@ -90,7 +90,11 @@ EmailWidget::EmailWidget(QGraphicsWidget *parent)
       m_importantIcon(0),
       m_taskIcon(0),
       //m_bodyView(0),
+      m_expandIconAnimation(0),
+      m_actionsAnimation(0),
+      m_bodyAnimation(0),
       m_fontAdjust(0)
+
 {
     setAcceptHoverEvents(true);
 
@@ -117,7 +121,7 @@ int EmailWidget::widgetHeight(int size)
             h = qMax((int)KIconLoader::SizeSmall, (int)(m_subjectLabel->minimumHeight()*1.5));
             break;
         case Small:
-            h = KIconLoader::SizeMedium*1.5; // 32 * 1.3
+            h = KIconLoader::SizeMedium*1.4; // 32 * 1.3
             break;
         case Medium:
             h = (int)(KIconLoader::SizeHuge * 1.5); // 96  FIXME: header is not always that big
@@ -299,29 +303,32 @@ void EmailWidget::showActions(bool show)
     if (!m_expanded) {
         return;
     }
+    if (!m_actionsAnimation) {
+        // Fade in when this widget appears
+        m_actionsAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
+    }
     if (show) {
         //kDebug() << "starting fade in";
         m_actionsWidget->show();
+        disconnect(m_actionsAnimation, SIGNAL(finished()), this, SLOT(hideLater()));
         
-        // Fade in when this widget appears
-        Plasma::Animation* fadeAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
-        fadeAnimation->setTargetWidget(m_actionsWidget);
-        fadeAnimation->setProperty("startOpacity", 0.0);
-        fadeAnimation->setProperty("targetOpacity", 1.0);
-        fadeAnimation->setProperty("Duration", 300);
+        m_actionsAnimation->setTargetWidget(m_actionsWidget);
+        m_actionsAnimation->setProperty("startOpacity", 0.0);
+        m_actionsAnimation->setProperty("targetOpacity", 1.0);
+        m_actionsAnimation->setProperty("Duration", 300);
 
-        fadeAnimation->start();
+        m_actionsAnimation->start();
         
     } else {
         // Fade in when this widget appears
-        Plasma::Animation* fadeAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
-        fadeAnimation->setTargetWidget(m_actionsWidget);
-        fadeAnimation->setProperty("startOpacity", 1.0);
-        fadeAnimation->setProperty("targetOpacity", 0.0);
-        fadeAnimation->setProperty("Duration", 300);
-        connect(fadeAnimation, SIGNAL(finished()), SLOT(hideLater()));
+        Plasma::Animation* m_actionsAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
+        m_actionsAnimation->setTargetWidget(m_actionsWidget);
+        m_actionsAnimation->setProperty("startOpacity", 1.0);
+        m_actionsAnimation->setProperty("targetOpacity", 0.0);
+        m_actionsAnimation->setProperty("Duration", 300);
+        connect(m_actionsAnimation, SIGNAL(finished()), SLOT(hideLater()));
         //kDebug() << "starting fade out";
-        fadeAnimation->start();
+        m_actionsAnimation->start();
         
     }
 }
@@ -331,29 +338,31 @@ void EmailWidget::showBody(bool show)
     if (!m_expanded) {
         return;
     }
+    if (!m_bodyAnimation) {
+        // Fade in when this widget appears
+        m_bodyAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
+    }
     if (show) {
         //kDebug() << "starting fade in";
         m_header->show();
-        
-        // Fade in when this widget appears
-        Plasma::Animation* fadeAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
-        fadeAnimation->setTargetWidget(m_header);
-        fadeAnimation->setProperty("startOpacity", 0.0);
-        fadeAnimation->setProperty("targetOpacity", 1.0);
-        fadeAnimation->setProperty("Duration", 300);
+        disconnect(m_bodyAnimation, SIGNAL(finished()), this, SLOT(hideLater()));
+        m_bodyAnimation->setTargetWidget(m_header);
+        m_bodyAnimation->setProperty("startOpacity", 0.0);
+        m_bodyAnimation->setProperty("targetOpacity", 1.0);
+        m_bodyAnimation->setProperty("Duration", 300);
 
-        fadeAnimation->start();
+        m_bodyAnimation->start();
         
     } else {
         // Fade in when this widget appears
-        Plasma::Animation* fadeAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
-        fadeAnimation->setTargetWidget(m_header);
-        fadeAnimation->setProperty("startOpacity", 1.0);
-        fadeAnimation->setProperty("targetOpacity", 0.0);
-        fadeAnimation->setProperty("Duration", 300);
-        connect(fadeAnimation, SIGNAL(finished()), SLOT(hideLater()));
+        Plasma::Animation* m_bodyAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
+        m_bodyAnimation->setTargetWidget(m_header);
+        m_bodyAnimation->setProperty("startOpacity", 1.0);
+        m_bodyAnimation->setProperty("targetOpacity", 0.0);
+        m_bodyAnimation->setProperty("Duration", 300);
+        connect(m_bodyAnimation, SIGNAL(finished()), SLOT(hideLater()));
         //kDebug() << "starting fade out";
-        fadeAnimation->start();
+        m_bodyAnimation->start();
     }
 }
 
@@ -408,6 +417,7 @@ void EmailWidget::buildDialog()
     m_layout->setHorizontalSpacing(4);
 
     m_icon = new Plasma::IconWidget(this);
+    m_icon->setToolTip(i18nc("open icon tooltip", "Open this Email"));
     m_icon->setIcon("mail-mark-read");
     m_icon->setAcceptHoverEvents(false);
     resizeIcon(32);
@@ -1006,8 +1016,8 @@ void EmailWidget::itemChanged(const Akonadi::Item& item)
         updateHeader();
         setBody(msg);
         refreshFlags();
-        kDebug() << "=== item changed" << id << msg->subject()->asUnicodeString() << item.flags();
-        kDebug() << "new:" << m_isNew << "important:" << m_isImportant << "task:" << m_isTask;
+        //kDebug() << "=== item changed" << id << msg->subject()->asUnicodeString() << item.flags();
+        //kDebug() << "new:" << m_isNew << "important:" << m_isImportant << "task:" << m_isTask;
     } else {
         //setSubject(i18n("Could not fetch email payload"));
     }
@@ -1112,16 +1122,9 @@ void EmailWidget::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
         //m_importantIcon->show();
         //m_taskIcon->show();
         showActions(true);
+        //showExpandIcon(true);
     }
-    m_expandIcon->show();
-    // Fade in when this widget appears
-    Plasma::Animation* fadeAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
-    fadeAnimation->setTargetWidget(m_expandIcon);
-    fadeAnimation->setProperty("startOpacity", 0.0);
-    fadeAnimation->setProperty("targetOpacity", 1.0);
-    fadeAnimation->setProperty("Duration", 300);
-
-    fadeAnimation->start();
+    showExpandIcon(true);
 }
 
 void EmailWidget::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
@@ -1134,15 +1137,31 @@ void EmailWidget::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     m_expandIcon->hide();
     */
     showActions(false);
-    // Fade in when this widget appears
-    Plasma::Animation* fadeAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
-    fadeAnimation->setTargetWidget(m_expandIcon);
-    fadeAnimation->setProperty("startOpacity", 1.0);
-    fadeAnimation->setProperty("targetOpacity", 0.0);
-    fadeAnimation->setProperty("Duration", 300);
-    connect(fadeAnimation, SIGNAL(finished()), SLOT(hideLater()));
-    fadeAnimation->start();
+    showExpandIcon(false);
+}
 
+void EmailWidget::showExpandIcon(bool show)
+{
+    if (!m_expandIconAnimation) {
+        m_expandIconAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
+    }
+    if (show) {
+        m_expandIcon->show();
+        disconnect(m_expandIconAnimation, SIGNAL(finished()), this, SLOT(hideLater()));
+        m_expandIconAnimation->setTargetWidget(m_expandIcon);
+        m_expandIconAnimation->setProperty("startOpacity", 0.0);
+        m_expandIconAnimation->setProperty("targetOpacity", 1.0);
+        m_expandIconAnimation->setProperty("Duration", 300);
+
+        m_expandIconAnimation->start();
+    } else {
+        m_expandIconAnimation->setTargetWidget(m_expandIcon);
+        m_expandIconAnimation->setProperty("startOpacity", 1.0);
+        m_expandIconAnimation->setProperty("targetOpacity", 0.0);
+        m_expandIconAnimation->setProperty("Duration", 300);
+        connect(m_expandIconAnimation, SIGNAL(finished()), SLOT(hideLater()));
+        m_expandIconAnimation->start();
+    }
 }
 
 void EmailWidget::hideLater()

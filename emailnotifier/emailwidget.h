@@ -34,24 +34,27 @@
 // PIM & Akonadi
 #include <Akonadi/Item>
 #include <Akonadi/Monitor>
-
 #include <kmime/kmime_message.h>
-
 #include <boost/shared_ptr.hpp>
 typedef boost::shared_ptr<KMime::Message> MessagePtr;
 
 
 // Plasma
 #include <Plasma/Frame>
+#include <Plasma/Animation>
+//#include <Plasma/Animation>
+
 namespace Plasma
 {
-    class IconWidget;
+    //class Animation;
     class Dialog;
+    class Frame;
+    //class Animation;
+    class IconWidget;
     class Label;
     class PopupApplet;
     class PushButton;
     class WebView;
-    class Frame;
 }
 
 //own
@@ -145,6 +148,7 @@ class EmailWidget : public Plasma::Frame
         void syncItemResult(KJob* job);
         void showBody(bool show = true);
         void showActions(bool show = true);
+        void showExpandIcon(bool show = true);
         void hideLater();
         void itemActivated();
 
@@ -206,6 +210,10 @@ class EmailWidget : public Plasma::Frame
         Plasma::PushButton* m_importantIcon;
         Plasma::PushButton* m_taskIcon;
         Plasma::PushButton* m_unreadIcon;
+        
+        Plasma::Animation* m_expandIconAnimation;
+        Plasma::Animation* m_actionsAnimation;
+        Plasma::Animation* m_bodyAnimation;
 
         //Plasma::WebView* m_bodyView;
 
