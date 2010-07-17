@@ -367,8 +367,8 @@ void EmailWidget::buildDialog()
     QGraphicsWidget* spacer = new QGraphicsWidget(this);
     spacer->setMinimumHeight(8);
     spacer->setMaximumHeight(8);
-    
-    
+
+
     m_deleteButton = new PushButton(this);
     m_deleteButton->setIcon(KIcon("edit-delete"));
     m_deleteButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
