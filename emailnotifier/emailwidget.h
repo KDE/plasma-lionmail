@@ -21,6 +21,7 @@
 #define EMAILWIDGET_H
 
 //Qt
+#include <QGraphicsAnchorLayout>
 #include <QGraphicsGridLayout>
 #include <QGraphicsLinearLayout>
 #include <QGraphicsWidget>
@@ -199,10 +200,13 @@ class EmailWidget : public Plasma::Frame
         bool m_allowHtml;
         bool m_showSmilies;
 
+        QGraphicsAnchorLayout* m_anchorLayout;
         QGraphicsGridLayout* m_layout;
         QGraphicsWidget* m_actionsWidget;
         QGraphicsLinearLayout* m_actionsLayout;
 
+        QGraphicsWidget* m_emailWidget;
+        
         Plasma::IconWidget* m_icon;
         Plasma::IconWidget* m_expandIcon;
         Plasma::Label* m_subjectLabel;

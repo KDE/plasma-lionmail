@@ -185,7 +185,7 @@ void EmailWidget::setSmall()
 void EmailWidget::showActions(bool show)
 {
     if (!m_expanded) {
-        return;
+        //return;
     }
     if (!m_actionsAnimation) {
         m_actionsAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
@@ -311,15 +311,17 @@ void EmailWidget::buildDialog()
     //setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum); 
     updateColors();
 
-    m_layout = new QGraphicsGridLayout(this);
+    m_emailWidget = new QGraphicsWidget(this);
+    
+    m_layout = new QGraphicsGridLayout(m_emailWidget);
     m_layout->setColumnFixedWidth(0, 40); // This could probably be a bit more dynamic should be dynamic
     m_layout->setColumnPreferredWidth(1, 180);
     m_layout->setColumnFixedWidth(2, 22);
     m_layout->setRowFixedHeight(0, 16);
     m_layout->setRowFixedHeight(1, 16);
     m_layout->setHorizontalSpacing(4);
-
-    m_icon = new Plasma::IconWidget(this);
+    
+    m_icon = new Plasma::IconWidget(m_emailWidget);
     m_icon->setToolTip(i18nc("open icon tooltip", "Open this Email"));
     m_icon->setIcon("mail-mark-read");
     m_icon->setAcceptHoverEvents(false);
@@ -327,28 +329,28 @@ void EmailWidget::buildDialog()
     m_layout->addItem(m_icon, 0, 0, 2, 1, Qt::AlignTop);
     connect(m_icon, SIGNAL(clicked()), SLOT(itemActivated()));
 
-    m_subjectLabel = new Plasma::Label(this);
+    m_subjectLabel = new Plasma::Label(m_emailWidget);
     m_subjectLabel->nativeWidget()->setWordWrap(false);
     m_subjectLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     m_subjectLabel->setMinimumWidth(100);
     m_layout->addItem(m_subjectLabel, 0, 1, 1, 1, Qt::AlignTop);
     setSubject("Re: sell me a beer, mon");
 
-    m_fromLabel = new Plasma::Label(this);
+    m_fromLabel = new Plasma::Label(m_emailWidget);
     m_fromLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     m_fromLabel->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
     //m_fromLabel->setStyleSheet(m_stylesheet);
     m_fromLabel->setOpacity(0.8);
     setFrom(m_from);
 
-    m_actionsWidget = new QGraphicsWidget(this);
+    m_actionsWidget = new QGraphicsWidget(m_emailWidget);
     //m_actionsWidget->setZValue(10);
     m_actionsLayout = new QGraphicsLinearLayout(m_actionsWidget);
     m_actionsLayout->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    m_actionsLayout->setOrientation(Qt::Vertical);
+    //m_actionsLayout->setOrientation(Qt::Vertical);
 
     int s = KIconLoader::SizeSmall * 1.5;
-    m_newIcon = new PushButton(this);
+    m_newIcon = new PushButton(m_actionsWidget);
     m_newIcon->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     m_newIcon->setIcon(KIcon("mail-mark-unread-new"));
     m_newIcon->setMinimumWidth(s);
@@ -357,7 +359,7 @@ void EmailWidget::buildDialog()
     m_newIcon->setCheckable(true);
     connect(m_newIcon, SIGNAL(clicked()), this, SLOT(flagNewClicked()));
 
-    m_importantIcon = new PushButton(this);
+    m_importantIcon = new PushButton(m_actionsWidget);
     m_importantIcon->setIcon(KIcon("mail-mark-important"));
     m_importantIcon->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     m_importantIcon->setMinimumWidth(s);
@@ -366,12 +368,13 @@ void EmailWidget::buildDialog()
     m_importantIcon->setCheckable(true);
     connect(m_importantIcon, SIGNAL(clicked()), this, SLOT(flagImportantClicked()));
 
-    QGraphicsWidget* spacer = new QGraphicsWidget(this);
+    QGraphicsWidget* spacer = new QGraphicsWidget(m_actionsWidget);
     spacer->setMinimumHeight(8);
     spacer->setMaximumHeight(8);
+    spacer->setMinimumWidth(8);
+    spacer->setMaximumWidth(8);
 
-
-    m_deleteButton = new PushButton(this);
+    m_deleteButton = new PushButton(m_actionsWidget);
     m_deleteButton->setIcon(KIcon("edit-delete"));
     m_deleteButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     m_deleteButton->setMinimumWidth(s);
@@ -384,13 +387,14 @@ void EmailWidget::buildDialog()
     m_actionsLayout->addItem(m_importantIcon);
     m_actionsLayout->addItem(spacer);
     m_actionsLayout->addItem(m_deleteButton);
-    m_layout->addItem(m_actionsWidget, 2, 0, 1, 1, Qt::AlignCenter | Qt::AlignLeft);
+
+    //m_layout->addItem(m_actionsWidget, 2, 0, 1, 1, Qt::AlignCenter | Qt::AlignLeft);
     m_actionsWidget->hide(); // for now
 
     m_layout->addItem(m_fromLabel, 1, 1, 1, 2, Qt::AlignTop | Qt::AlignRight);
 
     // From and date
-    m_bodyWidget = new Plasma::Label(this);
+    m_bodyWidget = new Plasma::Label(m_emailWidget);
     m_bodyWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     m_bodyWidget->setMinimumHeight(80);
     //m_bodyWidget->setOpacity(.8);
@@ -402,7 +406,7 @@ void EmailWidget::buildDialog()
     m_layout->addItem(m_bodyWidget, 2, 1, 1, 2, Qt::AlignTop);
 
 
-    m_expandIcon = new Plasma::IconWidget(this);
+    m_expandIcon = new Plasma::IconWidget(m_emailWidget);
     m_expandIcon->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     m_expandIcon->setIcon("arrow-down");
     m_expandIcon->setMinimumSize(22, 22);
@@ -411,9 +415,24 @@ void EmailWidget::buildDialog()
     m_layout->addItem(m_expandIcon, 0, 2, 1, 1, Qt::AlignRight | Qt::AlignTop);
     m_expandIcon->setOpacity(0);
 
-    setLayout(m_layout);
+    m_emailWidget->setLayout(m_layout);
     setNew(m_isNew);
     setImportant(m_isImportant);
+    
+    m_anchorLayout = new QGraphicsAnchorLayout(this);
+    // Fix the actual email widget on top-left and bottom-right corners
+    m_anchorLayout->addCornerAnchors(m_emailWidget, Qt::TopLeftCorner, 
+                                     m_anchorLayout, Qt::TopLeftCorner);
+    m_anchorLayout->addCornerAnchors(m_emailWidget, Qt::BottomRightCorner, 
+                                     m_anchorLayout, Qt::BottomRightCorner);
+    
+    m_anchorLayout->addCornerAnchors(m_expandIcon, Qt::TopRightCorner,
+                                     m_anchorLayout, Qt::TopRightCorner);
+    m_anchorLayout->addAnchor(m_actionsWidget, Qt::AnchorTop, m_anchorLayout, Qt::AnchorTop);
+    m_anchorLayout->addAnchor(m_actionsWidget, Qt::AnchorRight, m_expandIcon, Qt::AnchorLeft);
+
+
+    setLayout(m_anchorLayout);
 
     updateColors();
 }
@@ -550,7 +569,7 @@ void EmailWidget::collapse()
     //kDebug() << "hiding body";
     m_expandIcon->setIcon("arrow-down");
     showBody(false);
-    showActions(false);
+    //showActions(false);
     m_expanded = false; // needs to be unset last, otherwise animations won't trigger
     emit collapsed();
 }
@@ -898,7 +917,7 @@ void EmailWidget::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 void EmailWidget::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     Q_UNUSED( event );
-    if (m_appletSize > Tiny && m_expanded) {
+    if (m_appletSize > Tiny) {
         showActions(true);
     }
     showExpandIcon(true);
