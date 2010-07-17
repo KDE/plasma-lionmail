@@ -142,6 +142,7 @@ void EmailList::rowAdded(const QModelIndex &index, int start, int end)
         Akonadi::Item item = itemindex.data(EntityTreeModel::ItemRole).value<Akonadi::Item>();
         EmailWidget* ew = new EmailWidget(this);
         connect(ew, SIGNAL(activated(const QUrl)), SIGNAL(activated(const QUrl)));
+        connect(ew, SIGNAL(collapsed()), SLOT(fixLayout()));
         m_emailWidgets[item.url()] = ew;
         ew->setSmall();
         ew->itemChanged(item);
@@ -171,6 +172,16 @@ void EmailList::rowsRemoved(const QModelIndex &index, int start, int end)
         //ew->itemChanged(item);
         kDebug() << "Item gone URL:" << item.url();
     }
+    fixLayout();
+}
+
+void EmailList::fixLayout()
+{
+    kDebug() << "fixlayout";
+    setMinimumHeight(-1);
+    m_listLayout->setMaximumHeight(-1);
+    m_listLayout->updateGeometry();
+    updateGeometry();
 }
 
 

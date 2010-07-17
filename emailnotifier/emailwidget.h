@@ -134,6 +134,7 @@ class EmailWidget : public Plasma::Frame
     Q_SIGNALS:
         void geometryChanged(QSizeF newSize);
         void activated(const QUrl);
+        void collapsed();
 
     protected:
         void wheelEvent (QGraphicsSceneWheelEvent * event);

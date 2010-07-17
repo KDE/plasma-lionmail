@@ -147,6 +147,7 @@ void EmailWidget::updateSize(int h)
     setMinimumHeight(-1);
     setMinimumHeight(h);
     setPreferredHeight(h+6);
+    setMaximumHeight(h+6);
     // In Layouts, we want to restrict the appletsize as much as possible,
     // on the desktop or more generally, in an applet, we let the applet
     // itself manage the max size
@@ -154,7 +155,7 @@ void EmailWidget::updateSize(int h)
         //setMaximumHeight(h);
         //kDebug() << "MAX HEIGHT" << h;
     } else {
-        setMaximumHeight(QWIDGETSIZE_MAX);
+        //setMaximumHeight(QWIDGETSIZE_MAX);
         //kDebug() << "MAX HEIGHT INF" << h;
     }
     m_layout->updateGeometry();
@@ -307,6 +308,7 @@ void EmailWidget::setLarge(bool expanded)
 
 void EmailWidget::buildDialog()
 {
+    //setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum); 
     updateColors();
 
     m_layout = new QGraphicsGridLayout(this);
@@ -550,6 +552,7 @@ void EmailWidget::collapse()
     showBody(false);
     showActions(false);
     m_expanded = false; // needs to be unset last, otherwise animations won't trigger
+    emit collapsed();
 }
 
 

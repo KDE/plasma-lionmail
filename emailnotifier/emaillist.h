@@ -66,6 +66,7 @@ namespace Akonadi {
         void rowAdded(const QModelIndex &index, int start, int end);
         void rowsRemoved(const QModelIndex &index, int start, int end);
         void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
+        void fixLayout();
 
     private :
         /**
