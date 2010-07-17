@@ -84,13 +84,13 @@ class EmailWidget : public Plasma::Frame
         void setSubject(const QString& subject);
         void setBody(MessagePtr msg);
         void setRawBody(const QString& body);
-        void setAbstract(const QString& abstract);
+        //void setAbstract(const QString& abstract);
 
         void setAllowHtml(bool allow);
 
         void setNew(bool isnew);
         void setImportant(bool important);
-        void setTask(bool task);
+        //void setTask(bool task);
 
         bool isNew();
         void setSize(int appletsize);
@@ -111,19 +111,19 @@ class EmailWidget : public Plasma::Frame
         static QString stripTags(QString input);
 
     public Q_SLOTS:
-        void setIcon();
-        void setTiny();
+        //void setIcon();
+        //void setTiny();
         void setSmall();
-        void setMedium();
+        //void setMedium();
         void setLarge(bool expanded = false);
 
         void toggleBody();
-        void toggleMeta();
+        //void toggleMeta();
         void expand();
         void collapse();
 
         void flagNewClicked();
-        void flagTaskClicked();
+        void deleteClicked();
         void flagImportantClicked();
 
         void updateColors();
@@ -150,6 +150,7 @@ class EmailWidget : public Plasma::Frame
         void showActions(bool show = true);
         void showExpandIcon(bool show = true);
         void hideLater();
+        void resizeLater();
         void itemActivated();
 
     private :
@@ -187,11 +188,11 @@ class EmailWidget : public Plasma::Frame
         bool m_isNew;
         bool m_isUnread;
         bool m_isImportant;
-        bool m_isTask;
+        bool m_isDeleted;
         bool m_flagsShown;
 
         QString m_body;
-        QString m_abstract;
+        //QString m_abstract;
         QString m_stylesheet;
         bool m_allowHtml;
         bool m_showSmilies;
@@ -200,16 +201,16 @@ class EmailWidget : public Plasma::Frame
         QGraphicsWidget* m_actionsWidget;
         QGraphicsLinearLayout* m_actionsLayout;
 
-        Plasma::IconWidget* m_expandIcon;
         Plasma::IconWidget* m_icon;
+        Plasma::IconWidget* m_expandIcon;
         Plasma::Label* m_subjectLabel;
-        Plasma::Label* m_header;
         Plasma::Label* m_fromLabel;
+        Plasma::Label* m_bodyWidget;
 
         Plasma::PushButton* m_newIcon;
         Plasma::PushButton* m_importantIcon;
-        Plasma::PushButton* m_taskIcon;
-        Plasma::PushButton* m_unreadIcon;
+        Plasma::PushButton* m_deleteButton;
+        //Plasma::PushButton* m_unreadIcon;
         
         Plasma::Animation* m_expandIconAnimation;
         Plasma::Animation* m_actionsAnimation;
