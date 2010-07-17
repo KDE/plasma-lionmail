@@ -1,6 +1,8 @@
 [Desktop Entry]
 Name=Email Notifier
+Name[x-test]=xxEmail Notifierxx
 Comment=Keep an Eye on your Inbox
+Comment[x-test]=xxKeep an Eye on your Inboxxx
 Type=Service
 Icon=mail-folder-inbox
 X-KDE-ServiceTypes=Plasma/Applet,Plasma/PopupApplet
