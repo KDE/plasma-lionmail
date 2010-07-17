@@ -38,7 +38,7 @@
 
 Dialog::Dialog(QGraphicsWidget *parent)
     : QGraphicsWidget(parent),
-      m_navIcon(0),
+      //m_navIcon(0),
       m_titleBar(0),
       m_statusBar(0)
 {
@@ -54,23 +54,14 @@ void Dialog::buildDialog()
     QGraphicsGridLayout *gridLayout = new QGraphicsGridLayout(this);
     setLayout(gridLayout);
 
-    m_navIcon = new Plasma::IconWidget(this);
-    m_navIcon->setIcon("go-next");
-    m_navIcon->setMaximumSize(22, 22);
-    m_navIcon->setMinimumSize(22, 22);
-    m_navIcon->hide(); // for now until we need it
-    gridLayout->addItem(m_navIcon, 0, 0);
-    
     m_titleBar = new Plasma::Label(this);
-    m_titleBar->setText(i18nc("list title", "<b><font size=\"+1\">New Emails</font></b>"));
-    gridLayout->addItem(m_titleBar, 0, 1);
+    m_titleBar->setText(i18nc("list title", "<b><font size=\"+1\">&nbsp;&nbsp;&nbsp;New Emails</font></b>"));
+    gridLayout->addItem(m_titleBar, 0, 0, 1, 2);
 
 
     m_tabBar = new Plasma::TabBar(this);
 
 
-    //m_resultsView = new Crystal::ResultWebView(this);
-    //m_resultsView = new Crystal::ResultWidget(m_tabBar);
     m_unreadList = new EmailList(this);
     connect(m_unreadList, SIGNAL(activated(const QUrl)), SLOT(openUrl(const QUrl)));
     m_tabBar->addTab(KIcon("mail-unread-new"), i18n("Unread"), m_unreadList);
@@ -97,16 +88,9 @@ void Dialog::updateStatus(const QString status)
     m_statusBar->setText(status);
 }
 
-
 void Dialog::updateNavIcon(int tabIndex)
 {
-    if (tabIndex == 0) {
-        m_navIcon->setEnabled(true); // may be false ;)
-        m_navIcon->setIcon("go-next");
-    } else {
-        m_navIcon->setEnabled(true);
-        m_navIcon->setIcon("go-previous");
-    }
+    return;
 }
 
 void Dialog::toggleTab()

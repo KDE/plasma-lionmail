@@ -109,7 +109,25 @@ void EmailList::initETM()
     //m_model->setItemPopulationStrategy( EntityTreeModel::NoItemPopulation );
     connect(m_model, SIGNAL(rowsInserted(const QModelIndex&, int, int)), this, SLOT(rowAdded(const QModelIndex&, int, int)));
     connect(m_model, SIGNAL(rowsRemoved(const QModelIndex&, int, int)), this, SLOT(rowsRemoved(const QModelIndex&, int, int)));
+    connect(m_model, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex&)), this, SLOT(dataChanged(const QModelIndex&, const QModelIndex&)));
     kDebug() << "Model created and connected. :)";
+}
+
+void EmailList::dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
+{
+    int r = topLeft.row();
+    int c = topLeft.column(); // We ignore columns, everything is in 0
+    if (topLeft.row() >= 0) {
+        while (bottomRight.row() >= r) {
+            QModelIndex itemindex = m_model->index(r, c);
+            Akonadi::Item item = itemindex.data(EntityTreeModel::ItemRole).value<Akonadi::Item>();
+            if (m_emailWidgets.keys().contains(item.url())) {
+                kDebug() << "one of our items changed ..." << item.url();
+                m_emailWidgets[item.url()]->itemChanged(item);
+            }
+            r++;
+        }
+    }
 }
 
 void EmailList::rowAdded(const QModelIndex &index, int start, int end)

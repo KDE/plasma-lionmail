@@ -152,6 +152,7 @@ class EmailWidget : public Plasma::Frame
         void hideLater();
         void resizeLater();
         void itemActivated();
+        void linkClicked(const QString &link);
 
     private :
         void syncItemToAkonadi(Akonadi::Item &item);

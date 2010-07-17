@@ -340,7 +340,7 @@ void EmailWidget::buildDialog()
     setFrom(m_from);
 
     m_actionsWidget = new QGraphicsWidget(this);
-    m_actionsWidget->setZValue(10);
+    //m_actionsWidget->setZValue(10);
     m_actionsLayout = new QGraphicsLinearLayout(m_actionsWidget);
     m_actionsLayout->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     m_actionsLayout->setOrientation(Qt::Vertical);
@@ -382,6 +382,7 @@ void EmailWidget::buildDialog()
     m_actionsLayout->addItem(m_importantIcon);
     m_actionsLayout->addItem(spacer);
     m_actionsLayout->addItem(m_deleteButton);
+    m_layout->addItem(m_actionsWidget, 2, 0, 1, 1, Qt::AlignCenter | Qt::AlignLeft);
     m_actionsWidget->hide(); // for now
 
     m_layout->addItem(m_fromLabel, 1, 1, 1, 2, Qt::AlignTop | Qt::AlignRight);
@@ -394,10 +395,10 @@ void EmailWidget::buildDialog()
     m_bodyWidget->hide();
     
     m_bodyWidget->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
-    setFrom(i18n("Unknown Sender"));
+    connect(m_bodyWidget, SIGNAL(linkActivated(const QString&)), this, SLOT(linkClicked(const QString&)));
+    //setFrom(i18n("Unknown Sender"));
     m_layout->addItem(m_bodyWidget, 2, 1, 1, 2, Qt::AlignTop);
 
-    m_layout->addItem(m_actionsWidget, 2, 0, 1, 1, Qt::AlignCenter | Qt::AlignLeft);
 
     m_expandIcon = new Plasma::IconWidget(this);
     m_expandIcon->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -754,6 +755,7 @@ void EmailWidget::fetchPayload(bool full)
         fetchJob->fetchScope().fetchPayloadPart( Akonadi::MessagePart::Envelope );
     }
     connect( fetchJob, SIGNAL(result(KJob*)), SLOT(fetchDone(KJob*)) );
+    m_bodyWidget->setText(i18n("<h3>Loading body...</h3>"));
 }
 
 void EmailWidget::fetchDone(KJob* job)
@@ -930,6 +932,13 @@ void EmailWidget::itemActivated()
         emit activated(m_item.url());        
     }
 }
+
+void EmailWidget::linkClicked(const QString &link)
+{
+    kDebug() << "Link clicked:" << link;
+    emit activated(QUrl(link));
+}
+
 
 void EmailWidget::wheelEvent (QGraphicsSceneWheelEvent * event)
 {

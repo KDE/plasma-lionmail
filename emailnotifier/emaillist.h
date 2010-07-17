@@ -65,7 +65,7 @@ namespace Akonadi {
     private Q_SLOTS:
         void rowAdded(const QModelIndex &index, int start, int end);
         void rowsRemoved(const QModelIndex &index, int start, int end);
-
+        void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
 
     private :
         /**

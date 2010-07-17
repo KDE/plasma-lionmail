@@ -74,7 +74,7 @@ namespace Plasma
         void buildDialog();
         void updateStatus(const QString status);
 
-        Plasma::IconWidget *m_navIcon;
+        //Plasma::IconWidget *m_navIcon;
         Plasma::TabBar *m_tabBar;
         Plasma::Label *m_titleBar;
         Plasma::Label *m_statusBar;
