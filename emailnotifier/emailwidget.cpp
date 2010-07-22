@@ -66,12 +66,6 @@ EmailWidget::EmailWidget(QGraphicsWidget *parent)
       m_fetching(false),
       m_item(0),
 
-      // Flags
-      //m_isNew(false),
-      //m_isUnread(false),
-      //m_isImportant(false),
-      //m_isTask(false),
-
       // Display options
       m_allowHtml(false), // no html emails for now
       m_showSmilies(true),
@@ -381,7 +375,7 @@ void EmailWidget::buildDialog()
     m_deleteButton->setMaximumHeight(s);
     m_deleteButton->setMaximumWidth(s);
     m_deleteButton->setCheckable(true);
-    connect(m_deleteButton, SIGNAL(clicked()), this, SLOT(deleteClicked()));
+    connect(m_deleteButton, SIGNAL(clicked()), this, SLOT(setDeleted()));
 
     m_actionsLayout->addItem(m_newIcon);
     m_actionsLayout->addItem(m_importantIcon);
@@ -446,26 +440,26 @@ void EmailWidget::refreshFlags()
 void EmailWidget::flagNewClicked()
 {
     kDebug() << "New clicked";
-    /*
     if (!m_item.isValid()) {
+        kDebug() << "Item invalid, making a new one...";
         m_item = Akonadi::Item(id);
     }
-    */
+
     if (m_status.isRead()) {
         m_status.setUnread();
     } else {
-        //m_item.setFlag("\\SEEN");
         m_status.setRead();
     }
     syncItemToAkonadi();
-    refreshFlags();
+    //refreshFlags();
 }
 
+/*
 bool EmailWidget::isNew()
 {
-    return m_isNew;
+    return m_status.isRead();
 }
-
+*/
 void EmailWidget::flagImportantClicked()
 {
     kDebug() << "Important clicked";
@@ -513,31 +507,27 @@ void EmailWidget::refreshFlags(bool show)
     // Update larger icon with most important flag
     if (m_status.isImportant()) {
         m_icon->setIcon("mail-mark-important");
-    } else if (m_isNew) {
+    } else if (m_status.isUnread()) {
         m_icon->setIcon("mail-mark-unread-new");
     } else {
         m_icon->setIcon("mail-mark-read");
     }
 
-    if (m_expanded && show) {
-        m_newIcon->setChecked(m_isNew);
-        setSubject(m_subject); // for updating font weight on the subject line
-        if (m_isNew) {
-            m_newIcon->setIcon(KIcon("mail-mark-read"));
-            m_newIcon->setToolTip(i18nc("flag new", "Message is marked as New, click to mark as Read"));
-        } else {
-            m_newIcon->setIcon(KIcon("mail-mark-unread-new"));
-            m_newIcon->setToolTip(i18nc("flag new", "Message is marked as Read, click to mark as New"));
-        }
+    m_newIcon->setChecked(m_status.isUnread());
+    setSubject(m_subject); // for updating font weight on the subject line
+    if (m_status.isUnread()) {
+        m_newIcon->setIcon(KIcon("mail-mark-read"));
+        m_newIcon->setToolTip(i18nc("flag new", "Message is marked as New, click to mark as Read"));
+    } else {
+        m_newIcon->setIcon(KIcon("mail-mark-unread-new"));
+        m_newIcon->setToolTip(i18nc("flag new", "Message is marked as Read, click to mark as New"));
     }
 
-    if (m_expanded && show) {
-        m_importantIcon->setChecked(m_status.isImportant());
-        if (m_status.isImportant()) {
-            m_importantIcon->setToolTip(i18nc("flag important", "Message is marked as Important, click to remove this flag"));
-        } else {
-            m_importantIcon->setToolTip(i18nc("flag important", "Click to mark message as Important"));
-        }
+    m_importantIcon->setChecked(m_status.isImportant());
+    if (m_status.isImportant()) {
+        m_importantIcon->setToolTip(i18nc("flag important", "Message is marked as Important, click to remove this flag"));
+    } else {
+        m_importantIcon->setToolTip(i18nc("flag important", "Click to mark message as Important"));
     }
 }
 
@@ -663,7 +653,7 @@ void EmailWidget::setAllowHtml(bool allow)
 void EmailWidget::setSubject(const QString& subject)
 {
     if (m_subjectLabel && !subject.isEmpty()) {
-        if (m_isNew) {
+        if (m_status.isUnread()) {
             m_subjectLabel->setText(QString("<b>%1</b>").arg(subject));
         } else {
             m_subjectLabel->setText(subject);
@@ -681,7 +671,7 @@ void EmailWidget::setRawBody(const QString& body)
 {
     if (m_bodyWidget) {
         QString html;
-        if (m_fetching) {
+        if (m_body.isEmpty() && m_fetching) {
             html = i18n("<h3>Loading body...</h3>");
         } else {
             //html = i18n("<h3>Empty body loaded.</h3>");
@@ -704,6 +694,8 @@ void EmailWidget::setBody(MessagePtr msg)
 {
     // Borrowed from Tom Albers' mailody/src/messagedata.cpp
     m_msg = msg;
+
+    QString body = m_body;
     // Retrieve the plain and html part.
     QString plainPart, htmlPart;
     KMime::Content* part = m_msg->mainBodyPart( "text/plain" );
@@ -737,24 +729,24 @@ void EmailWidget::setBody(MessagePtr msg)
 
     if (m_allowHtml) {
         if (htmlPart.trimmed().isEmpty()) {
-            m_body = LinkLocator::convertToHtml(plainPart, flags);
+            body = LinkLocator::convertToHtml(plainPart, flags);
         } else {
-            m_body = htmlPart;
+            body = htmlPart;
         }
         // when replying prefer plain
         !plainPart.isEmpty() ? raw = plainPart : raw = htmlPart;
     } else {
         // show plain
         if ( plainPart.trimmed().isEmpty() ) {
-            m_body = LinkLocator::convertToHtml(htmlPart, flags);
+            body = LinkLocator::convertToHtml(htmlPart, flags);
         } else {
-            m_body = LinkLocator::convertToHtml(plainPart, flags);
+            body = LinkLocator::convertToHtml(plainPart, flags);
         }
         // when replying prefer plain
         !plainPart.isEmpty() ? raw = plainPart : raw = htmlPart;
     }
 
-    setRawBody(m_body);
+    setRawBody(body);
 }
 
 void EmailWidget::fetchPayload(bool full)
@@ -774,7 +766,9 @@ void EmailWidget::fetchPayload(bool full)
         fetchJob->fetchScope().fetchPayloadPart( Akonadi::MessagePart::Envelope );
     }
     connect( fetchJob, SIGNAL(result(KJob*)), SLOT(fetchDone(KJob*)) );
-    m_bodyWidget->setText(i18n("<h3>Loading body...</h3>"));
+    if (m_body.isEmpty()) {
+        m_bodyWidget->setText(i18n("<h3>Loading body...</h3>"));
+    }
 }
 
 void EmailWidget::fetchDone(KJob* job)
@@ -860,32 +854,10 @@ void EmailWidget::setFrom(const QString& from)
         }
     }
 }
-/*
-void EmailWidget::setCc(const QStringList& ccList)
-{
-    m_cc = ccList;
-}
 
-void EmailWidget::setBcc(const QStringList& bccList)
+void EmailWidget::setDeleted(bool deleted)
 {
-    m_bcc = bccList;
-}
-
-void EmailWidget::setNew(bool isnew)
-{
-    m_isNew = isnew;
-    refreshFlags();
-}
-
-void EmailWidget::setImportant(bool important)
-{
-    m_isImportant = important;
-    refreshFlags();
-}
-*/
-void EmailWidget::deleteClicked()
-{
-    m_isDeleted = !m_isDeleted;
+    m_isDeleted = deleted;
     m_deleteButton->setChecked(m_isDeleted);
     qreal o = .4;
     if (!m_isDeleted) {

@@ -83,8 +83,6 @@ class EmailWidget : public Plasma::Frame
 
         void setFrom(const QString& from);
         void setTo(const QStringList& to);
-        //void setCc(const QStringList& ccList);
-        //void setBcc(const QStringList& bccList);
         void setFlags(const QStringList& flagList);
         KUrl url();
         void setUrl(const KUrl);
@@ -96,11 +94,8 @@ class EmailWidget : public Plasma::Frame
 
         void setAllowHtml(bool allow);
 
-        //void setNew(bool isnew);
-        //void setImportant(bool important);
-        //void setTask(bool task);
+        //void setDeleted(bool deleted = true);
 
-        bool isNew();
         void setSize(int appletsize);
         void setDate(const QDateTime& date);
 
@@ -131,7 +126,7 @@ class EmailWidget : public Plasma::Frame
         void collapse();
 
         void flagNewClicked();
-        void deleteClicked();
+        void setDeleted(bool deleted = true);
         void flagImportantClicked();
 
         void updateColors();
@@ -180,6 +175,8 @@ class EmailWidget : public Plasma::Frame
         void refreshFlags();
         void refreshFlags(bool show);
 
+        bool m_isDeleted;
+
         // The applet attached to this item
         MessagePtr m_msg;
         Akonadi::Item m_item;
@@ -193,14 +190,9 @@ class EmailWidget : public Plasma::Frame
         QString m_from;
         QStringList m_cc;
         QStringList m_bcc;
-        QStringList m_flags;
 
         KPIM::MessageStatus m_status;
 
-        bool m_isNew;
-        bool m_isUnread;
-        bool m_isImportant;
-        bool m_isDeleted;
         bool m_flagsShown;
 
         QString m_body;

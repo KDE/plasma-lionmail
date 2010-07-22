@@ -43,6 +43,9 @@
 #include "emaillist.h"
 //#include "helpers.cpp"
 
+#include "copied_classes/messagestatus.h"
+
+
 using namespace Akonadi;
 
 EmailList::EmailList(QGraphicsWidget *parent)
@@ -124,6 +127,16 @@ void EmailList::dataChanged(const QModelIndex &topLeft, const QModelIndex &botto
             if (m_emailWidgets.keys().contains(item.url())) {
                 kDebug() << "one of our items changed ..." << item.url() << item.flags();
                 m_emailWidgets[item.url()]->itemChanged(item);
+                // Should we remove it?
+                if (!accept(item)) {
+                    m_emailWidgets[item.url()]->setDeleted();
+                } else {
+                    // this is a widget scheduled for deletion
+                    m_emailWidgets[item.url()]->setDeleted(false);
+                }
+            } else {
+                kDebug() << "an item becomes visible" << item.url();
+                addItem(item);
             }
             r++;
         }
@@ -140,19 +153,30 @@ void EmailList::rowAdded(const QModelIndex &index, int start, int end)
     for (int i = start; i <= end; i++) {
         QModelIndex itemindex =  m_model->index(i, 0, index);
         Akonadi::Item item = itemindex.data(EntityTreeModel::ItemRole).value<Akonadi::Item>();
-        EmailWidget* ew = new EmailWidget(this);
-        connect(ew, SIGNAL(activated(const QUrl)), SIGNAL(activated(const QUrl)));
-        connect(ew, SIGNAL(collapsed()), SLOT(fixLayout()));
-        if (m_emailWidgets.keys().contains(item.url())) {
+        if (!accept(item)) {
+            kDebug() << "item not interesting" << item.url();
+        } else if (m_emailWidgets.keys().contains(item.url())) {
             kDebug() << "skipping, item already exists:" << item.url();
         } else {
-            m_emailWidgets[item.url()] = ew;
-            ew->setSmall();
-            ew->itemChanged(item);
-            m_listLayout->addItem(ew);
-            kDebug() << "Item URL:" << item.url() << item.flags();
+            addItem(item);
         }
     }
+}
+
+void EmailList::addItem(Akonadi::Item item)
+{
+    if (!accept(item)) {
+        kWarning() << "adding not-accepted item!";
+    }
+    EmailWidget* ew = new EmailWidget(this);
+    connect(ew, SIGNAL(activated(const QUrl)), SIGNAL(activated(const QUrl)));
+    connect(ew, SIGNAL(collapsed()), SLOT(fixLayout()));
+    m_emailWidgets[item.url()] = ew;
+    ew->setSmall();
+    ew->itemChanged(item);
+    m_listLayout->addItem(ew);
+    kDebug() << "Item URL:" << item.url() << item.flags();
+
 }
 
 void EmailList::rowsRemoved(const QModelIndex &index, int start, int end)
@@ -190,7 +214,16 @@ void EmailList::fixLayout()
 
 bool EmailList::accept(const Akonadi::Item email)
 {
-    return true;
+    KPIM::MessageStatus status;
+    status.setStatusFromFlags(email.flags());
+
+    if (status.isUnread()) {
+        return true;
+    }
+    if (status.isImportant()) {
+        return true;
+    }
+    return false;
 }
 
 #include "emaillist.moc"

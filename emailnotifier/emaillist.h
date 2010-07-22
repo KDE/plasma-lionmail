@@ -77,7 +77,8 @@ namespace Akonadi {
         **/
         void buildEmailList();
         void initETM();
-        
+        void addItem(Akonadi::Item item);
+
         Akonadi::EntityTreeModel* m_model;
         QGraphicsWidget* m_innerWidget;
         QGraphicsLinearLayout* m_listLayout;
