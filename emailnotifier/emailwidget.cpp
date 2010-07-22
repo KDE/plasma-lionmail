@@ -328,7 +328,7 @@ void EmailWidget::buildDialog()
     m_subjectLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     m_subjectLabel->setMinimumWidth(100);
     m_layout->addItem(m_subjectLabel, 0, 1, 1, 1, Qt::AlignTop);
-    setSubject("Re: sell me a beer, mon");
+    setSubject(QString());
 
     m_fromLabel = new Plasma::Label(m_emailWidget);
     m_fromLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -652,11 +652,15 @@ void EmailWidget::setAllowHtml(bool allow)
 
 void EmailWidget::setSubject(const QString& subject)
 {
-    if (m_subjectLabel && !subject.isEmpty()) {
+    QString tmpSubject = subject;
+    if (m_subjectLabel) {
+        if (subject.isEmpty()) {
+            tmpSubject = i18nc("empty subject label", "(No Subject)");
+        }
         if (m_status.isUnread()) {
-            m_subjectLabel->setText(QString("<b>%1</b>").arg(subject));
+            m_subjectLabel->setText(QString("<b>%1</b>").arg(tmpSubject));
         } else {
-            m_subjectLabel->setText(subject);
+            m_subjectLabel->setText(tmpSubject);
         }
     }
     m_subject = subject;
