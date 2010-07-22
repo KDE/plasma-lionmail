@@ -67,9 +67,9 @@ EmailWidget::EmailWidget(QGraphicsWidget *parent)
       m_item(0),
 
       // Flags
-      m_isNew(false),
-      m_isUnread(false),
-      m_isImportant(false),
+      //m_isNew(false),
+      //m_isUnread(false),
+      //m_isImportant(false),
       //m_isTask(false),
 
       // Display options
@@ -416,8 +416,9 @@ void EmailWidget::buildDialog()
     m_expandIcon->setOpacity(0);
 
     m_emailWidget->setLayout(m_layout);
-    setNew(m_isNew);
-    setImportant(m_isImportant);
+    //setNew(m_isNew);
+    //setImportant(m_isImportant);
+    refreshFlags();
     
     m_anchorLayout = new QGraphicsAnchorLayout(this);
     // Fix the actual email widget on top-left and bottom-right corners
@@ -445,18 +446,18 @@ void EmailWidget::refreshFlags()
 void EmailWidget::flagNewClicked()
 {
     kDebug() << "New clicked";
-    m_isNew = !m_isNew;
-
-    // sync to Akonadi
+    /*
     if (!m_item.isValid()) {
         m_item = Akonadi::Item(id);
     }
-    if (m_isNew) {
-        m_item.clearFlag("\\SEEN");
+    */
+    if (m_status.isRead()) {
+        m_status.setUnread();
     } else {
-        m_item.setFlag("\\SEEN");
+        //m_item.setFlag("\\SEEN");
+        m_status.setRead();
     }
-    syncItemToAkonadi(m_item);
+    syncItemToAkonadi();
     refreshFlags();
 }
 
@@ -472,19 +473,15 @@ void EmailWidget::flagImportantClicked()
     if (!m_item.isValid()) {
         m_item = Akonadi::Item(id);
     }
-    m_isImportant = !m_isImportant;
-    if (m_isImportant) {
-        m_item.setFlag("\\FLAGGED");
-    } else {
-        m_item.clearFlag("\\FLAGGED");
-    }
-    syncItemToAkonadi(m_item);
+    m_status.setImportant(!(m_status.isImportant()));
+    syncItemToAkonadi();
     refreshFlags();
 }
 
-void EmailWidget::syncItemToAkonadi(Akonadi::Item &item)
+void EmailWidget::syncItemToAkonadi()
 {
-    Akonadi::ItemModifyJob* mjob = new Akonadi::ItemModifyJob(item);
+    m_item.setFlags(m_status.getStatusFlags());
+    Akonadi::ItemModifyJob* mjob = new Akonadi::ItemModifyJob(m_item);
 
     // FIXME: pending revision conflict check in Akonadi, consult with Volker
     // we're disabling it for now.
@@ -514,7 +511,7 @@ void EmailWidget::refreshFlags(bool show)
     }
 
     // Update larger icon with most important flag
-    if (m_isImportant) {
+    if (m_status.isImportant()) {
         m_icon->setIcon("mail-mark-important");
     } else if (m_isNew) {
         m_icon->setIcon("mail-mark-unread-new");
@@ -535,8 +532,8 @@ void EmailWidget::refreshFlags(bool show)
     }
 
     if (m_expanded && show) {
-        m_importantIcon->setChecked(m_isImportant);
-        if (m_isImportant) {
+        m_importantIcon->setChecked(m_status.isImportant());
+        if (m_status.isImportant()) {
             m_importantIcon->setToolTip(i18nc("flag important", "Message is marked as Important, click to remove this flag"));
         } else {
             m_importantIcon->setToolTip(i18nc("flag important", "Click to mark message as Important"));
@@ -814,16 +811,17 @@ void EmailWidget::itemChanged(const Akonadi::Item& item)
     if (item.hasPayload<MessagePtr>()) {
         MessagePtr msg = item.payload<MessagePtr>();
         id = item.id(); // This shouldn't change ... right?
-        m_isImportant = (item.hasFlag("\\FLAGGED") || item.hasFlag("\\Flagged"));
-        m_isNew = !(item.hasFlag("\\SEEN") || item.hasFlag("\\Seen"));
+        m_status.setStatusFromFlags(item.flags());
+        //m_isImportant = (item.hasFlag("\\FLAGGED") || item.hasFlag("\\Flagged"));
+        //m_isNew = !(item.hasFlag("\\SEEN") || item.hasFlag("\\Seen"));
         //m_isTask = (item.hasFlag("\\Task") || item.hasFlag("$TODO") || item.hasFlag("\\TASK"));
-        
+        //m_isImportant = m_status
         setSubject(msg->subject()->asUnicodeString());
         setFrom(msg->from()->asUnicodeString());
         setDate(msg->date()->dateTime().dateTime());
         setTo(QStringList(msg->to()->asUnicodeString()));
-        setCc(QStringList(msg->cc()->asUnicodeString()));
-        setBcc(QStringList(msg->bcc()->asUnicodeString()));
+        m_cc = QStringList(msg->cc()->asUnicodeString());
+        m_bcc = QStringList(msg->bcc()->asUnicodeString());
         setBody(msg);
         refreshFlags();
         //kDebug() << "=== item changed" << id << msg->subject()->asUnicodeString() << item.flags();
@@ -862,7 +860,7 @@ void EmailWidget::setFrom(const QString& from)
         }
     }
 }
-
+/*
 void EmailWidget::setCc(const QStringList& ccList)
 {
     m_cc = ccList;
@@ -884,7 +882,7 @@ void EmailWidget::setImportant(bool important)
     m_isImportant = important;
     refreshFlags();
 }
-
+*/
 void EmailWidget::deleteClicked()
 {
     m_isDeleted = !m_isDeleted;

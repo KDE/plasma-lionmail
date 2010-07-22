@@ -55,6 +55,7 @@
 #include "emailmessage.h"
 #include "emailwidget.h"
 
+
 using namespace Plasma;
 
 EmailWidget::EmailWidget(QGraphicsWidget *parent)
@@ -64,7 +65,7 @@ EmailWidget::EmailWidget(QGraphicsWidget *parent)
       //id(168593), // sample email + image + pdf attached
       //id(97881), // sample email + image + pdf attached
       id(0), // what it's supposed to be
-
+      m_status(KPim::MessageStatus());
       //id(83964),
 
       m_applet(0),

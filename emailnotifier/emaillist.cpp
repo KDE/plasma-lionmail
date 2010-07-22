@@ -122,7 +122,7 @@ void EmailList::dataChanged(const QModelIndex &topLeft, const QModelIndex &botto
             QModelIndex itemindex = m_model->index(r, c);
             Akonadi::Item item = itemindex.data(EntityTreeModel::ItemRole).value<Akonadi::Item>();
             if (m_emailWidgets.keys().contains(item.url())) {
-                kDebug() << "one of our items changed ..." << item.url();
+                kDebug() << "one of our items changed ..." << item.url() << item.flags();
                 m_emailWidgets[item.url()]->itemChanged(item);
             }
             r++;
@@ -143,18 +143,22 @@ void EmailList::rowAdded(const QModelIndex &index, int start, int end)
         EmailWidget* ew = new EmailWidget(this);
         connect(ew, SIGNAL(activated(const QUrl)), SIGNAL(activated(const QUrl)));
         connect(ew, SIGNAL(collapsed()), SLOT(fixLayout()));
-        m_emailWidgets[item.url()] = ew;
-        ew->setSmall();
-        ew->itemChanged(item);
-        m_listLayout->addItem(ew);
-        kDebug() << "Item URL:" << item.url();
+        if (m_emailWidgets.keys().contains(item.url())) {
+            kDebug() << "skipping, item already exists:" << item.url();
+        } else {
+            m_emailWidgets[item.url()] = ew;
+            ew->setSmall();
+            ew->itemChanged(item);
+            m_listLayout->addItem(ew);
+            kDebug() << "Item URL:" << item.url() << item.flags();
+        }
     }
 }
 
 void EmailList::rowsRemoved(const QModelIndex &index, int start, int end)
 {
     kDebug() << "ROWs Removed!!!!" << start << end;
-    kDebug() << "Total rows:" << m_model->rowCount() << m_model->columnCount();
+    kDebug() << "Total rows, cols:" << m_model->rowCount() << m_model->columnCount();
     kDebug() << index.data(EntityTreeModel::MimeTypeRole).value<QString>();
     kDebug() << index.data(EntityTreeModel::ItemIdRole).value<int>();
     
@@ -184,5 +188,9 @@ void EmailList::fixLayout()
     updateGeometry();
 }
 
+bool EmailList::accept(const Akonadi::Item email)
+{
+    return true;
+}
 
 #include "emaillist.moc"

@@ -61,7 +61,10 @@ namespace Akonadi {
     Q_SIGNALS:
         void updateToolTip(const QString&, int);
         void activated(const QUrl);
-        
+
+    protected:
+        bool accept(const Akonadi::Item email);
+
     private Q_SLOTS:
         void rowAdded(const QModelIndex &index, int start, int end);
         void rowsRemoved(const QModelIndex &index, int start, int end);

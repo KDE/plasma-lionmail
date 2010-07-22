@@ -72,7 +72,7 @@ class EmailWidget : public Plasma::Frame
         void setTo(const QStringList& to);
         void setCc(const QStringList& ccList);
         void setBcc(const QStringList& bccList);
-        void setFlags(const QStringList& flagList);
+        //void setFlags(const QStringList& flagList);
         KUrl url();
         void setUrl(const KUrl);
 

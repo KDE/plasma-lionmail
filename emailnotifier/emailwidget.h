@@ -39,23 +39,30 @@
 #include <boost/shared_ptr.hpp>
 typedef boost::shared_ptr<KMime::Message> MessagePtr;
 
+#include "copied_classes/messagestatus.h"
 
 // Plasma
 #include <Plasma/Frame>
-#include <Plasma/Animation>
+//#include <Plasma/Animation>
 //#include <Plasma/Animation>
 
 namespace Plasma
 {
-    //class Animation;
+    class Animation;
     class Dialog;
-    class Frame;
+    //class Frame;
     //class Animation;
     class IconWidget;
     class Label;
     class PopupApplet;
     class PushButton;
     class WebView;
+}
+
+// PIM
+namespace KPIM
+{
+    class MessageStatus;
 }
 
 //own
@@ -76,8 +83,8 @@ class EmailWidget : public Plasma::Frame
 
         void setFrom(const QString& from);
         void setTo(const QStringList& to);
-        void setCc(const QStringList& ccList);
-        void setBcc(const QStringList& bccList);
+        //void setCc(const QStringList& ccList);
+        //void setBcc(const QStringList& bccList);
         void setFlags(const QStringList& flagList);
         KUrl url();
         void setUrl(const KUrl);
@@ -89,8 +96,8 @@ class EmailWidget : public Plasma::Frame
 
         void setAllowHtml(bool allow);
 
-        void setNew(bool isnew);
-        void setImportant(bool important);
+        //void setNew(bool isnew);
+        //void setImportant(bool important);
         //void setTask(bool task);
 
         bool isNew();
@@ -157,7 +164,7 @@ class EmailWidget : public Plasma::Frame
         void linkClicked(const QString &link);
 
     private :
-        void syncItemToAkonadi(Akonadi::Item &item);
+        void syncItemToAkonadi();
         Akonadi::Monitor* m_monitor;
 
         void updateSize(int h);
@@ -187,6 +194,8 @@ class EmailWidget : public Plasma::Frame
         QStringList m_cc;
         QStringList m_bcc;
         QStringList m_flags;
+
+        KPIM::MessageStatus m_status;
 
         bool m_isNew;
         bool m_isUnread;

@@ -38,7 +38,7 @@ target_link_libraries(plasma_applet_lionmail
 #    akonadi-kabccommon
     ${KDE4_KCAL_LIBS}
     ${KDE4_KPIMUTILS_LIBS}
-
+    #messagecore # for email flags
 
 )
 
