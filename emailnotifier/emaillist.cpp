@@ -23,6 +23,7 @@
 
 // Akonadi
 #include <Akonadi/ChangeRecorder>
+#include <Akonadi/CollectionFetchScope>
 #include <Akonadi/ItemFetchScope>
 #include <Akonadi/Monitor>
 #include <Akonadi/Session>
@@ -49,7 +50,8 @@
 using namespace Akonadi;
 
 EmailList::EmailList(QGraphicsWidget *parent)
-    : Plasma::ScrollWidget(parent)
+    : Plasma::ScrollWidget(parent),
+    m_collectionId(108)
 {
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -102,14 +104,17 @@ void EmailList::initETM()
     
     //changeRecorder->setCollectionMonitored( Collection(201) );
     // // 201 is lion mail local, 191 is INBOX, 111 is lion mail imap
-    changeRecorder->setCollectionMonitored( Collection(201) ); 
+    //changeRecorder->setCollectionMonitored( Collection(201) );
+    changeRecorder->setCollectionMonitored( Collection(m_collectionId) );
     //changeRecorder->setMimeTypeMonitored("inode/directory");
     changeRecorder->itemFetchScope().fetchPayloadPart(MessagePart::Header);
+    changeRecorder->collectionFetchScope().setIncludeUnsubscribed(false);
     changeRecorder->setMimeTypeMonitored("message/rfc822");
     changeRecorder->setSession( session );
     
     m_model = new Akonadi::EntityTreeModel(changeRecorder, this);
     //m_model->setItemPopulationStrategy( EntityTreeModel::NoItemPopulation );
+    m_model->setCollectionFetchStrategy( EntityTreeModel::FetchNoCollections );
     connect(m_model, SIGNAL(rowsInserted(const QModelIndex&, int, int)), this, SLOT(rowAdded(const QModelIndex&, int, int)));
     connect(m_model, SIGNAL(rowsRemoved(const QModelIndex&, int, int)), this, SLOT(rowsRemoved(const QModelIndex&, int, int)));
     connect(m_model, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex&)), this, SLOT(dataChanged(const QModelIndex&, const QModelIndex&)));
@@ -134,6 +139,10 @@ void EmailList::dataChanged(const QModelIndex &topLeft, const QModelIndex &botto
                     // this is a widget scheduled for deletion
                     m_emailWidgets[item.url()]->setDeleted(false);
                 }
+                if (!item.isValid()) {
+                    kDebug() << "invalid item";
+                    m_emailWidgets[item.url()]->setDeleted();
+                }
             } else {
                 kDebug() << "an item becomes visible" << item.url();
                 addItem(item);
@@ -153,6 +162,9 @@ void EmailList::rowAdded(const QModelIndex &index, int start, int end)
     for (int i = start; i <= end; i++) {
         QModelIndex itemindex =  m_model->index(i, 0, index);
         Akonadi::Item item = itemindex.data(EntityTreeModel::ItemRole).value<Akonadi::Item>();
+        if (!item.isValid()) {
+            continue;
+        }
         if (!accept(item)) {
             kDebug() << "item not interesting" << item.url();
         } else if (m_emailWidgets.keys().contains(item.url())) {
@@ -175,7 +187,7 @@ void EmailList::addItem(Akonadi::Item item)
     ew->setSmall();
     ew->itemChanged(item);
     m_listLayout->addItem(ew);
-    kDebug() << "Item URL:" << item.url() << item.flags();
+    kDebug() << "Item URL:" << item.url() << item.flags() << item.storageCollectionId();
 
 }
 
@@ -214,6 +226,13 @@ void EmailList::fixLayout()
 
 bool EmailList::accept(const Akonadi::Item email)
 {
+
+    if (email.storageCollectionId() != m_collectionId) {
+        kDebug() << "wrong collection, doei ...";
+        return false;
+    } else {
+
+    }
     KPIM::MessageStatus status;
     status.setStatusFromFlags(email.flags());
 

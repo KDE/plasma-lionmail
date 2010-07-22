@@ -79,6 +79,8 @@ namespace Akonadi {
         void initETM();
         void addItem(Akonadi::Item item);
 
+        quint64 m_collectionId;
+
         Akonadi::EntityTreeModel* m_model;
         QGraphicsWidget* m_innerWidget;
         QGraphicsLinearLayout* m_listLayout;

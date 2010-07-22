@@ -821,7 +821,7 @@ void EmailWidget::itemChanged(const Akonadi::Item& item)
         //kDebug() << "=== item changed" << id << msg->subject()->asUnicodeString() << item.flags();
         //kDebug() << "new:" << m_isNew << "important:" << m_isImportant << "task:" << m_isTask;
     } else {
-        kDebug() << "Could not fetch email payload";
+        kDebug() << "Could not fetch email payload for" << item.url();
         //setSubject(i18n("Could not fetch email payload"));
     }
 }
@@ -859,6 +859,8 @@ void EmailWidget::setDeleted(bool deleted)
 {
     m_isDeleted = deleted;
     m_deleteButton->setChecked(m_isDeleted);
+
+    // Make it tranlucent for now
     qreal o = .4;
     if (!m_isDeleted) {
         o = 1.0;
