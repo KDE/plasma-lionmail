@@ -55,7 +55,7 @@ namespace Plasma
         * Constructor of the dialog
         * @param parent the parent of this object
         **/
-        Dialog(QGraphicsWidget *parent);
+        Dialog(quint64 collectionId, QGraphicsWidget *parent);
 
         virtual ~Dialog();
 
@@ -80,6 +80,8 @@ namespace Plasma
         Plasma::Label *m_statusBar;
 
         EmailList* m_unreadList;
+
+        quint64 m_collectionId;
   };
 
 #endif

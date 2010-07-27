@@ -49,10 +49,15 @@
 
 using namespace Akonadi;
 
-EmailList::EmailList(QGraphicsWidget *parent)
+EmailList::EmailList(quint64 collectionId, QGraphicsWidget *parent)
     : Plasma::ScrollWidget(parent),
-    m_collectionId(108)
+    m_collectionId(collectionId)
 {
+    /*
+    if (m_collectionId == 0) {
+        m_collectionId = 108;
+    }
+    */
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);

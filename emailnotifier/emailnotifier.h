@@ -43,13 +43,14 @@ class EmailNotifier : public Plasma::PopupApplet
         ~EmailNotifier();
 
         QGraphicsWidget* graphicsWidget();
-        
+
         void init();
         void updateToolTip(const QString query, const int matches);
         bool allowHtml();
 
     protected Q_SLOTS:
         void configAccepted();
+        void configChanged();
 
     protected:
         void createConfigurationInterface(KConfigDialog *parent);
@@ -62,6 +63,8 @@ class EmailNotifier : public Plasma::PopupApplet
 
         Ui::emailnotifierConfig* ui;
         Dialog* m_dialog;
+
+        quint64 m_collectionId;
 };
 
 

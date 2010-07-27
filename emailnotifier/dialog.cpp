@@ -36,12 +36,13 @@
 #include "dialog.h"
 
 
-Dialog::Dialog(QGraphicsWidget *parent)
+Dialog::Dialog(quint64 collectionId, QGraphicsWidget *parent)
     : QGraphicsWidget(parent),
       //m_navIcon(0),
       m_titleBar(0),
       m_statusBar(0)
 {
+    m_collectionId = collectionId;
     buildDialog();
 }
 
@@ -62,7 +63,7 @@ void Dialog::buildDialog()
     m_tabBar = new Plasma::TabBar(this);
 
 
-    m_unreadList = new EmailList(this);
+    m_unreadList = new EmailList(m_collectionId, this);
     connect(m_unreadList, SIGNAL(activated(const QUrl)), SLOT(openUrl(const QUrl)));
     m_tabBar->addTab(KIcon("mail-unread-new"), i18n("Unread"), m_unreadList);
     m_tabBar->setTabBarShown(false);

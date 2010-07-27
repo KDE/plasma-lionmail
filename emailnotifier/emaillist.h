@@ -54,7 +54,7 @@ namespace Akonadi {
   Q_OBJECT
 
     public:
-        EmailList(QGraphicsWidget *parent);
+        EmailList(quint64 collectionId, QGraphicsWidget *parent);
 
         virtual ~EmailList();
 
@@ -84,7 +84,7 @@ namespace Akonadi {
         Akonadi::EntityTreeModel* m_model;
         QGraphicsWidget* m_innerWidget;
         QGraphicsLinearLayout* m_listLayout;
-        
+
         QHash<QUrl, EmailWidget*> m_emailWidgets;
   };
 

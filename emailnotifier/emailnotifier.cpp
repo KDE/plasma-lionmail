@@ -36,7 +36,8 @@ EmailNotifier::EmailNotifier(QObject *parent, const QVariantList &args)
   : Plasma::PopupApplet(parent, args),
     m_theme(0),
     ui(0),
-    m_dialog(0)
+    m_dialog(0),
+    m_collectionId(0)
 {
     setPopupIcon("mail-unread-new");
     setHasConfigurationInterface(true);
@@ -44,10 +45,12 @@ EmailNotifier::EmailNotifier(QObject *parent, const QVariantList &args)
     setAspectRatioMode(Plasma::IgnoreAspectRatio);
     setPassivePopup(true);
     setStatus(Plasma::ActiveStatus);
-    
+
     kDebug() << "LionmailArgs" << args;
     foreach (QVariant a, args) {
         kDebug() << args.at(0).toString() << a.toString();
+        m_collectionId = args.at(0).toString().toInt();
+        /*
         QString firstarg = a.toString();
         if (firstarg.startsWith("EmailCollection-")) {
             //m_collections << firstarg;
@@ -55,6 +58,10 @@ EmailNotifier::EmailNotifier(QObject *parent, const QVariantList &args)
         } else {
             kWarning() << "argument has to be in the form \"EmailCollection-<id>\", but it isn't (" << firstarg << ")";
         }
+        */
+    }
+    if (!m_collectionId == 0) {
+        kDebug() << "No valid collection ID given";
     }
 }
 
@@ -63,12 +70,27 @@ EmailNotifier::~EmailNotifier()
     delete ui;
 }
 
-QGraphicsWidget* EmailNotifier::graphicsWidget()
-{   
-    if (!m_dialog) {
-        m_dialog = new Dialog(this);
+void EmailNotifier::configChanged()
+{
+    KConfigGroup cg = config();
+    if (!m_collectionId) {
+        m_collectionId = cg.readEntry("unreadCollectionId", 0);
+        kDebug() << "using config" << m_collectionId;
+    } else {
+        cg.writeEntry("unreadCollectionId", m_collectionId);
+        kDebug() << "writing config" << m_collectionId;
     }
-    
+    kDebug() << "Using collection ID" << m_collectionId;
+    m_allowHtml = cg.readEntry("allowHtml", false);
+}
+
+QGraphicsWidget* EmailNotifier::graphicsWidget()
+{
+    if (!m_dialog) {
+        kDebug() << "============================================== NEW";
+        m_dialog = new Dialog(m_collectionId, this);
+    }
+
     return m_dialog;
 }
 
@@ -82,8 +104,7 @@ void EmailNotifier::init()
     //Akonadi::ServerManager::start();
     //dataEngine("akonadi")->connectSource("EmailCollections", this);
 
-    KConfigGroup cg = config();
-    m_allowHtml = cg.readEntry("allowHtml", false);
+    configChanged();
 
     updateToolTip("", 0);
 }
