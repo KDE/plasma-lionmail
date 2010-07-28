@@ -190,6 +190,7 @@ void EmailNotifier::createConfigurationInterface(KConfigDialog *parent)
     checkablePM->setSelectionModel(m_checkSelection);
     checkablePM->setSourceModel(collectionFilter);
     treeView->setModel(checkablePM);
+    //treeView->setSelectionModel(m_checkSelection );
 }
 
 
@@ -209,7 +210,7 @@ void EmailNotifier::configAccepted()
         if (!item.isValid()) {
             kDebug() << "invalid item";
         }
-        quint64 itemid = itemindex.data(EntityTreeModel::ItemIdRole).value<quint64>();
+        quint64 itemid = itemindex.data(EntityTreeModel::CollectionIdRole).value<quint64>();
 
         quint64 _id = item.id();
         kDebug() << "Collection selected:" << _id << item.url() << itemid;
