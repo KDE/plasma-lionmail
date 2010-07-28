@@ -150,7 +150,7 @@ void EmailNotifier::init()
     configChanged();
 
     updateToolTip(i18nc("tooltip on startup", "No new email"), 0);
-    dataEngine("akonadi")->connectSource("EmailCollections", this);
+    //dataEngine("akonadi")->connectSource("EmailCollections", this);
 }
 
 
@@ -160,6 +160,8 @@ void EmailNotifier::createConfigurationInterface(KConfigDialog *parent)
     ui = new Ui::emailnotifierConfig();
     ui->setupUi(widget);
     parent->addPage(widget, i18n("Collections"), Applet::icon());
+    connect(parent, SIGNAL(applyClicked()), this, SLOT(configAccepted()));
+    connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
 
     QTreeView *treeView = ui->collectionsTreeView;
 
@@ -169,7 +171,7 @@ void EmailNotifier::createConfigurationInterface(KConfigDialog *parent)
     changeRecorder->setMimeTypeMonitored("message/rfc822");
     changeRecorder->setCollectionMonitored( Collection::root() );
     changeRecorder->fetchCollection( true );
-    changeRecorder->setAllMonitored( true );
+    //changeRecorder->setAllMonitored( true );
     changeRecorder->itemFetchScope().fetchFullPayload( true );
     changeRecorder->itemFetchScope().fetchAllAttributes( true );
 
@@ -183,9 +185,9 @@ void EmailNotifier::createConfigurationInterface(KConfigDialog *parent)
 
     CheckableItemProxyModel *checkablePM = new CheckableItemProxyModel(this);
 
-    QItemSelectionModel *checkSelection = new QItemSelectionModel(collectionFilter, this);
+    m_checkSelection = new QItemSelectionModel(collectionFilter, this);
 
-    checkablePM->setSelectionModel(checkSelection);
+    checkablePM->setSelectionModel(m_checkSelection);
     checkablePM->setSourceModel(collectionFilter);
     treeView->setModel(checkablePM);
 }
@@ -199,7 +201,19 @@ void EmailNotifier::configAccepted()
         m_allowHtml = !m_allowHtml;
         cg.writeEntry("allowHtml", m_allowHtml);
     }
+    kDebug() << "Looking at our treeview selection...";
+    //QItemSelectionModel *QModelIndexList    selectedIndexes () const
+    foreach (QModelIndex itemindex, m_checkSelection->selectedIndexes()) {
+        //QModelIndex itemindex = m_checkSelection->index(r, c);
+        Akonadi::Item item = itemindex.data(EntityTreeModel::ItemRole).value<Akonadi::Item>();
+        if (!item.isValid()) {
+            kDebug() << "invalid item";
+        }
+        quint64 itemid = itemindex.data(EntityTreeModel::ItemIdRole).value<quint64>();
 
+        quint64 _id = item.id();
+        kDebug() << "Collection selected:" << _id << item.url() << itemid;
+    }
 }
 
 void EmailNotifier::statusChanged(int emailsCount, const QString& statusText)

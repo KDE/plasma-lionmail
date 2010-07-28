@@ -65,6 +65,8 @@ class EmailNotifier : public Plasma::PopupApplet
         QHash<quint64, QString> m_allCollections;
 
         Ui::emailnotifierConfig* ui;
+        QItemSelectionModel *m_checkSelection;
+
         Dialog* m_dialog;
 
         quint64 m_collectionId;
