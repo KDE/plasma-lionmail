@@ -155,6 +155,7 @@ void EmailList::dataChanged(const QModelIndex &topLeft, const QModelIndex &botto
             r++;
         }
     }
+    updateStatus();
 }
 
 void EmailList::rowAdded(const QModelIndex &index, int start, int end)
@@ -171,13 +172,14 @@ void EmailList::rowAdded(const QModelIndex &index, int start, int end)
             continue;
         }
         if (!accept(item)) {
-            kDebug() << "item not interesting" << item.url();
+            //kDebug() << "item not interesting" << item.url();
         } else if (m_emailWidgets.keys().contains(item.url())) {
             kDebug() << "skipping, item already exists:" << item.url();
         } else {
             addItem(item);
         }
     }
+    updateStatus();    
 }
 
 void EmailList::addItem(Akonadi::Item item)
@@ -193,7 +195,6 @@ void EmailList::addItem(Akonadi::Item item)
     ew->itemChanged(item);
     m_listLayout->addItem(ew);
     kDebug() << "Item URL:" << item.url() << item.flags() << item.storageCollectionId();
-
 }
 
 void EmailList::rowsRemoved(const QModelIndex &index, int start, int end)
@@ -218,6 +219,7 @@ void EmailList::rowsRemoved(const QModelIndex &index, int start, int end)
         kDebug() << "Item gone URL:" << item.url();
     }
     fixLayout();
+    updateStatus();
 }
 
 void EmailList::fixLayout()
@@ -232,7 +234,7 @@ void EmailList::fixLayout()
 bool EmailList::accept(const Akonadi::Item email)
 {
 
-    if (email.storageCollectionId() != m_collectionId) {
+    if ((quint64)(email.storageCollectionId()) != m_collectionId) {
         kDebug() << "wrong collection, doei ...";
         return false;
     } else {
@@ -248,6 +250,24 @@ bool EmailList::accept(const Akonadi::Item email)
         return true;
     }
     return false;
+}
+
+void EmailList::updateStatus()
+{
+    m_emailsCount = m_emailWidgets.count();
+    m_statusText = i18np("%1 New Email", "%1 New Emails", m_emailsCount);
+    
+    emit statusChanged(m_emailsCount, m_statusText);
+}
+
+int EmailList::emailsCount()
+{
+    return m_emailsCount;
+}
+
+QString EmailList::statusText()
+{
+    return m_statusText;
 }
 
 #include "emaillist.moc"

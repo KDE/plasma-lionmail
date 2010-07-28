@@ -45,12 +45,13 @@ class EmailNotifier : public Plasma::PopupApplet
         QGraphicsWidget* graphicsWidget();
 
         void init();
-        void updateToolTip(const QString query, const int matches);
+        void updateToolTip(const QString& statusText, const QString& icon);
         bool allowHtml();
 
     protected Q_SLOTS:
         void configAccepted();
         void configChanged();
+        void statusChanged(int count, const QString&);
 
     protected:
         void createConfigurationInterface(KConfigDialog *parent);

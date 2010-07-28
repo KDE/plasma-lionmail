@@ -89,6 +89,7 @@ QGraphicsWidget* EmailNotifier::graphicsWidget()
     if (!m_dialog) {
         kDebug() << "============================================== NEW";
         m_dialog = new Dialog(m_collectionId, this);
+        connect(m_dialog, SIGNAL(statusChanged(int, const QString&)), this, SLOT(statusChanged(int, const QString&)));
     }
 
     return m_dialog;
@@ -131,13 +132,25 @@ void EmailNotifier::configAccepted()
 
 }
 
-void EmailNotifier::updateToolTip(const QString query, const int matches)
+void EmailNotifier::statusChanged(int emailsCount, const QString& statusText)
 {
-    Q_UNUSED(query);
-    Q_UNUSED(matches);
-    m_toolTip = Plasma::ToolTipContent(i18nc("No search has been done yet", "Lion Mail"),
-            i18nc("Tooltip sub text", "Click on the icon to monitor your emails"),
-                    KIcon("akonadi").pixmap(IconSize(KIconLoader::Desktop))
+    QString icon = "mail-mark-unread";
+    if (emailsCount) {
+        icon = "mail-mark-unread-new";
+        updateToolTip(statusText, icon);
+        setStatus(Plasma::ActiveStatus);
+    } else {
+        updateToolTip(i18nc("tooltip: no new emails", "No new email"), icon);
+        setStatus(Plasma::PassiveStatus);
+    }
+    setPopupIcon(icon);
+}
+
+void EmailNotifier::updateToolTip(const QString& statusText, const QString& icon)
+{
+    m_toolTip = Plasma::ToolTipContent(statusText,
+            i18nc("Tooltip sub text", ""),
+                    KIcon(icon).pixmap(IconSize(KIconLoader::Desktop))
                 );
     Plasma::ToolTipManager::self()->setContent(this, m_toolTip);
 }

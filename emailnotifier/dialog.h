@@ -59,6 +59,10 @@ namespace Plasma
 
         virtual ~Dialog();
 
+    Q_SIGNALS:
+        void statusChanged(int count, const QString &statusText);
+
+        
     private Q_SLOTS:
         void toggleTab();
         void openUrl(const QUrl url);

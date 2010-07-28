@@ -58,9 +58,13 @@ namespace Akonadi {
 
         virtual ~EmailList();
 
+        int emailsCount();
+        QString statusText();
+
     Q_SIGNALS:
         void updateToolTip(const QString&, int);
         void activated(const QUrl);
+        void statusChanged(int count, const QString &statusText);
 
     protected:
         bool accept(const Akonadi::Item email);
@@ -70,6 +74,7 @@ namespace Akonadi {
         void rowsRemoved(const QModelIndex &index, int start, int end);
         void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
         void fixLayout();
+        void updateStatus();
 
     private :
         /**
@@ -86,6 +91,9 @@ namespace Akonadi {
         QGraphicsLinearLayout* m_listLayout;
 
         QHash<QUrl, EmailWidget*> m_emailWidgets;
+
+        int m_emailsCount;
+        QString m_statusText;
   };
 
 #endif

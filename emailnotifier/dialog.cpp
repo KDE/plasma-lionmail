@@ -65,6 +65,7 @@ void Dialog::buildDialog()
 
     m_unreadList = new EmailList(m_collectionId, this);
     connect(m_unreadList, SIGNAL(activated(const QUrl)), SLOT(openUrl(const QUrl)));
+    connect(m_unreadList, SIGNAL(statusChanged(int, const QString&)), this, SIGNAL(statusChanged(int, const QString&)));
     m_tabBar->addTab(KIcon("mail-unread-new"), i18n("Unread"), m_unreadList);
     m_tabBar->setTabBarShown(false);
 
