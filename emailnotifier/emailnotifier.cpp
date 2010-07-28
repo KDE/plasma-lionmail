@@ -19,18 +19,36 @@
 
 #include "emailnotifier.h"
 
+#include <QTreeView>
+
 
 #include <KConfigDialog>
+#include <kselectionproxymodel.h>
+
 
 #include <Plasma/Svg>
 #include <Plasma/Theme>
 #include <Plasma/Extender>
 #include <Plasma/DataEngine>
 
+#include <Akonadi/ChangeRecorder>
+#include <Akonadi/CollectionFetchScope>
+#include <Akonadi/ItemFetchScope>
+#include <Akonadi/Monitor>
+#include <Akonadi/Session>
+#include <Akonadi/EntityTreeModel>
+
 #include <Akonadi/ServerManager>
-//#include "mailextender.h"
+//#include <akonadi/entitytreemodel.h>
+//#include <akonadi/changerecorder.h>
+//#include <akonadi/itemfetchscope.h>
+#include <akonadi/entitymimetypefiltermodel.h>
+#include "copied_classes/checkableitemproxymodel.h"
+
 #include "../emailmessage/emailmessage.h"
 #include "dialog.h"
+
+using namespace Akonadi;
 
 EmailNotifier::EmailNotifier(QObject *parent, const QVariantList &args)
   : Plasma::PopupApplet(parent, args),
@@ -84,6 +102,29 @@ void EmailNotifier::configChanged()
     m_allowHtml = cg.readEntry("allowHtml", false);
 }
 
+void EmailNotifier::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
+{
+    //setBusy(false);
+    kDebug() << "source" << source;
+    if (source == "EmailCollections") {
+        kDebug() << "EmailCollections are in..." << data.keys();
+        foreach(const QString &k, data.keys()) {
+            QString _k = k;
+            quint64 _id = (quint64)(_k.remove("EmailCollection-").toInt());
+            m_allCollections[_id] = data[k].toString();
+            kDebug() << k << "id" << _id << m_allCollections[_id];
+        }
+        //addConfigCollections();
+        //update();
+        //return;
+    }
+    /*
+    if (source == "ContactCollections") {
+        kDebug() << "Akonadi contacts collections:" << data.keys() << data;
+    }
+    */
+}
+
 QGraphicsWidget* EmailNotifier::graphicsWidget()
 {
     if (!m_dialog) {
@@ -108,7 +149,8 @@ void EmailNotifier::init()
 
     configChanged();
 
-    updateToolTip("", 0);
+    updateToolTip(i18nc("tooltip on startup", "No new email"), 0);
+    dataEngine("akonadi")->connectSource("EmailCollections", this);
 }
 
 
@@ -119,6 +161,33 @@ void EmailNotifier::createConfigurationInterface(KConfigDialog *parent)
     ui->setupUi(widget);
     parent->addPage(widget, i18n("Collections"), Applet::icon());
 
+    QTreeView *treeView = ui->collectionsTreeView;
+
+
+    // Set a model that displays only folders containing emails onto the treeView
+    ChangeRecorder *changeRecorder = new ChangeRecorder( this );
+    changeRecorder->setMimeTypeMonitored("message/rfc822");
+    changeRecorder->setCollectionMonitored( Collection::root() );
+    changeRecorder->fetchCollection( true );
+    changeRecorder->setAllMonitored( true );
+    changeRecorder->itemFetchScope().fetchFullPayload( true );
+    changeRecorder->itemFetchScope().fetchAllAttributes( true );
+
+    EntityTreeModel *etm = new EntityTreeModel( changeRecorder, this );
+
+    Akonadi::EntityMimeTypeFilterModel *collectionFilter = new Akonadi::EntityMimeTypeFilterModel(this);
+
+    collectionFilter->addMimeTypeInclusionFilter(Akonadi::Collection::mimeType());
+    collectionFilter->setSourceModel(etm);
+    collectionFilter->setHeaderGroup(Akonadi::EntityTreeModel::CollectionTreeHeaders);
+
+    CheckableItemProxyModel *checkablePM = new CheckableItemProxyModel(this);
+
+    QItemSelectionModel *checkSelection = new QItemSelectionModel(collectionFilter, this);
+
+    checkablePM->setSelectionModel(checkSelection);
+    checkablePM->setSourceModel(collectionFilter);
+    treeView->setModel(checkablePM);
 }
 
 
