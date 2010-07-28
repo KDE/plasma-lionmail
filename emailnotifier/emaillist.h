@@ -76,6 +76,8 @@ namespace Akonadi {
         void fixLayout();
         void updateStatus();
 
+        void deleteItem();
+
     private :
         /**
         * @internal build the dialog

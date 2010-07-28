@@ -138,6 +138,7 @@ class EmailWidget : public Plasma::Frame
         void geometryChanged(QSizeF newSize);
         void activated(const QUrl);
         void collapsed();
+        void deleteMe(); /**< emitted once the disappearAnimation is done and the item can go away **/
 
     protected:
         void wheelEvent (QGraphicsSceneWheelEvent * event);
@@ -157,6 +158,7 @@ class EmailWidget : public Plasma::Frame
         void resizeLater();
         void itemActivated();
         void linkClicked(const QString &link);
+        void disappearAnimationFinished();
 
     private :
         void syncItemToAkonadi();
@@ -222,6 +224,7 @@ class EmailWidget : public Plasma::Frame
         Plasma::Animation* m_expandIconAnimation;
         Plasma::Animation* m_actionsAnimation;
         Plasma::Animation* m_bodyAnimation;
+        Plasma::Animation* m_disappearAnimation;
 
         //Plasma::WebView* m_bodyView;
 

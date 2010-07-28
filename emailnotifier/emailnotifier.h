@@ -51,7 +51,7 @@ class EmailNotifier : public Plasma::PopupApplet
     protected Q_SLOTS:
         void configAccepted();
         void configChanged();
-        void statusChanged(int count, const QString&);
+        void statusChanged(int count, const QString& = QString());
 
     protected:
         void createConfigurationInterface(KConfigDialog *parent);

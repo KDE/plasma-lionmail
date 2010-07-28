@@ -777,7 +777,7 @@ void EmailWidget::fetchPayload(bool full)
 
 void EmailWidget::fetchDone(KJob* job)
 {
-
+    kDebug() << "fetchjob returning";
     if ( job->error() ) {
         kDebug() << "Error fetching item" << id << ": " << job->errorString();
         setRawBody(i18n("<h3>Fetching email body %1 failed: <p /></h3><pre>%2</pre>", id, job->errorString()));
@@ -805,6 +805,10 @@ void EmailWidget::fetchDone(KJob* job)
 
 void EmailWidget::itemChanged(const Akonadi::Item& item)
 {
+    if (!item.isValid()) {
+        kDebug() << "item is gone";
+        return;
+    }
     m_item = Akonadi::Item(item.id());
     if (item.hasPayload<MessagePtr>()) {
         MessagePtr msg = item.payload<MessagePtr>();
@@ -865,11 +869,29 @@ void EmailWidget::setDeleted(bool deleted)
     m_deleteButton->setChecked(m_isDeleted);
 
     // Make it tranlucent for now
-    qreal o = .4;
+
+    qreal o = .7;
     if (!m_isDeleted) {
         o = 1.0;
     }
-    setOpacity(o);
+    //setOpacity(o);
+    kDebug() << "setting deleted, starting disappearAnimation";
+    m_disappearAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
+    m_disappearAnimation->setProperty("Duration", 5000);
+    m_disappearAnimation->setProperty("startOpacity", 1.0);
+    m_disappearAnimation->setProperty("targetOpacity", 0.0);
+
+    m_disappearAnimation->setTargetWidget(this);
+    m_disappearAnimation->start();
+    connect(m_disappearAnimation, SIGNAL(finished()), this, SLOT(disappearAnimationFinished()));
+}
+
+void EmailWidget::disappearAnimationFinished()
+{
+    disconnect( m_monitor, SIGNAL(itemChanged(const Akonadi::Item&, const QSet<QByteArray>&)),
+            this, SLOT(itemChanged(const Akonadi::Item&)) );
+
+    emit deleteMe();
 }
 
 void EmailWidget::mousePressEvent(QGraphicsSceneMouseEvent * event)

@@ -53,11 +53,8 @@ EmailList::EmailList(quint64 collectionId, QGraphicsWidget *parent)
     : Plasma::ScrollWidget(parent),
     m_collectionId(collectionId)
 {
-    /*
-    if (m_collectionId == 0) {
-        m_collectionId = 108;
-    }
-    */
+    if (m_collectionId == 0) m_collectionId = 108; // FIXME: comment, collection id is hardcoded atm
+
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
@@ -126,6 +123,21 @@ void EmailList::initETM()
     kDebug() << "Model created and connected. :)";
 }
 
+void EmailList::deleteItem()
+{
+    EmailWidget* ew = dynamic_cast<EmailWidget*>(sender());
+    if (ew) {
+        kDebug() << "Scheduling item for deletion, let's hope we don't crash ;-)";
+        QUrl _url = m_emailWidgets.key(ew);
+        m_emailWidgets.remove(_url);
+        m_listLayout->removeItem(ew);
+        delete ew;
+        //item->deleteLater();
+    } else {
+        kDebug() << "Sender is not a QGraphicsWidget, something's wrong with your code.";
+    }
+}
+
 void EmailList::dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
 {
     int r = topLeft.row();
@@ -139,6 +151,7 @@ void EmailList::dataChanged(const QModelIndex &topLeft, const QModelIndex &botto
                 m_emailWidgets[item.url()]->itemChanged(item);
                 // Should we remove it?
                 if (!accept(item)) {
+                    kDebug() << "Setting deleted";
                     m_emailWidgets[item.url()]->setDeleted();
                 } else {
                     // this is a widget scheduled for deletion
@@ -188,8 +201,11 @@ void EmailList::addItem(Akonadi::Item item)
         kWarning() << "adding not-accepted item!";
     }
     EmailWidget* ew = new EmailWidget(this);
+
     connect(ew, SIGNAL(activated(const QUrl)), SIGNAL(activated(const QUrl)));
     connect(ew, SIGNAL(collapsed()), SLOT(fixLayout()));
+    connect(ew, SIGNAL(deleteMe()), SLOT(deleteItem()));
+
     m_emailWidgets[item.url()] = ew;
     ew->setSmall();
     ew->itemChanged(item);
@@ -255,7 +271,7 @@ bool EmailList::accept(const Akonadi::Item email)
 void EmailList::updateStatus()
 {
     m_emailsCount = m_emailWidgets.count();
-    m_statusText = i18np("%1 New Email", "%1 New Emails", m_emailsCount);
+    m_statusText = i18np("%1 new email", "%1 new emails", m_emailsCount);
     
     emit statusChanged(m_emailsCount, m_statusText);
 }

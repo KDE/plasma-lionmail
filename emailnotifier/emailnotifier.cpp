@@ -104,6 +104,7 @@ void EmailNotifier::init()
 {
     //Akonadi::ServerManager::start();
     //dataEngine("akonadi")->connectSource("EmailCollections", this);
+    setStatus(Plasma::PassiveStatus);
 
     configChanged();
 
@@ -137,7 +138,12 @@ void EmailNotifier::statusChanged(int emailsCount, const QString& statusText)
     QString icon = "mail-mark-unread";
     if (emailsCount) {
         icon = "mail-mark-unread-new";
-        updateToolTip(statusText, icon);
+        if (!statusText.isEmpty()) {
+            updateToolTip(statusText, icon);
+        } else {
+            const QString _t = i18np("%1 new email", "%1 new emails", emailsCount);
+            updateToolTip(_t, icon);
+        }
         setStatus(Plasma::ActiveStatus);
     } else {
         updateToolTip(i18nc("tooltip: no new emails", "No new email"), icon);
@@ -149,7 +155,7 @@ void EmailNotifier::statusChanged(int emailsCount, const QString& statusText)
 void EmailNotifier::updateToolTip(const QString& statusText, const QString& icon)
 {
     m_toolTip = Plasma::ToolTipContent(statusText,
-            i18nc("Tooltip sub text", ""),
+            i18nc("Tooltip sub text", "Click on the icon to view your emails"),
                     KIcon(icon).pixmap(IconSize(KIconLoader::Desktop))
                 );
     Plasma::ToolTipManager::self()->setContent(this, m_toolTip);
