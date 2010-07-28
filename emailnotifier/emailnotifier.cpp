@@ -44,6 +44,7 @@
 //#include <akonadi/itemfetchscope.h>
 #include <akonadi/entitymimetypefiltermodel.h>
 #include "copied_classes/checkableitemproxymodel.h"
+#include "copied_classes/entitymodelstatesaver.h"
 
 #include "../emailmessage/emailmessage.h"
 #include "dialog.h"
@@ -172,8 +173,8 @@ void EmailNotifier::createConfigurationInterface(KConfigDialog *parent)
     changeRecorder->setCollectionMonitored( Collection::root() );
     changeRecorder->fetchCollection( true );
     //changeRecorder->setAllMonitored( true );
-    changeRecorder->itemFetchScope().fetchFullPayload( true );
-    changeRecorder->itemFetchScope().fetchAllAttributes( true );
+    //changeRecorder->itemFetchScope().fetchFullPayload( true );
+    //changeRecorder->itemFetchScope().fetchAllAttributes( true );
 
     EntityTreeModel *etm = new EntityTreeModel( changeRecorder, this );
 
@@ -191,6 +192,10 @@ void EmailNotifier::createConfigurationInterface(KConfigDialog *parent)
     checkablePM->setSourceModel(collectionFilter);
     treeView->setModel(checkablePM);
     //treeView->setSelectionModel(m_checkSelection );
+
+    m_modelState = new Akonadi::EntityModelStateSaver( checkablePM, this );
+    m_modelState->addRole( Qt::CheckStateRole, "CheckState" );
+    m_modelState->restoreConfig(config());
 }
 
 
@@ -204,17 +209,32 @@ void EmailNotifier::configAccepted()
     }
     kDebug() << "Looking at our treeview selection...";
     //QItemSelectionModel *QModelIndexList    selectedIndexes () const
+    int c = m_collectionIds.count();
+    QList<quint64> newIds;
     foreach (QModelIndex itemindex, m_checkSelection->selectedIndexes()) {
+        // We're only interested in the collection ID
+        /*
         //QModelIndex itemindex = m_checkSelection->index(r, c);
-        Akonadi::Item item = itemindex.data(EntityTreeModel::ItemRole).value<Akonadi::Item>();
+        //Akonadi::Item item = itemindex.data(EntityTreeModel::ItemRole).value<Akonadi::Item>();
         if (!item.isValid()) {
             kDebug() << "invalid item";
         }
-        quint64 itemid = itemindex.data(EntityTreeModel::CollectionIdRole).value<quint64>();
-
-        quint64 _id = item.id();
-        kDebug() << "Collection selected:" << _id << item.url() << itemid;
+        */
+        quint64 _id = itemindex.data(EntityTreeModel::CollectionIdRole).value<quint64>();
+        newIds << _id;
+        kDebug() << "Collection selected:" << _id;
     }
+    qSort(m_collectionIds.begin(), m_collectionIds.end());
+    qSort(newIds.begin(), newIds.end());
+    //m_newIds.sort();
+    if (m_collectionIds != newIds) {
+        m_collectionIds = newIds;
+        kWarning() << "Things have changed, don't know how to deal with this!";
+    }
+    kDebug() << "Collection IDs:" << m_collectionIds;
+    m_modelState->saveConfig(cg);
+
+    emit configNeedsSaving();
 }
 
 void EmailNotifier::statusChanged(int emailsCount, const QString& statusText)

@@ -873,6 +873,7 @@ void EmailWidget::setDeleted(bool deleted)
     qreal o = .7;
     if (!m_isDeleted) {
         o = 1.0;
+        return;
     }
     //setOpacity(o);
     kDebug() << "setting deleted, starting disappearAnimation";

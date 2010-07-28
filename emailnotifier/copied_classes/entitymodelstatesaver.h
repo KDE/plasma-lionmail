@@ -25,7 +25,7 @@
 
 namespace Akonadi {
     
-    class AKONADI_NEXT_EXPORT EntityModelStateSaver : public ModelStateSaver
+    class EntityModelStateSaver : public ModelStateSaver
     {
         Q_OBJECT
     public:

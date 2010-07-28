@@ -99,21 +99,22 @@ void EmailList::initETM()
     monitor->setCollectionMonitored(Collection::root(), false);
     monitor->itemFetchScope().fetchPayloadPart( MessagePart::Envelope );
     */
-    
+
     Session *session = new Session( QByteArray( "PlasmaEmailNotifier-" ) + QByteArray::number( qrand() ), this );
  
     ChangeRecorder *changeRecorder = new ChangeRecorder( this );
-    
+
     //changeRecorder->setCollectionMonitored( Collection(201) );
     // // 201 is lion mail local, 191 is INBOX, 111 is lion mail imap
     //changeRecorder->setCollectionMonitored( Collection(201) );
     changeRecorder->setCollectionMonitored( Collection(m_collectionId) );
     //changeRecorder->setMimeTypeMonitored("inode/directory");
-    changeRecorder->itemFetchScope().fetchPayloadPart(MessagePart::Header);
+    //changeRecorder->itemFetchScope().fetchPayloadPart(MessagePart::Header);
+    changeRecorder->itemFetchScope().fetchPayloadPart(MessagePart::Envelope);
     changeRecorder->collectionFetchScope().setIncludeUnsubscribed(false);
     changeRecorder->setMimeTypeMonitored("message/rfc822");
     changeRecorder->setSession( session );
-    
+
     m_model = new Akonadi::EntityTreeModel(changeRecorder, this);
     //m_model->setItemPopulationStrategy( EntityTreeModel::NoItemPopulation );
     m_model->setCollectionFetchStrategy( EntityTreeModel::FetchNoCollections );
@@ -144,8 +145,11 @@ void EmailList::dataChanged(const QModelIndex &topLeft, const QModelIndex &botto
     int c = topLeft.column(); // We ignore columns, everything is in 0
     if (topLeft.row() >= 0) {
         while (bottomRight.row() >= r) {
-            QModelIndex itemindex = m_model->index(r, c);
+            QModelIndex itemindex = topLeft.model()->index(r, c);
             Akonadi::Item item = itemindex.data(EntityTreeModel::ItemRole).value<Akonadi::Item>();
+            if (item.isValid()) {
+                kDebug() << "Item is invalid .";
+            }
             if (m_emailWidgets.keys().contains(item.url())) {
                 kDebug() << "one of our items changed ..." << item.url() << item.flags();
                 m_emailWidgets[item.url()]->itemChanged(item);
@@ -173,11 +177,11 @@ void EmailList::dataChanged(const QModelIndex &topLeft, const QModelIndex &botto
 
 void EmailList::rowAdded(const QModelIndex &index, int start, int end)
 {
-    kDebug() << "New ROW!!!!" << start << end;
-    kDebug() << "Total rows:" << m_model->rowCount() << m_model->columnCount();
+    //kDebug() << "New ROW!!!!" << start << end;
+    //kDebug() << "Total rows:" << m_model->rowCount() << m_model->columnCount();
     kDebug() << index.data(EntityTreeModel::MimeTypeRole).value<QString>();
     kDebug() << index.data(EntityTreeModel::ItemIdRole).value<int>();
-    
+
     for (int i = start; i <= end; i++) {
         QModelIndex itemindex =  m_model->index(i, 0, index);
         Akonadi::Item item = itemindex.data(EntityTreeModel::ItemRole).value<Akonadi::Item>();
@@ -192,7 +196,7 @@ void EmailList::rowAdded(const QModelIndex &index, int start, int end)
             addItem(item);
         }
     }
-    updateStatus();    
+    updateStatus();
 }
 
 void EmailList::addItem(Akonadi::Item item)
@@ -219,9 +223,9 @@ void EmailList::rowsRemoved(const QModelIndex &index, int start, int end)
     kDebug() << "Total rows, cols:" << m_model->rowCount() << m_model->columnCount();
     kDebug() << index.data(EntityTreeModel::MimeTypeRole).value<QString>();
     kDebug() << index.data(EntityTreeModel::ItemIdRole).value<int>();
-    
+
     for (int i = start; i <= end; i++) {
-        QModelIndex itemindex =  m_model->index(i, 0, index);
+        QModelIndex itemindex =  index.model()->index(i, 0, index);
         Akonadi::Item item = itemindex.data(EntityTreeModel::ItemRole).value<Akonadi::Item>();
         //EmailWidget* ew = new EmailWidget(this);
         if (m_emailWidgets.keys().contains(item.url())) {
@@ -258,11 +262,14 @@ bool EmailList::accept(const Akonadi::Item email)
     }
     KPIM::MessageStatus status;
     status.setStatusFromFlags(email.flags());
+    kDebug() << "Flags:" <<     email.flags();
 
     if (status.isUnread()) {
+        kDebug() << "message is unread";
         return true;
     }
     if (status.isImportant()) {
+        kDebug() << "message is important";
         return true;
     }
     return false;

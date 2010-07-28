@@ -34,6 +34,11 @@ namespace Plasma
     class Svg;
 }
 
+namespace Akonadi
+{
+    class EntityModelStateSaver;
+}
+
 class EmailNotifier : public Plasma::PopupApplet
 {
   Q_OBJECT
@@ -66,10 +71,12 @@ class EmailNotifier : public Plasma::PopupApplet
 
         Ui::emailnotifierConfig* ui;
         QItemSelectionModel *m_checkSelection;
+        Akonadi::EntityModelStateSaver *m_modelState;
 
         Dialog* m_dialog;
 
         quint64 m_collectionId;
+        QList<quint64> m_collectionIds;
 };
 
 
