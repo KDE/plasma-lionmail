@@ -56,8 +56,9 @@ namespace Plasma
         * @param parent the parent of this object
         **/
         Dialog(quint64 collectionId, QGraphicsWidget *parent);
-
         virtual ~Dialog();
+
+        EmailList* unreadEmailList();
 
     Q_SIGNALS:
         void statusChanged(int count, const QString &statusText);

@@ -61,6 +61,9 @@ namespace Akonadi {
         virtual int emailsCount();
         virtual QString statusText();
 
+        virtual void addCollection(const quint64 collectionId);
+        virtual void removeCollection(const quint64 collectionId);
+
     Q_SIGNALS:
         void updateToolTip(const QString&, int);
         void activated(const QUrl);
@@ -68,8 +71,6 @@ namespace Akonadi {
 
     protected:
         virtual bool accept(const Akonadi::Item email);
-        virtual void addCollection(const quint64 collectionId);
-        virtual void removeCollection(const quint64 collectionId);
 
         Akonadi::Session* m_session;
         Akonadi::EntityTreeModel* m_model;

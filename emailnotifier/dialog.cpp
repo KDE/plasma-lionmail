@@ -85,6 +85,11 @@ void Dialog::buildDialog()
     setPreferredSize(400, 400);
 }
 
+EmailList* Dialog::unreadEmailList()
+{
+    return m_unreadList;
+}
+
 void Dialog::updateStatus(const QString status)
 {
     m_statusBar->setText(status);

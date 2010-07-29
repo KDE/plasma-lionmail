@@ -228,8 +228,23 @@ void EmailNotifier::configAccepted()
     qSort(newIds.begin(), newIds.end());
     //m_newIds.sort();
     if (m_collectionIds != newIds) {
+        kWarning() << "Things have changed...";
+        // First, we remove all collections that aren't in the selection anymore ...
+        foreach(const quint64 _id, m_collectionIds) {
+            if (!newIds.contains(_id)) {
+                kDebug() << "ID" << _id << "is not wanted anymore, removing it...";
+                m_dialog->unreadEmailList()->removeCollection(_id);
+            }
+        }
+        // Then we add those collections that weren't previously in the list
+        foreach(const quint64 _id, newIds) {
+            if (!m_collectionIds.contains(_id)) {
+                kDebug() << "ID" << _id << "is not wanted anymore, removing it...";
+                m_dialog->unreadEmailList()->addCollection(_id);
+            }
+        }
+        // We're done synching the list with the configured collections
         m_collectionIds = newIds;
-        kWarning() << "Things have changed, don't know how to deal with this!";
     }
     kDebug() << "Collection IDs:" << m_collectionIds;
     m_modelState->saveConfig(cg);
