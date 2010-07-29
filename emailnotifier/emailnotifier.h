@@ -57,7 +57,7 @@ class EmailNotifier : public Plasma::PopupApplet
         void configAccepted();
         void configChanged();
         void statusChanged(int count, const QString& = QString());
-        void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);
+        //void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);
 
     protected:
         void createConfigurationInterface(KConfigDialog *parent);
@@ -76,6 +76,7 @@ class EmailNotifier : public Plasma::PopupApplet
         Dialog* m_dialog;
 
         quint64 m_collectionId;
+        QList<quint64> m_newCollectionIds;
         QList<quint64> m_collectionIds;
 };
 

@@ -888,7 +888,7 @@ void EmailWidget::setDeleted(bool deleted)
     //setOpacity(o);
     kDebug() << "setting deleted, starting disappearAnimation";
     m_disappearAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
-    m_disappearAnimation->setProperty("duration", 5000);
+    m_disappearAnimation->setProperty("duration", 2000);
     m_disappearAnimation->setProperty("startOpacity", 1.0);
     m_disappearAnimation->setProperty("targetOpacity", 0.0);
 

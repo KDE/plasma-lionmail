@@ -53,34 +53,31 @@ using namespace Akonadi;
 
 EmailNotifier::EmailNotifier(QObject *parent, const QVariantList &args)
   : Plasma::PopupApplet(parent, args),
+    m_allowHtml(false),
     m_theme(0),
     ui(0),
     m_dialog(0),
     m_collectionId(0)
 {
-    setPopupIcon("mail-unread-new");
+    setPopupIcon("mail-mark-unread");
     setHasConfigurationInterface(true);
     setBackgroundHints(StandardBackground);
     setAspectRatioMode(Plasma::IgnoreAspectRatio);
     setPassivePopup(true);
-    setStatus(Plasma::ActiveStatus);
+    //setStatus(Plasma::ActiveStatus);
 
     kDebug() << "LionmailArgs" << args;
     foreach (QVariant a, args) {
         kDebug() << args.at(0).toString() << a.toString();
-        m_collectionId = args.at(0).toString().toInt();
-        /*
-        QString firstarg = a.toString();
-        if (firstarg.startsWith("EmailCollection-")) {
-            //m_collections << firstarg;
-            kDebug() << "Loading EmailCollection from commandline argument (" << firstarg << ").";
-        } else {
-            kWarning() << "argument has to be in the form \"EmailCollection-<id>\", but it isn't (" << firstarg << ")";
+        int id = args.at(0).toString().toInt();
+        if (id > 0) {
+            //m_collectionIds << id;
+            m_newCollectionIds << id;
         }
-        */
     }
-    if (!m_collectionId == 0) {
-        kDebug() << "No valid collection ID given";
+
+    if (!m_newCollectionIds.count()) {
+        kDebug() << "found init collections:" << m_newCollectionIds;
     }
 }
 
@@ -89,20 +86,7 @@ EmailNotifier::~EmailNotifier()
     delete ui;
 }
 
-void EmailNotifier::configChanged()
-{
-    KConfigGroup cg = config();
-    if (!m_collectionId) {
-        m_collectionId = cg.readEntry("unreadCollectionId", 0);
-        kDebug() << "using config" << m_collectionId;
-    } else {
-        cg.writeEntry("unreadCollectionId", m_collectionId);
-        kDebug() << "writing config" << m_collectionId;
-    }
-    kDebug() << "Using collection ID" << m_collectionId;
-    m_allowHtml = cg.readEntry("allowHtml", false);
-}
-
+/*
 void EmailNotifier::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
     //setBusy(false);
@@ -119,19 +103,23 @@ void EmailNotifier::dataUpdated(const QString &source, const Plasma::DataEngine:
         //update();
         //return;
     }
-    /*
+    / *
     if (source == "ContactCollections") {
         kDebug() << "Akonadi contacts collections:" << data.keys() << data;
     }
-    */
+    * /
 }
-
+*/
 QGraphicsWidget* EmailNotifier::graphicsWidget()
 {
     if (!m_dialog) {
         kDebug() << "============================================== NEW";
         m_dialog = new Dialog(m_collectionId, this);
         connect(m_dialog, SIGNAL(statusChanged(int, const QString&)), this, SLOT(statusChanged(int, const QString&)));
+        foreach (const quint64 id, m_collectionIds) {
+            kDebug() << "adding unread:" << id;
+            m_dialog->unreadEmailList()->addCollection(id);
+        }
     }
 
     return m_dialog;
@@ -144,13 +132,24 @@ bool EmailNotifier::allowHtml()
 
 void EmailNotifier::init()
 {
+    kDebug() << "INIT!!!!!!!";
     //Akonadi::ServerManager::start();
     //dataEngine("akonadi")->connectSource("EmailCollections", this);
     setStatus(Plasma::PassiveStatus);
 
     configChanged();
+    // We use this var the first time for adding the collections passed on the
+    // command line, and subsequently to compare selections
+    m_collectionIds << m_newCollectionIds;
+    kDebug() << "add collection ids:" << m_collectionIds;
+    if (m_dialog) {
+        foreach(const quint64 _id, m_collectionIds) {
+            kDebug() << "ID" << _id << "adding to monitored collections...";
+            m_dialog->unreadEmailList()->addCollection(_id);
+        }
+    }
 
-    updateToolTip(i18nc("tooltip on startup", "No new email"), 0);
+    updateToolTip(i18nc("tooltip on startup", "No new email"), "mail-mark-unread");
     //dataEngine("akonadi")->connectSource("EmailCollections", this);
 }
 
@@ -208,48 +207,63 @@ void EmailNotifier::configAccepted()
         cg.writeEntry("allowHtml", m_allowHtml);
     }
     kDebug() << "Looking at our treeview selection...";
-    //QItemSelectionModel *QModelIndexList    selectedIndexes () const
-    int c = m_collectionIds.count();
-    QList<quint64> newIds;
+
+    m_newCollectionIds.clear();
     foreach (QModelIndex itemindex, m_checkSelection->selectedIndexes()) {
         // We're only interested in the collection ID
-        /*
-        //QModelIndex itemindex = m_checkSelection->index(r, c);
-        //Akonadi::Item item = itemindex.data(EntityTreeModel::ItemRole).value<Akonadi::Item>();
-        if (!item.isValid()) {
-            kDebug() << "invalid item";
-        }
-        */
         quint64 _id = itemindex.data(EntityTreeModel::CollectionIdRole).value<quint64>();
-        newIds << _id;
+        m_newCollectionIds << _id;
         kDebug() << "Collection selected:" << _id;
     }
+
     qSort(m_collectionIds.begin(), m_collectionIds.end());
-    qSort(newIds.begin(), newIds.end());
-    //m_newIds.sort();
-    if (m_collectionIds != newIds) {
+    qSort(m_newCollectionIds.begin(), m_newCollectionIds.end());
+
+    if (m_collectionIds != m_newCollectionIds) {
         kWarning() << "Things have changed...";
         // First, we remove all collections that aren't in the selection anymore ...
         foreach(const quint64 _id, m_collectionIds) {
-            if (!newIds.contains(_id)) {
+            if (!m_newCollectionIds.contains(_id)) {
                 kDebug() << "ID" << _id << "is not wanted anymore, removing it...";
                 m_dialog->unreadEmailList()->removeCollection(_id);
             }
         }
         // Then we add those collections that weren't previously in the list
-        foreach(const quint64 _id, newIds) {
+        foreach(const quint64 _id, m_newCollectionIds) {
             if (!m_collectionIds.contains(_id)) {
-                kDebug() << "ID" << _id << "is not wanted anymore, removing it...";
+                kDebug() << "ID" << _id << "is new, adding it...";
                 m_dialog->unreadEmailList()->addCollection(_id);
             }
         }
         // We're done synching the list with the configured collections
-        m_collectionIds = newIds;
+        m_collectionIds = m_newCollectionIds;
+        cg.writeEntry("unreadCollectionIds", m_collectionIds);
+        kDebug() << m_collectionIds << "written to config";
+    } else {
+        kDebug() << "same collections still";
     }
     kDebug() << "Collection IDs:" << m_collectionIds;
-    m_modelState->saveConfig(cg);
 
+
+    m_modelState->saveConfig(cg);
+    //configChanged();
     emit configNeedsSaving();
+}
+
+void EmailNotifier::configChanged()
+{
+    m_allowHtml = config().readEntry("allowHtml", false);
+
+    KConfigGroup cg = config();
+    //if (!m_collectionId) {
+    m_collectionIds = cg.readEntry("unreadCollectionIds", QList<quint64>());
+        //m_collectionIds << m_newCollectionIds;
+        //kDebug() << "using config" << m_collectionIds;
+    //} else {
+        //cg.writeEntry("unreadCollectionIds", m_collectionIds);
+        //kDebug() << "writing config" << m_collectionId;
+    //}
+    kDebug() << "collections from config:" << m_collectionIds;
 }
 
 void EmailNotifier::statusChanged(int emailsCount, const QString& statusText)

@@ -97,7 +97,9 @@ void EmailList::buildEmailList()
 
 void EmailList::addCollection(const quint64 collectionId)
 {
-    if (!m_session) {
+    if (m_etms.keys().contains(collectionId)) {
+        kDebug() << "collection already monitored, skipping...";
+        return;
         //m_session = new Session( QByteArray( "PlasmaEmailNotifier-" ) + QByteArray::number( qrand() ), this );
 
     }
@@ -109,7 +111,7 @@ void EmailList::addCollection(const quint64 collectionId)
     monitor->setCollectionMonitored(Collection::root(), false);
     monitor->itemFetchScope().fetchPayloadPart( MessagePart::Envelope );
     */
-
+    kDebug() << " =====> New ETM, monitoring:" << collectionId;
  
     ChangeRecorder *changeRecorder = new ChangeRecorder( this );
 
@@ -192,9 +194,10 @@ void EmailList::dataChanged(const QModelIndex &topLeft, const QModelIndex &botto
 void EmailList::rowAdded(const QModelIndex &index, int start, int end)
 {
     Akonadi::EntityTreeModel* _model = dynamic_cast<Akonadi::EntityTreeModel*>(sender());
-    if (_model) {
+    if (!_model) {
         kDebug() << "sender - model is not OK, damnit!";
     }
+    /*
     kDebug() << "New ROW!!!!" << start << end;
     if (!index.isValid()) {
         kDebug() << "index invalid";
@@ -210,14 +213,14 @@ void EmailList::rowAdded(const QModelIndex &index, int start, int end)
 
     }
     if (!m_model) {
-        kDebug() << "m_model is NOT OK";
+        //kDebug() << "m_model is NOT OK";
     }
-    kDebug() << "Model created and connected. :) Now holding models for col-ids:" << m_etms.keys() << m_etms.values();
+    //kDebug() << "Model created and connected. :) Now holding models for col-ids:" << m_etms.keys() << m_etms.values();
 
     //kDebug() << "Total rows:" << m_etms.values().first()->rowCount() << index.model()->columnCount();
     kDebug() << index.data(EntityTreeModel::MimeTypeRole).value<QString>();
     kDebug() << index.data(EntityTreeModel::ItemIdRole).value<int>();
-
+    */
     for (int i = start; i <= end; i++) {
         QModelIndex itemindex =  _model->index(i, 0, index);
         Akonadi::Item item = itemindex.data(EntityTreeModel::ItemRole).value<Akonadi::Item>();
