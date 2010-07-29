@@ -51,15 +51,20 @@ using namespace Akonadi;
 
 EmailList::EmailList(quint64 collectionId, QGraphicsWidget *parent)
     : Plasma::ScrollWidget(parent),
+    m_session(0),
     m_collectionId(collectionId)
 {
-    if (m_collectionId == 0) m_collectionId = 108; // FIXME: comment, collection id is hardcoded atm
+    //m_collectionId = 108; // FIXME: comment, collection id is hardcoded atm
 
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
 
     buildEmailList();
+
+    if (m_collectionId > 0) {
+        addCollection(collectionId);
+    }
 }
 
 EmailList::~EmailList()
@@ -88,11 +93,16 @@ void EmailList::buildEmailList()
     m_listLayout->addItem(w2);
     */
     setPreferredSize(400, 400);
-    initETM();
 }
 
-void EmailList::initETM()
+void EmailList::addCollection(const quint64 collectionId)
 {
+    if (!m_session) {
+        //m_session = new Session( QByteArray( "PlasmaEmailNotifier-" ) + QByteArray::number( qrand() ), this );
+
+    }
+    Session* session = new Session( QByteArray( "PlasmaEmailNotifier-" ) + QByteArray::number( qrand() ), this );
+
     /*
     Monitor *monitor = new Monitor( this );
     monitor->setMimeTypeMonitored("message/rfc822");
@@ -100,14 +110,13 @@ void EmailList::initETM()
     monitor->itemFetchScope().fetchPayloadPart( MessagePart::Envelope );
     */
 
-    Session *session = new Session( QByteArray( "PlasmaEmailNotifier-" ) + QByteArray::number( qrand() ), this );
  
     ChangeRecorder *changeRecorder = new ChangeRecorder( this );
 
     //changeRecorder->setCollectionMonitored( Collection(201) );
     // // 201 is lion mail local, 191 is INBOX, 111 is lion mail imap
     //changeRecorder->setCollectionMonitored( Collection(201) );
-    changeRecorder->setCollectionMonitored( Collection(m_collectionId) );
+    changeRecorder->setCollectionMonitored( Collection(collectionId) );
     //changeRecorder->setMimeTypeMonitored("inode/directory");
     //changeRecorder->itemFetchScope().fetchPayloadPart(MessagePart::Header);
     changeRecorder->itemFetchScope().fetchPayloadPart(MessagePart::Envelope);
@@ -115,13 +124,21 @@ void EmailList::initETM()
     changeRecorder->setMimeTypeMonitored("message/rfc822");
     changeRecorder->setSession( session );
 
-    m_model = new Akonadi::EntityTreeModel(changeRecorder, this);
+    Akonadi::EntityTreeModel* model = new Akonadi::EntityTreeModel(changeRecorder, this);
     //m_model->setItemPopulationStrategy( EntityTreeModel::NoItemPopulation );
-    m_model->setCollectionFetchStrategy( EntityTreeModel::FetchNoCollections );
-    connect(m_model, SIGNAL(rowsInserted(const QModelIndex&, int, int)), this, SLOT(rowAdded(const QModelIndex&, int, int)));
-    connect(m_model, SIGNAL(rowsRemoved(const QModelIndex&, int, int)), this, SLOT(rowsRemoved(const QModelIndex&, int, int)));
-    connect(m_model, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex&)), this, SLOT(dataChanged(const QModelIndex&, const QModelIndex&)));
-    kDebug() << "Model created and connected. :)";
+    model->setCollectionFetchStrategy( EntityTreeModel::FetchNoCollections );
+    connect(model, SIGNAL(rowsInserted(const QModelIndex&, int, int)), this, SLOT(rowAdded(const QModelIndex&, int, int)));
+    connect(model, SIGNAL(rowsRemoved(const QModelIndex&, int, int)), this, SLOT(rowsRemoved(const QModelIndex&, int, int)));
+    connect(model, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex&)), this, SLOT(dataChanged(const QModelIndex&, const QModelIndex&)));
+    m_etms[collectionId] = model;
+    kDebug() << "Model created and connected. :) Now holding models for col-ids:" << m_etms.keys() << m_etms.values();
+
+    m_model = model; // FIXME: gnnn..
+}
+
+void EmailList::removeCollection(const quint64 collectionId)
+{
+    kDebug() << "removing collection (not implemented):" << collectionId;
 }
 
 void EmailList::deleteItem()
@@ -142,14 +159,11 @@ void EmailList::deleteItem()
 void EmailList::dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
 {
     int r = topLeft.row();
-    int c = topLeft.column(); // We ignore columns, everything is in 0
+    int c = topLeft.column(); // We ignore columns, everything is in 0s
     if (topLeft.row() >= 0) {
         while (bottomRight.row() >= r) {
             QModelIndex itemindex = topLeft.model()->index(r, c);
             Akonadi::Item item = itemindex.data(EntityTreeModel::ItemRole).value<Akonadi::Item>();
-            if (item.isValid()) {
-                kDebug() << "Item is invalid .";
-            }
             if (m_emailWidgets.keys().contains(item.url())) {
                 kDebug() << "one of our items changed ..." << item.url() << item.flags();
                 m_emailWidgets[item.url()]->itemChanged(item);
@@ -177,13 +191,35 @@ void EmailList::dataChanged(const QModelIndex &topLeft, const QModelIndex &botto
 
 void EmailList::rowAdded(const QModelIndex &index, int start, int end)
 {
-    //kDebug() << "New ROW!!!!" << start << end;
-    //kDebug() << "Total rows:" << m_model->rowCount() << m_model->columnCount();
+    Akonadi::EntityTreeModel* _model = dynamic_cast<Akonadi::EntityTreeModel*>(sender());
+    if (_model) {
+        kDebug() << "sender - model is not OK, damnit!";
+    }
+    kDebug() << "New ROW!!!!" << start << end;
+    if (!index.isValid()) {
+        kDebug() << "index invalid";
+        //return;
+    //} else {
+        const QAbstractItemModel* m = index.model();
+        if (!m) {
+            kDebug() << "model is NULL";
+        } else {
+            kDebug() << " model should be OK";
+        }
+        //m_etms[108]
+
+    }
+    if (!m_model) {
+        kDebug() << "m_model is NOT OK";
+    }
+    kDebug() << "Model created and connected. :) Now holding models for col-ids:" << m_etms.keys() << m_etms.values();
+
+    //kDebug() << "Total rows:" << m_etms.values().first()->rowCount() << index.model()->columnCount();
     kDebug() << index.data(EntityTreeModel::MimeTypeRole).value<QString>();
     kDebug() << index.data(EntityTreeModel::ItemIdRole).value<int>();
 
     for (int i = start; i <= end; i++) {
-        QModelIndex itemindex =  m_model->index(i, 0, index);
+        QModelIndex itemindex =  _model->index(i, 0, index);
         Akonadi::Item item = itemindex.data(EntityTreeModel::ItemRole).value<Akonadi::Item>();
         if (!item.isValid()) {
             continue;
@@ -220,7 +256,7 @@ void EmailList::addItem(Akonadi::Item item)
 void EmailList::rowsRemoved(const QModelIndex &index, int start, int end)
 {
     kDebug() << "ROWs Removed!!!!" << start << end;
-    kDebug() << "Total rows, cols:" << m_model->rowCount() << m_model->columnCount();
+    kDebug() << "Total rows, cols:" << index.model()->rowCount() << index.model()->columnCount();
     kDebug() << index.data(EntityTreeModel::MimeTypeRole).value<QString>();
     kDebug() << index.data(EntityTreeModel::ItemIdRole).value<int>();
 
@@ -254,7 +290,7 @@ void EmailList::fixLayout()
 bool EmailList::accept(const Akonadi::Item email)
 {
 
-    if ((quint64)(email.storageCollectionId()) != m_collectionId) {
+    if (!m_etms.keys().contains((quint64)(email.storageCollectionId()))) {
         kDebug() << "wrong collection, doei ...";
         return false;
     } else {
@@ -262,14 +298,14 @@ bool EmailList::accept(const Akonadi::Item email)
     }
     KPIM::MessageStatus status;
     status.setStatusFromFlags(email.flags());
-    kDebug() << "Flags:" <<     email.flags();
+    //kDebug() << "Flags:" <<     email.flags();
 
     if (status.isUnread()) {
-        kDebug() << "message is unread";
+        //kDebug() << "message is unread";
         return true;
     }
     if (status.isImportant()) {
-        kDebug() << "message is important";
+        //kDebug() << "message is important";
         return true;
     }
     return false;
@@ -279,7 +315,7 @@ void EmailList::updateStatus()
 {
     m_emailsCount = m_emailWidgets.count();
     m_statusText = i18np("%1 new email", "%1 new emails", m_emailsCount);
-    
+
     emit statusChanged(m_emailsCount, m_statusText);
 }
 

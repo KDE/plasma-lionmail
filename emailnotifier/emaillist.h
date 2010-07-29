@@ -58,8 +58,8 @@ namespace Akonadi {
 
         virtual ~EmailList();
 
-        int emailsCount();
-        QString statusText();
+        virtual int emailsCount();
+        virtual QString statusText();
 
     Q_SIGNALS:
         void updateToolTip(const QString&, int);
@@ -67,7 +67,18 @@ namespace Akonadi {
         void statusChanged(int count, const QString &statusText);
 
     protected:
-        bool accept(const Akonadi::Item email);
+        virtual bool accept(const Akonadi::Item email);
+        virtual void addCollection(const quint64 collectionId);
+        virtual void removeCollection(const quint64 collectionId);
+
+        Akonadi::Session* m_session;
+        Akonadi::EntityTreeModel* m_model;
+        QHash<QUrl, EmailWidget*> m_emailWidgets;
+        QHash<quint64, Akonadi::EntityTreeModel*> m_etms;
+
+        int m_emailsCount;
+        QString m_statusText;
+        quint64 m_collectionId;
 
     private Q_SLOTS:
         void rowAdded(const QModelIndex &index, int start, int end);
@@ -83,19 +94,14 @@ namespace Akonadi {
         * @internal build the dialog
         **/
         void buildEmailList();
-        void initETM();
+        //void initETM();
         void addItem(Akonadi::Item item);
 
-        quint64 m_collectionId;
 
-        Akonadi::EntityTreeModel* m_model;
         QGraphicsWidget* m_innerWidget;
         QGraphicsLinearLayout* m_listLayout;
 
-        QHash<QUrl, EmailWidget*> m_emailWidgets;
 
-        int m_emailsCount;
-        QString m_statusText;
   };
 
 #endif

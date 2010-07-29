@@ -182,11 +182,21 @@ void EmailWidget::showActions(bool show)
         //return;
     }
     if (!m_actionsAnimation) {
-        m_actionsAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
+        //m_actionsAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
+        /*
         m_actionsAnimation->setProperty("startOpacity", 0.0);
         m_actionsAnimation->setProperty("targetOpacity", 1.0);
-        m_actionsAnimation->setProperty("Duration", 300);
+        //m_actionsAnimation->setProperty("duration", 2000);
+        m_actionsAnimation->setProperty("duration", 2000);
+
         m_actionsAnimation->setTargetWidget(m_actionsWidget);
+        */
+        m_actionsWidget->setProperty("transformOriginPoint", QPointF(48, 12)); // centered
+        m_actionsAnimation  = new QPropertyAnimation(m_actionsWidget, "scale");
+        m_actionsAnimation ->setDuration(150);
+        m_actionsAnimation ->setStartValue(0.0);
+        m_actionsAnimation ->setEndValue(1.0);
+
     }
     if (m_actionsAnimation->state() == QAbstractAnimation::Running) {
         if (!show) {
@@ -218,7 +228,7 @@ void EmailWidget::showBody(bool show)
         m_bodyAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
         m_bodyAnimation->setProperty("startOpacity", 0.0);
         m_bodyAnimation->setProperty("targetOpacity", 8.0);
-        m_bodyAnimation->setProperty("Duration", 300);
+        m_bodyAnimation->setProperty("duration", 300);
         m_bodyAnimation->setTargetWidget(m_bodyWidget);
     }
     if (m_bodyAnimation->state() == QAbstractAnimation::Running) {
@@ -249,7 +259,7 @@ void EmailWidget::showExpandIcon(bool show)
         m_expandIconAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
         m_expandIconAnimation->setProperty("startOpacity", 0.0);
         m_expandIconAnimation->setProperty("targetOpacity", 1.0);
-        m_expandIconAnimation->setProperty("Duration", 300);
+        m_expandIconAnimation->setProperty("duration", 300);
         m_expandIconAnimation->setTargetWidget(m_expandIcon);
     }
     if (m_expandIconAnimation->state() == QAbstractAnimation::Running) {
@@ -878,7 +888,7 @@ void EmailWidget::setDeleted(bool deleted)
     //setOpacity(o);
     kDebug() << "setting deleted, starting disappearAnimation";
     m_disappearAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
-    m_disappearAnimation->setProperty("Duration", 5000);
+    m_disappearAnimation->setProperty("duration", 5000);
     m_disappearAnimation->setProperty("startOpacity", 1.0);
     m_disappearAnimation->setProperty("targetOpacity", 0.0);
 

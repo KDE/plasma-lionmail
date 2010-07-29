@@ -220,9 +220,10 @@ class EmailWidget : public Plasma::Frame
         Plasma::PushButton* m_importantIcon;
         Plasma::PushButton* m_deleteButton;
         //Plasma::PushButton* m_unreadIcon;
-        
+
         Plasma::Animation* m_expandIconAnimation;
-        Plasma::Animation* m_actionsAnimation;
+        //Plasma::Animation* m_actionsAnimation;
+        QPropertyAnimation* m_actionsAnimation;
         Plasma::Animation* m_bodyAnimation;
         Plasma::Animation* m_disappearAnimation;
 
