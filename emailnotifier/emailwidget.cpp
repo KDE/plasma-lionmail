@@ -693,14 +693,17 @@ void EmailWidget::setRawBody(const QString& body)
 
         if (body.isEmpty() && !m_body.isEmpty()) {
             html = m_body;
+            m_fetching = false;
         } else if (!body.isEmpty()) {
             html = body;
+            m_fetching = false;
         }
-            
-        html = i18n("<style type=\"text/css\">%1</style><body>%2</body>", m_stylesheet, html);
-        html.replace("<br />\n<br />", "<br />\n");
-        //kDebug() << html;
-        m_bodyWidget->setText(html);
+        if (!html.isEmpty()) {
+            html = i18n("<style type=\"text/css\">%1</style><body>%2</body>", m_stylesheet, html);
+            html.replace("<br />\n<br />", "<br />\n");
+            //kDebug() << html;
+            m_bodyWidget->setText(html);
+        }
     }
 }
 

@@ -161,6 +161,7 @@ void EmailList::deleteItem()
 
 void EmailList::dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
 {
+    kDebug() << "data changed...";
     int r = topLeft.row();
     int c = topLeft.column(); // We ignore columns, everything is in 0s
     if (topLeft.row() >= 0) {
@@ -236,7 +237,7 @@ void EmailList::addItem(Akonadi::Item item)
 void EmailList::rowsRemoved(const QModelIndex &index, int start, int end)
 {
     kDebug() << "ROWs Removed!!!!" << start << end;
-    kDebug() << "Total rows, cols:" << index.model()->rowCount() << index.model()->columnCount();
+    //kDebug() << "Total rows, cols:" << index.model()->rowCount() << index.model()->columnCount();
     kDebug() << index.data(EntityTreeModel::MimeTypeRole).value<QString>();
     kDebug() << index.data(EntityTreeModel::ItemIdRole).value<int>();
 
