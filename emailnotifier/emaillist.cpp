@@ -168,29 +168,42 @@ void EmailList::dataChanged(const QModelIndex &topLeft, const QModelIndex &botto
         while (bottomRight.row() >= r) {
             QModelIndex itemindex = topLeft.model()->index(r, c);
             Akonadi::Item item = itemindex.data(EntityTreeModel::ItemRole).value<Akonadi::Item>();
-            if (m_emailWidgets.keys().contains(item.url())) {
-                kDebug() << "one of our items changed ..." << item.url() << item.flags();
-                m_emailWidgets[item.url()]->itemChanged(item);
-                // Should we remove it?
-                if (!accept(item)) {
-                    kDebug() << "Setting deleted";
-                    m_emailWidgets[item.url()]->setDeleted();
-                } else {
-                    // this is a widget scheduled for deletion
-                    m_emailWidgets[item.url()]->setDeleted(false);
-                }
-                if (!item.isValid()) {
-                    kDebug() << "invalid item";
-                    m_emailWidgets[item.url()]->setDeleted();
-                }
-            } else {
-                kDebug() << "an item becomes visible" << item.url();
-                addItem(item);
-            }
+            // ...
+            itemChanged(item);
             r++;
         }
     }
     updateStatus();
+}
+
+void EmailList::itemChanged(Akonadi::Item item)
+{
+    if (!item.isValid()) {
+        kDebug() << "Invalid item, skipping itemChanged()";
+        return;
+    }
+    if (m_emailWidgets.keys().contains(item.url())) {
+        kDebug() << "one of our items changed ..." << item.url() << item.flags();
+        m_emailWidgets[item.url()]->itemChanged(item);
+        // Should we remove it?
+        if (!accept(item)) {
+            kDebug() << "Setting deleted";
+            m_emailWidgets[item.url()]->setDeleted();
+        } else {
+            // this is a widget scheduled for deletion
+            m_emailWidgets[item.url()]->setDeleted(false);
+        }
+        if (!item.isValid()) {
+            kDebug() << "invalid item";
+            m_emailWidgets[item.url()]->setDeleted();
+        }
+    } else {
+        kDebug() << "an item becomes visible" << item.url();
+        if (accept(item)) {
+            addItem(item);
+        }
+    }
+
 }
 
 void EmailList::rowAdded(const QModelIndex &index, int start, int end)

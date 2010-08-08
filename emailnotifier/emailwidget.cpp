@@ -776,8 +776,8 @@ void EmailWidget::setBody(MessagePtr msg)
 
 void EmailWidget::fetchPayload(bool full)
 {
-    if (id == 0) {
-        kDebug() << "id is 0";
+    if (id <= 0) {
+        kDebug() << "id invalid";
         return;
     }
     //m_bodyView->setMinimumHeight(30);
