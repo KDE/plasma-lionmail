@@ -89,6 +89,9 @@ EmailWidget::EmailWidget(QGraphicsWidget *parent)
     buildDialog();
     connect(Plasma::Theme::defaultTheme(), SIGNAL(themeChanged()), SLOT(updateColors()));
     connect(KGlobalSettings::self(), SIGNAL(kdisplayPaletteChanged()), SLOT(updateColors()));
+
+    m_disappearAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
+
 }
 
 EmailWidget::~EmailWidget()
@@ -385,7 +388,7 @@ void EmailWidget::buildDialog()
     m_deleteButton->setMaximumHeight(s);
     m_deleteButton->setMaximumWidth(s);
     m_deleteButton->setCheckable(true);
-    connect(m_deleteButton, SIGNAL(clicked()), this, SLOT(setDeleted()));
+    connect(m_deleteButton, SIGNAL(clicked()), this, SLOT(deleteClicked()));
 
     m_actionsLayout->addItem(m_newIcon);
     m_actionsLayout->addItem(m_importantIcon);
@@ -403,7 +406,7 @@ void EmailWidget::buildDialog()
     m_bodyWidget->setMinimumHeight(80);
     //m_bodyWidget->setOpacity(.8);
     m_bodyWidget->hide();
-    
+
     m_bodyWidget->nativeWidget()->setFont(KGlobalSettings::smallestReadableFont());
     connect(m_bodyWidget, SIGNAL(linkActivated(const QString&)), this, SLOT(linkClicked(const QString&)));
     //setFrom(i18n("Unknown Sender"));
@@ -539,6 +542,11 @@ void EmailWidget::refreshFlags(bool show)
     } else {
         m_importantIcon->setToolTip(i18nc("flag important", "Click to mark message as Important"));
     }
+}
+
+void EmailWidget::deleteClicked()
+{
+    setDeleted(m_deleteButton->isChecked());
 }
 
 void EmailWidget::resizeIcon(int iconsize)
@@ -875,6 +883,9 @@ void EmailWidget::setFrom(const QString& from)
 
 void EmailWidget::setDeleted(bool deleted)
 {
+    kDebug() << "del?" << deleted;
+    if (!deleted && m_isDeleted) {
+    }
     m_isDeleted = deleted;
     m_deleteButton->setChecked(m_isDeleted);
 
@@ -883,22 +894,32 @@ void EmailWidget::setDeleted(bool deleted)
     qreal o = .7;
     if (!m_isDeleted) {
         o = 1.0;
-        return;
+        //setOpacity(1.0);
+        //return;
     }
     //setOpacity(o);
-    kDebug() << "setting deleted, starting disappearAnimation";
-    m_disappearAnimation = Plasma::Animator::create(Plasma::Animator::FadeAnimation);
     m_disappearAnimation->setProperty("duration", 2000);
-    m_disappearAnimation->setProperty("startOpacity", 1.0);
-    m_disappearAnimation->setProperty("targetOpacity", 0.0);
-
+    if (m_isDeleted) {
+        m_disappearAnimation->setProperty("startOpacity", 1.0);
+        m_disappearAnimation->setProperty("targetOpacity", 0.0);
+        connect(m_disappearAnimation, SIGNAL(finished()), this, SLOT(disappearAnimationFinished()));
+        kDebug() << "setting deleted, starting disappearAnimation";
+    } else {
+        m_disappearAnimation->setProperty("startOpacity", opacity());
+        m_disappearAnimation->setProperty("targetOpacity", 1.0);
+        disconnect(m_disappearAnimation, SIGNAL(finished()), this, SLOT(disappearAnimationFinished()));
+        kDebug() << "setting UNdeleted, starting appearAnimation" << opacity();
+    }
     m_disappearAnimation->setTargetWidget(this);
     m_disappearAnimation->start();
-    connect(m_disappearAnimation, SIGNAL(finished()), this, SLOT(disappearAnimationFinished()));
 }
 
 void EmailWidget::disappearAnimationFinished()
 {
+    if (!m_isDeleted) {
+        kDebug() << "item not set deleted, not removing it";
+        return;
+    }
     disconnect( m_monitor, SIGNAL(itemChanged(const Akonadi::Item&, const QSet<QByteArray>&)),
             this, SLOT(itemChanged(const Akonadi::Item&)) );
 

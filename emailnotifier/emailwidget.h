@@ -127,6 +127,7 @@ class EmailWidget : public Plasma::Frame
 
         void flagNewClicked();
         void setDeleted(bool deleted = true);
+        void deleteClicked();
         void flagImportantClicked();
 
         void updateColors();
@@ -209,7 +210,7 @@ class EmailWidget : public Plasma::Frame
         QGraphicsLinearLayout* m_actionsLayout;
 
         QGraphicsWidget* m_emailWidget;
-        
+
         Plasma::IconWidget* m_icon;
         Plasma::IconWidget* m_expandIcon;
         Plasma::Label* m_subjectLabel;

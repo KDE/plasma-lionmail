@@ -82,7 +82,7 @@ void Dialog::buildDialog()
 
     updateStatus(i18nc("no active search, no results shown", "Idle."));
     updateNavIcon(m_tabBar->currentIndex());
-    setPreferredSize(400, 400);
+    setPreferredSize(540, 320);
 }
 
 EmailList* Dialog::unreadEmailList()

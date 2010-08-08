@@ -54,7 +54,7 @@ using namespace Akonadi;
 EmailNotifier::EmailNotifier(QObject *parent, const QVariantList &args)
   : Plasma::PopupApplet(parent, args),
     m_allowHtml(false),
-    m_theme(0),
+    //m_theme(0),
     ui(0),
     m_dialog(0),
     m_collectionId(0)
