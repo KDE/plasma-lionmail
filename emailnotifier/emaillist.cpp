@@ -24,6 +24,7 @@
 // Akonadi
 #include <Akonadi/ChangeRecorder>
 #include <Akonadi/CollectionFetchScope>
+#include <Akonadi/ItemFetchJob>
 #include <Akonadi/ItemFetchScope>
 #include <Akonadi/Monitor>
 #include <Akonadi/Session>
@@ -153,7 +154,6 @@ void EmailList::deleteItem()
         m_emailWidgets.remove(_url);
         m_listLayout->removeItem(ew);
         delete ew;
-        //item->deleteLater();
     } else {
         kDebug() << "Sender is not a QGraphicsWidget, something's wrong with your code.";
     }
@@ -167,13 +167,44 @@ void EmailList::dataChanged(const QModelIndex &topLeft, const QModelIndex &botto
     if (topLeft.row() >= 0) {
         while (bottomRight.row() >= r) {
             QModelIndex itemindex = topLeft.model()->index(r, c);
-            Akonadi::Item item = itemindex.data(EntityTreeModel::ItemRole).value<Akonadi::Item>();
-            // ...
-            itemChanged(item);
+            quint64 id = itemindex.data(EntityTreeModel::ItemIdRole).value<quint64>();
+            fetchItem(id);
             r++;
         }
     }
     updateStatus();
+}
+
+void EmailList::fetchItem(const quint64 id)
+{
+    if (id <= 0) {
+        kDebug() << "id invalid";
+        return;
+    }
+    kDebug() << "Fetching payload for " << id;
+    Akonadi::ItemFetchJob* fetchJob = new Akonadi::ItemFetchJob( Akonadi::Item( id ), this );
+    //fetchJob->fetchScope().fetchFullPayload();
+    fetchJob->fetchScope().fetchPayloadPart( Akonadi::MessagePart::Envelope );
+    connect( fetchJob, SIGNAL(result(KJob*)), SLOT(fetchDone(KJob*)) );
+}
+
+void EmailList::fetchDone(KJob* job)
+{
+    kDebug() << "fetchjob returning";
+    if ( job->error() ) {
+        kDebug() << "Error fetching item: " << job->errorString();
+        return;
+    }
+    Akonadi::Item::List items = static_cast<Akonadi::ItemFetchJob*>(job)->items();
+
+    kDebug() << "Fetched" << items.count() << "email Items.";
+    if (items.count() == 0) {
+        kDebug() << "job ok, but no item returned";
+        return;
+    }
+    foreach( const Akonadi::Item &item, items ) {
+        itemChanged(item);
+    }
 }
 
 void EmailList::itemChanged(Akonadi::Item item)
@@ -203,7 +234,6 @@ void EmailList::itemChanged(Akonadi::Item item)
             addItem(item);
         }
     }
-
 }
 
 void EmailList::rowAdded(const QModelIndex &index, int start, int end)
@@ -214,17 +244,8 @@ void EmailList::rowAdded(const QModelIndex &index, int start, int end)
     }
     for (int i = start; i <= end; i++) {
         QModelIndex itemindex =  _model->index(i, 0, index);
-        Akonadi::Item item = itemindex.data(EntityTreeModel::ItemRole).value<Akonadi::Item>();
-        if (!item.isValid()) {
-            continue;
-        }
-        if (!accept(item)) {
-            //kDebug() << "item not interesting" << item.url();
-        } else if (m_emailWidgets.keys().contains(item.url())) {
-            kDebug() << "skipping, item already exists:" << item.url();
-        } else {
-            addItem(item);
-        }
+        quint64 id = itemindex.data(EntityTreeModel::ItemIdRole).value<quint64>();
+        fetchItem(id);
     }
     updateStatus();
 }
@@ -237,19 +258,19 @@ void EmailList::addItem(Akonadi::Item item)
     EmailWidget* ew = new EmailWidget(this);
 
     connect(ew, SIGNAL(activated(const QUrl)), SIGNAL(activated(const QUrl)));
-    connect(ew, SIGNAL(collapsed()), SLOT(fixLayout()));
+    //connect(ew, SIGNAL(collapsed()), SLOT(fixLayout()));
     connect(ew, SIGNAL(deleteMe()), SLOT(deleteItem()));
 
     m_emailWidgets[item.url()] = ew;
     ew->setSmall();
     ew->itemChanged(item);
     m_listLayout->insertItem(0, ew);
-    kDebug() << "Item URL:" << item.url() << item.flags() << item.storageCollectionId();
+    kDebug() << "Added Item:" << item.url() << item.flags() << item.storageCollectionId();
 }
 
 void EmailList::rowsRemoved(const QModelIndex &index, int start, int end)
 {
-    kDebug() << "ROWs Removed!!!!" << start << end;
+    //kDebug() << "ROWs Removed!!!!" << start << end;
     //kDebug() << "Total rows, cols:" << index.model()->rowCount() << index.model()->columnCount();
     kDebug() << index.data(EntityTreeModel::MimeTypeRole).value<QString>();
     kDebug() << index.data(EntityTreeModel::ItemIdRole).value<int>();
@@ -268,41 +289,21 @@ void EmailList::rowsRemoved(const QModelIndex &index, int start, int end)
         //ew->itemChanged(item);
         kDebug() << "Item gone URL:" << item.url();
     }
-    fixLayout();
+    //fixLayout();
     updateStatus();
-}
-
-void EmailList::fixLayout()
-{
-    kDebug() << "fixlayout";
-    setMinimumHeight(-1);
-    m_listLayout->setMaximumHeight(-1);
-    m_listLayout->updateGeometry();
-    updateGeometry();
 }
 
 bool EmailList::accept(const Akonadi::Item email)
 {
 
     if (!m_etms.keys().contains((quint64)(email.storageCollectionId()))) {
-        kDebug() << "wrong collection, doei ...";
         return false;
-    } else {
-
     }
     KPIM::MessageStatus status;
     status.setStatusFromFlags(email.flags());
-    //kDebug() << "Flags:" <<     email.flags();
 
-    if (status.isUnread()) {
-        //kDebug() << "message is unread";
-        return true;
-    }
-    if (status.isImportant()) {
-        //kDebug() << "message is important";
-        return true;
-    }
-    return false;
+    // We accept unread and important emails
+    return (status.isUnread() || status.isImportant());
 }
 
 void EmailList::updateStatus()

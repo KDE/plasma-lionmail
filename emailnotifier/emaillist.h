@@ -71,6 +71,7 @@ namespace Akonadi {
 
     protected:
         virtual bool accept(const Akonadi::Item email);
+        void fetchItem(const quint64 id);
 
         Akonadi::Session* m_session;
         Akonadi::EntityTreeModel* m_model;
@@ -86,7 +87,7 @@ namespace Akonadi {
         void rowsRemoved(const QModelIndex &index, int start, int end);
         void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
         void itemChanged(Akonadi::Item item);
-        void fixLayout();
+        void fetchDone(KJob* job);
         void updateStatus();
 
         void deleteItem();
