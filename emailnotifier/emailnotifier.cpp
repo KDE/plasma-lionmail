@@ -202,6 +202,8 @@ void EmailNotifier::configAccepted()
 {
     KConfigGroup cg = config();
 
+    m_modelState->saveConfig(cg);
+
     if (ui->allowHtml->isChecked() != m_allowHtml) {
         m_allowHtml = !m_allowHtml;
         cg.writeEntry("allowHtml", m_allowHtml);
@@ -243,18 +245,17 @@ void EmailNotifier::configAccepted()
         kDebug() << "same collections still";
     }
     kDebug() << "Collection IDs:" << m_collectionIds;
+    kDebug() << "Config Collections synching:" << cg.readEntry("unreadCollectionIds", QList<quint64>());
 
-
-    m_modelState->saveConfig(cg);
     //configChanged();
     emit configNeedsSaving();
 }
 
 void EmailNotifier::configChanged()
 {
+    KConfigGroup cg = config();
     m_allowHtml = config().readEntry("allowHtml", false);
 
-    KConfigGroup cg = config();
     //if (!m_collectionId) {
     m_collectionIds = cg.readEntry("unreadCollectionIds", QList<quint64>());
         //m_collectionIds << m_newCollectionIds;
@@ -263,7 +264,8 @@ void EmailNotifier::configChanged()
         //cg.writeEntry("unreadCollectionIds", m_collectionIds);
         //kDebug() << "writing config" << m_collectionId;
     //}
-    kDebug() << "collections from config:" << m_collectionIds;
+    kDebug() << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@";
+    kDebug() << "@@@@@@@@ collections from config:" << m_collectionIds;
 }
 
 void EmailNotifier::statusChanged(int emailsCount, const QString& statusText)

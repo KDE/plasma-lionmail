@@ -129,6 +129,7 @@ void EmailList::addCollection(const quint64 collectionId)
     Akonadi::EntityTreeModel* model = new Akonadi::EntityTreeModel(changeRecorder, this);
     //m_model->setItemPopulationStrategy( EntityTreeModel::NoItemPopulation );
     model->setCollectionFetchStrategy( EntityTreeModel::FetchNoCollections );
+    model->setItemPopulationStrategy(EntityTreeModel::ImmediatePopulation);
     connect(model, SIGNAL(rowsInserted(const QModelIndex&, int, int)), this, SLOT(rowAdded(const QModelIndex&, int, int)));
     connect(model, SIGNAL(rowsRemoved(const QModelIndex&, int, int)), this, SLOT(rowsRemoved(const QModelIndex&, int, int)));
     connect(model, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex&)), this, SLOT(dataChanged(const QModelIndex&, const QModelIndex&)));
@@ -197,30 +198,6 @@ void EmailList::rowAdded(const QModelIndex &index, int start, int end)
     if (!_model) {
         kDebug() << "sender - model is not OK, damnit!";
     }
-    /*
-    kDebug() << "New ROW!!!!" << start << end;
-    if (!index.isValid()) {
-        kDebug() << "index invalid";
-        //return;
-    //} else {
-        const QAbstractItemModel* m = index.model();
-        if (!m) {
-            kDebug() << "model is NULL";
-        } else {
-            kDebug() << " model should be OK";
-        }
-        //m_etms[108]
-
-    }
-    if (!m_model) {
-        //kDebug() << "m_model is NOT OK";
-    }
-    //kDebug() << "Model created and connected. :) Now holding models for col-ids:" << m_etms.keys() << m_etms.values();
-
-    //kDebug() << "Total rows:" << m_etms.values().first()->rowCount() << index.model()->columnCount();
-    kDebug() << index.data(EntityTreeModel::MimeTypeRole).value<QString>();
-    kDebug() << index.data(EntityTreeModel::ItemIdRole).value<int>();
-    */
     for (int i = start; i <= end; i++) {
         QModelIndex itemindex =  _model->index(i, 0, index);
         Akonadi::Item item = itemindex.data(EntityTreeModel::ItemRole).value<Akonadi::Item>();
@@ -252,7 +229,7 @@ void EmailList::addItem(Akonadi::Item item)
     m_emailWidgets[item.url()] = ew;
     ew->setSmall();
     ew->itemChanged(item);
-    m_listLayout->addItem(ew);
+    m_listLayout->insertItem(0, ew);
     kDebug() << "Item URL:" << item.url() << item.flags() << item.storageCollectionId();
 }
 
