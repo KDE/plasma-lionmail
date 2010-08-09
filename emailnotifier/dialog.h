@@ -63,11 +63,11 @@ namespace Plasma
     Q_SIGNALS:
         void statusChanged(int count, const QString &statusText);
 
-        
     private Q_SLOTS:
         void toggleTab();
         void openUrl(const QUrl url);
         void updateNavIcon(int tabIndex);
+        void refreshClicked();
 
     Q_SIGNALS:
         void updateToolTip(const QString&, int);
@@ -83,10 +83,9 @@ namespace Plasma
         Plasma::TabBar *m_tabBar;
         Plasma::Label *m_titleBar;
         Plasma::Label *m_statusBar;
+        Plasma::IconWidget *m_refreshIcon;
 
         EmailList* m_unreadList;
-
-        quint64 m_collectionId;
   };
 
 #endif

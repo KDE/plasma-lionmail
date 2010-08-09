@@ -63,6 +63,7 @@ namespace Akonadi {
 
         virtual void addCollection(const quint64 collectionId);
         virtual void removeCollection(const quint64 collectionId);
+        QList<quint64> collectionIds();
 
     Q_SIGNALS:
         void updateToolTip(const QString&, int);
@@ -80,7 +81,6 @@ namespace Akonadi {
 
         int m_emailsCount;
         QString m_statusText;
-        quint64 m_collectionId;
 
     private Q_SLOTS:
         void rowAdded(const QModelIndex &index, int start, int end);

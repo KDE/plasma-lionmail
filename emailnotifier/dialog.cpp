@@ -42,7 +42,6 @@ Dialog::Dialog(quint64 collectionId, QGraphicsWidget *parent)
       m_titleBar(0),
       m_statusBar(0)
 {
-    m_collectionId = collectionId;
     buildDialog();
 }
 
@@ -63,7 +62,7 @@ void Dialog::buildDialog()
     m_tabBar = new Plasma::TabBar(this);
 
 
-    m_unreadList = new EmailList(m_collectionId, this);
+    m_unreadList = new EmailList(0, this);
     connect(m_unreadList, SIGNAL(activated(const QUrl)), SLOT(openUrl(const QUrl)));
     connect(m_unreadList, SIGNAL(statusChanged(int, const QString&)), this, SIGNAL(statusChanged(int, const QString&)));
     m_tabBar->addTab(KIcon("mail-unread-new"), i18n("Unread"), m_unreadList);
@@ -76,7 +75,14 @@ void Dialog::buildDialog()
     m_statusBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     m_statusBar->setMaximumHeight(22);
     m_statusBar->setFont(KGlobalSettings::smallestReadableFont());
-    gridLayout->addItem(m_statusBar, 2, 0, 1, 3);
+    gridLayout->addItem(m_statusBar, 2, 0, 1, 2);
+
+    m_refreshIcon = new Plasma::IconWidget(this);
+    m_refreshIcon->setIcon("view-refresh");
+    m_refreshIcon->setToolTip(i18nc("tooltip on the refresh button", "Check for new email"));
+    m_refreshIcon->setMaximumHeight(16);
+    gridLayout->addItem(m_refreshIcon, 2, 2, 1, 1);
+    connect(m_refreshIcon, SIGNAL(clicked()), this, SLOT(refreshClicked()));
 
     connect(m_tabBar, SIGNAL(currentChanged(int)), SLOT(updateNavIcon(int)));
 
@@ -113,6 +119,18 @@ void Dialog::openUrl(const QUrl url)
 {
     kDebug() << "Opening ..." << url;
     KRun::runUrl(url, "message/rfc822", 0);
+}
+
+void Dialog::refreshClicked()
+{
+    kDebug() << "refresh!";
+    /*
+     *  void AgentManager::synchronizeCollection (   const Collection &  collection   )
+        SIGNAL void    instanceStatusChanged (const Akonadi::AgentInstance &instance)
+        SIGNAL void    instanceProgressChanged (const Akonadi::AgentInstance &instance)
+     *
+     */
+    
 }
 
 #include "dialog.moc"

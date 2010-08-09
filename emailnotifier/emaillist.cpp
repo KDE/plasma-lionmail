@@ -52,18 +52,15 @@ using namespace Akonadi;
 
 EmailList::EmailList(quint64 collectionId, QGraphicsWidget *parent)
     : Plasma::ScrollWidget(parent),
-    m_session(0),
-    m_collectionId(collectionId)
+    m_session(0)
 {
-    //m_collectionId = 108; // FIXME: comment, collection id is hardcoded atm
-
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
 
     buildEmailList();
 
-    if (m_collectionId > 0) {
+    if (collectionId > 0) {
         addCollection(collectionId);
     }
 }
@@ -94,6 +91,11 @@ void EmailList::buildEmailList()
     m_listLayout->addItem(w2);
     */
     setPreferredSize(400, 400);
+}
+
+QList<quint64> EmailList::collectionIds()
+{
+    return m_etms.keys();
 }
 
 void EmailList::addCollection(const quint64 collectionId)
@@ -190,7 +192,6 @@ void EmailList::fetchItem(const quint64 id)
 
 void EmailList::fetchDone(KJob* job)
 {
-    kDebug() << "fetchjob returning";
     if ( job->error() ) {
         kDebug() << "Error fetching item: " << job->errorString();
         return;
