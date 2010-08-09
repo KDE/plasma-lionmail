@@ -21,6 +21,9 @@
 #include <QLabel>
 #include <QTimer>
 
+//Akonadi
+#include <Akonadi/AgentInstance>
+
 //KDE
 #include <KDebug>
 #include <KGlobalSettings>
@@ -130,7 +133,10 @@ void Dialog::refreshClicked()
         SIGNAL void    instanceProgressChanged (const Akonadi::AgentInstance &instance)
      *
      */
-    
+    Akonadi::AgentInstance::List instances = Akonadi::AgentManager::self()->instances();
+    foreach ( const Akonadi::AgentInstance &instance, instances ) {
+        kDebug() << "Name:" << instance.name() << "(" << instance.identifier() << ")";
+    }
 }
 
 #include "dialog.moc"
