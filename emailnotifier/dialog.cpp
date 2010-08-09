@@ -21,9 +21,6 @@
 #include <QLabel>
 #include <QTimer>
 
-//Akonadi
-#include <Akonadi/AgentInstance>
-
 //KDE
 #include <KDebug>
 #include <KGlobalSettings>
@@ -39,11 +36,12 @@
 #include "dialog.h"
 
 
-Dialog::Dialog(quint64 collectionId, QGraphicsWidget *parent)
+Dialog::Dialog(QGraphicsWidget *parent)
     : QGraphicsWidget(parent),
       //m_navIcon(0),
       m_titleBar(0),
-      m_statusBar(0)
+      m_statusBar(0),
+      m_amConnected(false)
 {
     buildDialog();
 }
@@ -106,6 +104,7 @@ void Dialog::updateStatus(const QString status)
 
 void Dialog::updateNavIcon(int tabIndex)
 {
+    Q_UNUSED(tabIndex);
     return;
 }
 
@@ -133,10 +132,61 @@ void Dialog::refreshClicked()
         SIGNAL void    instanceProgressChanged (const Akonadi::AgentInstance &instance)
      *
      */
-    Akonadi::AgentInstance::List instances = Akonadi::AgentManager::self()->instances();
-    foreach ( const Akonadi::AgentInstance &instance, instances ) {
-        kDebug() << "Name:" << instance.name() << "(" << instance.identifier() << ")";
+    Akonadi::AgentManager* am = Akonadi::AgentManager::self();
+    if (!m_amConnected) {
+        connect(am, SIGNAL(instanceStatusChanged(const Akonadi::AgentInstance&)),
+                this, SLOT(instanceStatusChanged(const Akonadi::AgentInstance&)));
+        connect(am, SIGNAL(instanceProgressChanged(const Akonadi::AgentInstance&)),
+                this, SLOT(instanceStatusChanged(const Akonadi::AgentInstance&)));
     }
+
+    //am->synchronizeCollectionTree();
+
+    Akonadi::Collection collection;
+    foreach(const quint64 id, m_unreadList->collectionIds()) {
+        //quint64 id = 111;
+        kDebug() << "Connected, now syncing:" << id;
+        Akonadi::Collection collection = Akonadi::Collection(id);
+        if (collection.isValid()) {
+            if (collection.resource().isEmpty()) {
+                collection.setResource("akonadi_imap_resource_0");
+                kWarning() << "invalid resource string, set to" << collection.resource() << " to not make AgentManager crash (!!!)";
+            }
+            kDebug() << "collection is good" << collection.resource();
+            am->synchronizeCollection(collection);
+        }
+    }
+    //return;
+    // demo...
+    Akonadi::AgentInstance::List instances = am->instances();
+    foreach (const Akonadi::AgentInstance &instance, instances ) {
+        //kDebug() << "Name:" << instance.name() << "(" << instance.identifier() << ")"
+                 //<< instance.isOnline() << instance.statusMessage();
+        if (instance.identifier() == collection.resource()) {
+            Akonadi::AgentInstance inst = Akonadi::AgentInstance(instance);
+            //inst.synchronizeCollectionTree();
+            inst.synchronize();
+            kDebug() << "this might be ours" << instance.identifier();
+        }
+    }
+}
+
+void Dialog::instanceStatusChanged(const Akonadi::AgentInstance &instance)
+{
+    QString _s;
+    switch (instance.status()) {
+        case Akonadi::AgentInstance::Running:
+            _s = i18nc("sync status running", "Checking email in %1", instance.name());
+            break;
+        case Akonadi::AgentInstance::Idle:
+            _s = i18nc("sync status idle", "%1 is idle", instance.name());
+            break;
+        case Akonadi::AgentInstance::Broken:
+            _s = i18nc("sync status error", "Error checking email in %1", instance.name());
+            break;
+    }
+    m_statusBar->setText(_s);
+    kDebug() << "Instance changed:" << _s << instance.statusMessage() << instance.progress();
 }
 
 #include "dialog.moc"

@@ -183,7 +183,7 @@ void EmailList::fetchItem(const quint64 id)
         kDebug() << "id invalid";
         return;
     }
-    kDebug() << "Fetching payload for " << id;
+    //kDebug() << "Fetching payload for " << id;
     Akonadi::ItemFetchJob* fetchJob = new Akonadi::ItemFetchJob( Akonadi::Item( id ), this );
     //fetchJob->fetchScope().fetchFullPayload();
     fetchJob->fetchScope().fetchPayloadPart( Akonadi::MessagePart::Envelope );
@@ -198,7 +198,7 @@ void EmailList::fetchDone(KJob* job)
     }
     Akonadi::Item::List items = static_cast<Akonadi::ItemFetchJob*>(job)->items();
 
-    kDebug() << "Fetched" << items.count() << "email Items.";
+    //kDebug() << "Fetched" << items.count() << "email Items.";
     if (items.count() == 0) {
         kDebug() << "job ok, but no item returned";
         return;
@@ -230,7 +230,7 @@ void EmailList::itemChanged(Akonadi::Item item)
             m_emailWidgets[item.url()]->setDeleted();
         }
     } else {
-        kDebug() << "an item becomes visible" << item.url();
+        //kDebug() << "an item becomes visible" << item.url();
         if (accept(item)) {
             addItem(item);
         }
@@ -275,7 +275,9 @@ void EmailList::rowsRemoved(const QModelIndex &index, int start, int end)
     //kDebug() << "Total rows, cols:" << index.model()->rowCount() << index.model()->columnCount();
     kDebug() << index.data(EntityTreeModel::MimeTypeRole).value<QString>();
     kDebug() << index.data(EntityTreeModel::ItemIdRole).value<int>();
-
+    if (!index.isValid()) {
+        kDebug() << "invalid ModelIndex while removing item";
+    }
     for (int i = start; i <= end; i++) {
         QModelIndex itemindex =  index.model()->index(i, 0, index);
         Akonadi::Item item = itemindex.data(EntityTreeModel::ItemRole).value<Akonadi::Item>();

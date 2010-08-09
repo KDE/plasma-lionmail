@@ -75,9 +75,10 @@ class EmailNotifier : public Plasma::PopupApplet
 
         Dialog* m_dialog;
 
-        quint64 m_collectionId;
         QList<quint64> m_newCollectionIds;
         QList<quint64> m_collectionIds;
+
+        bool m_hasFullPayload;
 };
 
 

@@ -232,6 +232,7 @@ class EmailWidget : public Plasma::Frame
 
         QPointF m_startPos;
         int m_fontAdjust; // wheel adjustment of the font size
+        bool m_hasFullPayload;
 };
 
 #endif

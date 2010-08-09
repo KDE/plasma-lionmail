@@ -79,7 +79,8 @@ EmailWidget::EmailWidget(QGraphicsWidget *parent)
       m_expandIconAnimation(0),
       m_actionsAnimation(0),
       m_bodyAnimation(0),
-      m_fontAdjust(0)
+      m_fontAdjust(0),
+      m_hasFullPayload(false)
 
 {
     setAcceptHoverEvents(true);
@@ -770,7 +771,9 @@ void EmailWidget::setBody(MessagePtr msg)
         // when replying prefer plain
         !plainPart.isEmpty() ? raw = plainPart : raw = htmlPart;
     }
-
+    if (!body.isEmpty()) {
+        m_hasFullPayload = true;
+    }
     setRawBody(body);
 }
 
@@ -778,6 +781,9 @@ void EmailWidget::fetchPayload(bool full)
 {
     if (id <= 0) {
         kDebug() << "id invalid";
+        return;
+    }
+    if (m_hasFullPayload) {
         return;
     }
     //m_bodyView->setMinimumHeight(30);

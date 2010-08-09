@@ -24,8 +24,9 @@
 #include <QLabel>
 #include <QStringList>
 
-// KDE
-//#include <kio/jobclasses.h>
+//Akonadi
+#include <Akonadi/AgentInstance>
+#include <Akonadi/AgentManager>
 
 // Plasma
 #include <Plasma/IconWidget>
@@ -55,7 +56,7 @@ namespace Plasma
         * Constructor of the dialog
         * @param parent the parent of this object
         **/
-        Dialog(quint64 collectionId, QGraphicsWidget *parent);
+        Dialog(QGraphicsWidget *parent);
         virtual ~Dialog();
 
         EmailList* unreadEmailList();
@@ -68,6 +69,8 @@ namespace Plasma
         void openUrl(const QUrl url);
         void updateNavIcon(int tabIndex);
         void refreshClicked();
+
+        void instanceStatusChanged(const Akonadi::AgentInstance &instance);
 
     Q_SIGNALS:
         void updateToolTip(const QString&, int);
@@ -86,6 +89,8 @@ namespace Plasma
         Plasma::IconWidget *m_refreshIcon;
 
         EmailList* m_unreadList;
+
+        bool m_amConnected;
   };
 
 #endif
