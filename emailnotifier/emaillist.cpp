@@ -280,9 +280,11 @@ void EmailList::rowsRemoved(const QModelIndex &index, int start, int end)
     }
     for (int i = start; i <= end; i++) {
         QModelIndex itemindex =  index.model()->index(i, 0, index);
-        Akonadi::Item item = itemindex.data(EntityTreeModel::ItemRole).value<Akonadi::Item>();
+        quint64 _id = itemindex.data(EntityTreeModel::ItemIdRole).value<quint64>();
+        Akonadi::Item item = Akonadi::Item(_id);
         //EmailWidget* ew = new EmailWidget(this);
         if (m_emailWidgets.keys().contains(item.url())) {
+            kDebug() << "Removing item" << item.url();
             QGraphicsWidget* ew = m_emailWidgets[item.url()];
             m_listLayout->removeItem(ew);
             delete ew;
