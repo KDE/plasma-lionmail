@@ -187,6 +187,8 @@ void Dialog::instanceStatusChanged(const Akonadi::AgentInstance &instance)
     }
     m_statusBar->setText(_s);
     kDebug() << "Instance changed:" << _s << instance.statusMessage() << instance.progress();
+
+    // TODO: $time since last email check when idle :)
 }
 
 #include "dialog.moc"

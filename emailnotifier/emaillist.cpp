@@ -273,10 +273,11 @@ void EmailList::rowsRemoved(const QModelIndex &index, int start, int end)
 {
     //kDebug() << "ROWs Removed!!!!" << start << end;
     //kDebug() << "Total rows, cols:" << index.model()->rowCount() << index.model()->columnCount();
-    kDebug() << index.data(EntityTreeModel::MimeTypeRole).value<QString>();
-    kDebug() << index.data(EntityTreeModel::ItemIdRole).value<int>();
+    //kDebug() << index.data(EntityTreeModel::MimeTypeRole).value<QString>();
+    //kDebug() << index.data(EntityTreeModel::ItemIdRole).value<int>();
     if (!index.isValid()) {
         kDebug() << "invalid ModelIndex while removing item";
+        return;
     }
     for (int i = start; i <= end; i++) {
         QModelIndex itemindex =  index.model()->index(i, 0, index);
