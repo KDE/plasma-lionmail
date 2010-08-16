@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>583</width>
-    <height>513</height>
+    <width>504</width>
+    <height>360</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,57 +18,117 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>400</width>
+    <width>500</width>
     <height>360</height>
    </size>
   </property>
-  <layout class="QFormLayout" name="formLayout">
+  <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <widget class="QLabel" name="generallabel">
-     <property name="text">
-      <string>&lt;b&gt;General Options&lt;/b&gt;</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QCheckBox" name="allowHtml">
-     <property name="text">
-      <string>Allow HTML</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
     <widget class="QLabel" name="selectcollectionslabel">
      <property name="text">
-      <string>&lt;b&gt;Select Collections&lt;/b&gt;</string>
+      <string>&lt;b&gt;Mail Folders&lt;/b&gt;</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>
-   <item row="2" column="1">
+   <item row="0" column="1">
     <widget class="QLabel" name="collectionsStatus">
      <property name="text">
       <string/>
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
+   <item row="1" column="1">
     <widget class="QTreeView" name="collectionsTreeView">
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>400</height>
+       <height>180</height>
       </size>
+     </property>
+     <property name="toolTip">
+      <string>Mark the folders you want to monitor for new and important emails</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="selectcollectionslabel_2">
+     <property name="text">
+      <string>&lt;b&gt;Filtering&lt;/b&gt;</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="KButtonGroup" name="kbuttongroup">
+     <property name="minimumSize">
+      <size>
+       <width>360</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="margin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QRadioButton" name="radioButton">
+        <property name="text">
+         <string>Do not show emails marked as Important</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioButton_2">
+        <property name="text">
+         <string>Show emails marked as Important</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioButton_3">
+        <property name="text">
+         <string>Show Important emails in a separate tab</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="generallabel">
+     <property name="text">
+      <string>&lt;b&gt;Display&lt;/b&gt;</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QCheckBox" name="allowHtml">
+     <property name="text">
+      <string>Allow HTML</string>
      </property>
     </widget>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>KButtonGroup</class>
+   <extends>QGroupBox</extends>
+   <header>kbuttongroup.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
