@@ -125,3 +125,14 @@ Technical Stuff
 - KJots has akonotes_*
 
 
+
+Short TODO emailnotifier:
+- clear collection
+- clear whole list
+- refresh mechanics
+- show important emails as separate list
+- show no important emails
+- show combined list (set current default in UI)
+- fix drag and drop between kmail2 and lionmail
+- monochrome artwork for the panel
+- fix "unknown" emails
