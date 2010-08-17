@@ -112,8 +112,8 @@ void EmailNotifier::dataUpdated(const QString &source, const Plasma::DataEngine:
 QGraphicsWidget* EmailNotifier::graphicsWidget()
 {
     if (!m_dialog) {
-        kDebug() << "============================================== NEW";
-        m_dialog = new Dialog(this);
+        m_dialog = new Dialog(m_showImportant == ShowMerged, this);
+        m_dialog->unreadEmailList()->setShowImportant(m_showImportant == ShowMerged);
         connect(m_dialog, SIGNAL(statusChanged(int, const QString&)), this, SLOT(statusChanged(int, const QString&)));
         foreach (const quint64 id, m_collectionIds) {
             kDebug() << "adding unread:" << id;
@@ -131,7 +131,6 @@ bool EmailNotifier::allowHtml()
 
 void EmailNotifier::init()
 {
-    kDebug() << "INIT!!!!!!!";
     //Akonadi::ServerManager::start();
     //dataEngine("akonadi")->connectSource("EmailCollections", this);
     setStatus(Plasma::PassiveStatus);
@@ -194,21 +193,52 @@ void EmailNotifier::createConfigurationInterface(KConfigDialog *parent)
     m_modelState = new Akonadi::EntityModelStateSaver( checkablePM, this );
     m_modelState->addRole( Qt::CheckStateRole, "CheckState" );
     m_modelState->restoreConfig(config());
+
+    ui->allowHtml->setChecked(m_allowHtml);
+    ui->showImportantNone->setChecked(m_showImportant == None);
+    ui->showImportantMerged->setChecked(m_showImportant == ShowMerged);
+    ui->showImportantSeparately->setChecked(m_showImportant == ShowSeparately);
 }
 
 
 void EmailNotifier::configAccepted()
 {
     KConfigGroup cg = config();
+    m_modelState->saveConfig(cg); // has to happen first, otherwise our config data gets lost
 
-    m_modelState->saveConfig(cg);
+    // Display of important emails
+    ImportantDisplay d = None;
+    if (ui->showImportantNone->isChecked()) {
+        kDebug() << "None...";
+        d = None;
+    }
+    if (ui->showImportantMerged->isChecked()) {
+        kDebug() << "Merged..." << ShowMerged;
+        d = ShowMerged;
+    }
+    if (ui->showImportantSeparately->isChecked()) {
+        kDebug() << "Separately...";
+        d = ShowSeparately;
+    }
+    if (d != m_showImportant) {
+        m_showImportant = d;
+        m_dialog->unreadEmailList()->setShowImportant(d == ShowMerged);
+        kDebug() << "show important is now" << m_showImportant;
 
+        // TODO: create important tab
+    }
+    cg.writeEntry("showImportant", (int)(d));
+
+    // HTML display
     if (ui->allowHtml->isChecked() != m_allowHtml) {
         m_allowHtml = !m_allowHtml;
-        cg.writeEntry("allowHtml", m_allowHtml);
+        kDebug() << "HTML Allowed changed";
     }
+    cg.writeEntry("allowHtml", m_allowHtml);
 
+    // Collections
     m_newCollectionIds.clear();
+
     foreach (QModelIndex itemindex, m_checkSelection->selectedIndexes()) {
         // We're only interested in the collection ID
         quint64 _id = itemindex.data(EntityTreeModel::CollectionIdRole).value<quint64>();
@@ -251,6 +281,11 @@ void EmailNotifier::configChanged()
     KConfigGroup cg = config();
     m_allowHtml = config().readEntry("allowHtml", false);
     m_collectionIds = cg.readEntry("unreadCollectionIds", QList<quint64>());
+
+    m_showImportant = (ImportantDisplay)(cg.readEntry("showImportant", 0));
+    if (m_dialog) {
+        m_dialog->unreadEmailList()->setShowImportant( m_showImportant == ShowMerged );
+    }
 }
 
 void EmailNotifier::statusChanged(int emailsCount, const QString& statusText)

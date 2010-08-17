@@ -50,9 +50,10 @@
 
 using namespace Akonadi;
 
-EmailList::EmailList(quint64 collectionId, QGraphicsWidget *parent)
+EmailList::EmailList(bool showImportant, QGraphicsWidget *parent)
     : Plasma::ScrollWidget(parent),
-    m_session(0)
+    m_session(0),
+    m_showImportant(showImportant)
 {
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -60,9 +61,6 @@ EmailList::EmailList(quint64 collectionId, QGraphicsWidget *parent)
 
     buildEmailList();
 
-    if (collectionId > 0) {
-        addCollection(collectionId);
-    }
 }
 
 EmailList::~EmailList()
@@ -77,19 +75,6 @@ void EmailList::buildEmailList()
     m_listLayout->setOrientation(Qt::Vertical);
     m_innerWidget->setLayout(m_listLayout);
 
-    /*
-    Plasma::IconWidget *w1 = new Plasma::IconWidget(this);
-    w1->setOrientation(Qt::Horizontal);
-    w1->setIcon("mail-unread-new");
-    w1->setText("Fake Email");
-    m_listLayout->addItem(w1);
-    
-    Plasma::IconWidget *w2 = new Plasma::IconWidget(this);
-    w2->setOrientation(Qt::Horizontal);
-    w2->setIcon("mail-unread-new");
-    w2->setText("Yet Another Fake Email");
-    m_listLayout->addItem(w2);
-    */
     setPreferredSize(400, 400);
 }
 
@@ -298,17 +283,37 @@ void EmailList::rowsRemoved(const QModelIndex &index, int start, int end)
     updateStatus();
 }
 
+void EmailList::setShowImportant(bool show)
+{
+    m_showImportant = show;
+    filter();
+}
+
+
+void EmailList::filter()
+{
+    // Filter out items that don't match anymore
+    foreach(EmailWidget* widget, m_emailWidgets) {
+        itemChanged(widget->item());
+    }
+    // TODO:: add important items items
+}
+
 bool EmailList::accept(const Akonadi::Item email)
 {
-
+    // discard collections we're not interested in
     if (!m_etms.keys().contains((quint64)(email.storageCollectionId()))) {
         return false;
     }
     KPIM::MessageStatus status;
     status.setStatusFromFlags(email.flags());
 
-    // We accept unread and important emails
-    return (status.isUnread() || status.isImportant());
+    // Conditionally show important emails
+    if (m_showImportant && status.isImportant()) {
+        return true;
+    }
+    // We accept unread emails
+    return status.isUnread();
 }
 
 void EmailList::updateStatus()

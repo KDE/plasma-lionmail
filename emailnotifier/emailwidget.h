@@ -78,6 +78,7 @@ class EmailWidget : public Plasma::Frame
         virtual ~EmailWidget();
 
         QGraphicsWidget* dialog();
+        Akonadi::Item item();
 
         qlonglong id;
 

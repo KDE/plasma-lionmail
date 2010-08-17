@@ -56,7 +56,7 @@ namespace Plasma
         * Constructor of the dialog
         * @param parent the parent of this object
         **/
-        Dialog(QGraphicsWidget *parent);
+        Dialog(bool showImportant, QGraphicsWidget *parent);
         virtual ~Dialog();
 
         EmailList* unreadEmailList();
@@ -79,7 +79,7 @@ namespace Plasma
         /**
         * @internal build the dialog
         **/
-        void buildDialog();
+        void buildDialog(bool showImportant);
         void updateStatus(const QString status);
 
         //Plasma::IconWidget *m_navIcon;

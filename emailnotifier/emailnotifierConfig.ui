@@ -79,21 +79,21 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QRadioButton" name="radioButton">
+       <widget class="QRadioButton" name="showImportantNone">
         <property name="text">
          <string>Do not show emails marked as Important</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="radioButton_2">
+       <widget class="QRadioButton" name="showImportantMerged">
         <property name="text">
          <string>Show emails marked as Important</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="radioButton_3">
+       <widget class="QRadioButton" name="showImportantSeparately">
         <property name="text">
          <string>Show Important emails in a separate tab</string>
         </property>

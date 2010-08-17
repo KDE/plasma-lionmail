@@ -36,21 +36,21 @@
 #include "dialog.h"
 
 
-Dialog::Dialog(QGraphicsWidget *parent)
+Dialog::Dialog(bool showImportant, QGraphicsWidget *parent)
     : QGraphicsWidget(parent),
       //m_navIcon(0),
       m_titleBar(0),
       m_statusBar(0),
       m_amConnected(false)
 {
-    buildDialog();
+    buildDialog(showImportant);
 }
 
 Dialog::~Dialog()
 {
 }
 
-void Dialog::buildDialog()
+void Dialog::buildDialog(bool showImportant)
 {
     QGraphicsGridLayout *gridLayout = new QGraphicsGridLayout(this);
     setLayout(gridLayout);
@@ -63,7 +63,7 @@ void Dialog::buildDialog()
     m_tabBar = new Plasma::TabBar(this);
 
 
-    m_unreadList = new EmailList(0, this);
+    m_unreadList = new EmailList(showImportant, this);
     connect(m_unreadList, SIGNAL(activated(const QUrl)), SLOT(openUrl(const QUrl)));
     connect(m_unreadList, SIGNAL(statusChanged(int, const QString&)), this, SIGNAL(statusChanged(int, const QString&)));
     m_tabBar->addTab(KIcon("mail-unread-new"), i18n("Unread"), m_unreadList);

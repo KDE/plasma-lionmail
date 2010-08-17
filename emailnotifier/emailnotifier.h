@@ -43,6 +43,8 @@ class EmailNotifier : public Plasma::PopupApplet
 {
   Q_OBJECT
 
+    enum ImportantDisplay { None = 0, ShowMerged = 1, ShowSeparately = 2 };
+
     public:
         EmailNotifier(QObject* parent, const QVariantList &args);
         ~EmailNotifier();
@@ -67,6 +69,7 @@ class EmailNotifier : public Plasma::PopupApplet
         Plasma::ToolTipContent m_toolTip;
 
         bool m_allowHtml;
+        ImportantDisplay m_showImportant;
         QHash<quint64, QString> m_allCollections;
 
         Ui::emailnotifierConfig* ui;

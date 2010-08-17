@@ -54,15 +54,15 @@ namespace Akonadi {
   Q_OBJECT
 
     public:
-        EmailList(quint64 collectionId, QGraphicsWidget *parent);
+        EmailList(bool showImportant, QGraphicsWidget *parent);
 
         virtual ~EmailList();
 
         virtual int emailsCount();
         virtual QString statusText();
-
         virtual void addCollection(const quint64 collectionId);
         virtual void removeCollection(const quint64 collectionId);
+        void setShowImportant(bool show);
         QList<quint64> collectionIds();
 
     Q_SIGNALS:
@@ -72,6 +72,7 @@ namespace Akonadi {
 
     protected:
         virtual bool accept(const Akonadi::Item email);
+        virtual void filter();
         void fetchItem(const quint64 id);
 
         Akonadi::Session* m_session;
@@ -80,6 +81,7 @@ namespace Akonadi {
 
         int m_emailsCount;
         QString m_statusText;
+        bool m_showImportant;
 
     private Q_SLOTS:
         void rowAdded(const QModelIndex &index, int start, int end);
@@ -91,18 +93,15 @@ namespace Akonadi {
 
         void deleteItem();
 
-    private :
+    private:
         /**
         * @internal build the dialog
         **/
         void buildEmailList();
-        //void initETM();
         void addItem(Akonadi::Item item);
-
 
         QGraphicsWidget* m_innerWidget;
         QGraphicsLinearLayout* m_listLayout;
-
 
   };
 

@@ -830,6 +830,11 @@ void EmailWidget::fetchDone(KJob* job)
     }
 }
 
+Akonadi::Item EmailWidget::item()
+{
+    return m_item;
+}
+
 void EmailWidget::itemChanged(const Akonadi::Item& item)
 {
     if (!item.isValid()) {
