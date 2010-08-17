@@ -75,7 +75,6 @@ namespace Akonadi {
         void fetchItem(const quint64 id);
 
         Akonadi::Session* m_session;
-        Akonadi::EntityTreeModel* m_model;
         QHash<QUrl, EmailWidget*> m_emailWidgets;
         QHash<quint64, Akonadi::EntityTreeModel*> m_etms;
 

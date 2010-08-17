@@ -889,7 +889,6 @@ void EmailWidget::setFrom(const QString& from)
 
 void EmailWidget::setDeleted(bool deleted)
 {
-    kDebug() << "del?" << deleted;
     if (!deleted && m_isDeleted) {
     }
     m_isDeleted = deleted;
@@ -909,12 +908,10 @@ void EmailWidget::setDeleted(bool deleted)
         m_disappearAnimation->setProperty("startOpacity", 1.0);
         m_disappearAnimation->setProperty("targetOpacity", 0.0);
         connect(m_disappearAnimation, SIGNAL(finished()), this, SLOT(disappearAnimationFinished()));
-        kDebug() << "setting deleted, starting disappearAnimation";
     } else {
         m_disappearAnimation->setProperty("startOpacity", opacity());
         m_disappearAnimation->setProperty("targetOpacity", 1.0);
         disconnect(m_disappearAnimation, SIGNAL(finished()), this, SLOT(disappearAnimationFinished()));
-        kDebug() << "setting UNdeleted, starting appearAnimation" << opacity();
     }
     m_disappearAnimation->setTargetWidget(this);
     m_disappearAnimation->start();
@@ -923,7 +920,6 @@ void EmailWidget::setDeleted(bool deleted)
 void EmailWidget::disappearAnimationFinished()
 {
     if (!m_isDeleted) {
-        kDebug() << "item not set deleted, not removing it";
         return;
     }
     disconnect( m_monitor, SIGNAL(itemChanged(const Akonadi::Item&, const QSet<QByteArray>&)),
@@ -995,7 +991,7 @@ void EmailWidget::linkClicked(const QString &link)
 {
     kDebug() << "Link clicked:" << link;
     emit activated(QUrl(link));
-}
+    }
 
 
 void EmailWidget::wheelEvent (QGraphicsSceneWheelEvent * event)

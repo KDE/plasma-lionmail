@@ -138,8 +138,6 @@ void EmailList::addCollection(const quint64 collectionId)
     connect(model, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex&)), this, SLOT(dataChanged(const QModelIndex&, const QModelIndex&)));
     m_etms[collectionId] = model;
     kDebug() << "Model created and connected. :) Now holding models for col-ids:" << m_etms.keys() << m_etms.values();
-
-    m_model = model; // FIXME: gnnn..
 }
 
 void EmailList::removeCollection(const quint64 collectionId)
@@ -151,7 +149,6 @@ void EmailList::deleteItem()
 {
     EmailWidget* ew = dynamic_cast<EmailWidget*>(sender());
     if (ew) {
-        kDebug() << "Scheduling item for deletion, let's hope we don't crash ;-)";
         QUrl _url = m_emailWidgets.key(ew);
         m_emailWidgets.remove(_url);
         m_listLayout->removeItem(ew);
@@ -193,7 +190,7 @@ void EmailList::fetchItem(const quint64 id)
 void EmailList::fetchDone(KJob* job)
 {
     if ( job->error() ) {
-        kDebug() << "Error fetching item: " << job->errorString();
+        kDebug() << "!!! Error fetching item: " << job->errorString();
         return;
     }
     Akonadi::Item::List items = static_cast<Akonadi::ItemFetchJob*>(job)->items();
@@ -210,10 +207,12 @@ void EmailList::fetchDone(KJob* job)
 
 void EmailList::itemChanged(Akonadi::Item item)
 {
+    /*
     if (!item.isValid()) {
         kDebug() << "Invalid item, skipping itemChanged()";
         return;
     }
+    */
     if (m_emailWidgets.keys().contains(item.url())) {
         kDebug() << "one of our items changed ..." << item.url() << item.flags();
         m_emailWidgets[item.url()]->itemChanged(item);
