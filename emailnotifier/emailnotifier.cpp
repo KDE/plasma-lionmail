@@ -318,10 +318,7 @@ void EmailNotifier::statusChanged(int emailsCount, const QString& statusText)
 
 void EmailNotifier::updateToolTip(const QString& statusText, const QString& icon)
 {
-    m_toolTip = Plasma::ToolTipContent(statusText,
-            i18nc("Tooltip sub text", "Click on the icon to view your emails"),
-                    KIcon(icon).pixmap(IconSize(KIconLoader::Desktop))
-                );
+    m_toolTip = Plasma::ToolTipContent(statusText, QString(), KIcon(icon));
     Plasma::ToolTipManager::self()->setContent(this, m_toolTip);
 }
 
