@@ -16,6 +16,7 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
+
 //Qt
 #include <QGraphicsGridLayout>
 #include <QLabel>
@@ -228,7 +229,6 @@ void EmailList::rowAdded(const QModelIndex &index, int start, int end)
         quint64 id = itemindex.data(EntityTreeModel::ItemIdRole).value<quint64>();
         fetchItem(id);
     }
-    updateStatus();
 }
 
 void EmailList::addItem(Akonadi::Item item)
@@ -247,6 +247,7 @@ void EmailList::addItem(Akonadi::Item item)
     ew->itemChanged(item);
     m_listLayout->insertItem(0, ew);
     kDebug() << "Added Item:" << item.url() << item.flags() << item.storageCollectionId();
+    updateStatus();
 }
 
 void EmailList::rowsRemoved(const QModelIndex &index, int start, int end)
