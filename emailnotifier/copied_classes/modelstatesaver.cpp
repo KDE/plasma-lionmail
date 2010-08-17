@@ -145,7 +145,7 @@ void ModelStateSaver::restoreConfig( const KConfigGroup& configGroup )
 
 void ModelStateSaver::saveConfig( KConfigGroup& configGroup )
 {
-    configGroup.deleteGroup();
+    //configGroup.deleteGroup();
     typedef QPair<QString, QVariant> StringVariantPair;
     typedef QHash<QByteArray, QVector<StringVariantPair> > ValueHash;
     ValueHash values;
