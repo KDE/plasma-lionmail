@@ -24,8 +24,6 @@ set(emailnotifier_SRCS
     emailwidget.cpp
     copied_classes/messagestatus.cpp
     copied_classes/checkableitemproxymodel.cpp
-    copied_classes/modelstatesaver.cpp
-    copied_classes/entitymodelstatesaver.cpp
     )
 
 kde4_add_ui_files(emailnotifier_SRCS emailnotifierConfig.ui )

@@ -37,14 +37,11 @@
 #include <Akonadi/Monitor>
 #include <Akonadi/Session>
 #include <Akonadi/EntityTreeModel>
+#include <akonadi/etmviewstatesaver.h>
 
 #include <Akonadi/ServerManager>
-//#include <akonadi/entitytreemodel.h>
-//#include <akonadi/changerecorder.h>
-//#include <akonadi/itemfetchscope.h>
 #include <akonadi/entitymimetypefiltermodel.h>
 #include "copied_classes/checkableitemproxymodel.h"
-#include "copied_classes/entitymodelstatesaver.h"
 
 #include "../emailmessage/emailmessage.h"
 #include "dialog.h"
@@ -190,9 +187,10 @@ void EmailNotifier::createConfigurationInterface(KConfigDialog *parent)
     treeView->setModel(checkablePM);
     //treeView->setSelectionModel(m_checkSelection );
 
-    m_modelState = new Akonadi::EntityModelStateSaver( checkablePM, this );
-    m_modelState->addRole( Qt::CheckStateRole, "CheckState" );
-    m_modelState->restoreConfig(config());
+    m_viewState = new Akonadi::ETMViewStateSaver(this);
+    m_viewState->setView(treeView);
+    m_viewState->setSelectionModel(m_checkSelection);
+    m_viewState->restoreState(config());
 
     ui->allowHtml->setChecked(m_allowHtml);
     ui->showImportantNone->setChecked(m_showImportant == None);
@@ -204,7 +202,7 @@ void EmailNotifier::createConfigurationInterface(KConfigDialog *parent)
 void EmailNotifier::configAccepted()
 {
     KConfigGroup cg = config();
-    m_modelState->saveConfig(cg); // has to happen first, otherwise our config data gets lost
+    m_viewState->saveState(cg);
 
     // Display of important emails
     ImportantDisplay d = None;

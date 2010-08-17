@@ -26,6 +26,8 @@
 #include <Plasma/PopupApplet>
 //#include <plasma/dataengine.h>
 #include <Plasma/ToolTipManager>
+
+
 #include "ui_emailnotifierConfig.h"
 #include "dialog.h"
 
@@ -36,7 +38,7 @@ namespace Plasma
 
 namespace Akonadi
 {
-    class EntityModelStateSaver;
+    class ETMViewStateSaver;
 }
 
 class EmailNotifier : public Plasma::PopupApplet
@@ -74,7 +76,7 @@ class EmailNotifier : public Plasma::PopupApplet
 
         Ui::emailnotifierConfig* ui;
         QItemSelectionModel *m_checkSelection;
-        Akonadi::EntityModelStateSaver *m_modelState;
+        Akonadi::ETMViewStateSaver *m_viewState;
 
         Dialog* m_dialog;
 
