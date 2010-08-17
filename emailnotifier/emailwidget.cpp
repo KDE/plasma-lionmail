@@ -21,7 +21,6 @@
 #include <QGraphicsGridLayout>
 #include <QGraphicsSceneMouseEvent>
 #include <QMimeData>
-#include <QWebPage>
 #include <QLabel>
 #include <QTextDocument>
 #include <QApplication>
@@ -44,6 +43,7 @@
 #include <kpimutils/linklocator.h>
 #include <kmime/kmime_dateformatter.h>
 #include <akonadi/kmime/messageparts.h>
+#include <akonadi/kmime/messagestatus.h>
 
 // Plasma
 #include <Plasma/Animation>
@@ -51,7 +51,6 @@
 #include <Plasma/IconWidget>
 #include <Plasma/Label>
 #include <Plasma/PushButton>
-#include <Plasma/WebView>
 
 // own
 #include "emailwidget.h"
@@ -488,7 +487,7 @@ void EmailWidget::flagImportantClicked()
 
 void EmailWidget::syncItemToAkonadi()
 {
-    m_item.setFlags(m_status.getStatusFlags());
+    m_item.setFlags(m_status.statusFlags());
     Akonadi::ItemModifyJob* mjob = new Akonadi::ItemModifyJob(m_item);
 
     // FIXME: pending revision conflict check in Akonadi, consult with Volker

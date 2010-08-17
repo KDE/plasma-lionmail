@@ -36,38 +36,23 @@
 #include <Akonadi/Item>
 #include <Akonadi/Monitor>
 #include <kmime/kmime_message.h>
+#include <akonadi/kmime/messagestatus.h>
 #include <boost/shared_ptr.hpp>
 typedef boost::shared_ptr<KMime::Message> MessagePtr;
 
-#include "copied_classes/messagestatus.h"
-
 // Plasma
 #include <Plasma/Frame>
-//#include <Plasma/Animation>
-//#include <Plasma/Animation>
 
 namespace Plasma
 {
     class Animation;
     class Dialog;
-    //class Frame;
-    //class Animation;
     class IconWidget;
     class Label;
     class PopupApplet;
     class PushButton;
     class WebView;
 }
-
-// PIM
-namespace KPIM
-{
-    class MessageStatus;
-}
-
-//own
-class EmailMessage;
-
 
 class EmailWidget : public Plasma::Frame
 {
@@ -195,7 +180,7 @@ class EmailWidget : public Plasma::Frame
         QStringList m_cc;
         QStringList m_bcc;
 
-        KPIM::MessageStatus m_status;
+        Akonadi::MessageStatus m_status;
 
         bool m_flagsShown;
 

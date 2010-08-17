@@ -30,6 +30,7 @@
 #include <Akonadi/Session>
 #include <Akonadi/EntityTreeModel>
 #include <akonadi/kmime/messageparts.h>
+#include <akonadi/kmime/messagestatus.h>
 
 //KDE
 #include <KDebug>
@@ -40,13 +41,8 @@
 //plasma
 #include <Plasma/Theme>
 
-
 //own
 #include "emaillist.h"
-//#include "helpers.cpp"
-
-#include "copied_classes/messagestatus.h"
-
 
 using namespace Akonadi;
 
@@ -305,7 +301,7 @@ bool EmailList::accept(const Akonadi::Item email)
     if (!m_etms.keys().contains((quint64)(email.storageCollectionId()))) {
         return false;
     }
-    KPIM::MessageStatus status;
+    Akonadi::MessageStatus status;
     status.setStatusFromFlags(email.flags());
 
     // Conditionally show important emails

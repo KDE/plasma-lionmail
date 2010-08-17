@@ -22,7 +22,6 @@ set(emailnotifier_SRCS
     dialog.cpp
     emaillist.cpp
     emailwidget.cpp
-    copied_classes/messagestatus.cpp
     copied_classes/checkableitemproxymodel.cpp
     )
 
@@ -32,11 +31,11 @@ kde4_add_plugin(plasma_applet_emailnotifier ${emailnotifier_SRCS})
 target_link_libraries(plasma_applet_emailnotifier
     ${KDE4_PLASMA_LIBS}
     ${KDE4_KIO_LIBS}
-    ${QT_QTWEBKIT_LIBRARY}
+    #ss${QT_QTWEBKIT_LIBRARY}
     ${KDE4_AKONADI_LIBS}
     ${KDE4_KMIME_LIBS}
     ${KDE4_AKONADI_KMIME_LIBS}
-    ${KDE4_KABC_LIBS}
+    #${KDE4_KABC_LIBS}
 #    akonadi-kabccommon
     ${KDE4_KCAL_LIBS}
     ${KDE4_KPIMUTILS_LIBS}
