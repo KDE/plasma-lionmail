@@ -129,10 +129,12 @@ Technical Stuff
 Short TODO emailnotifier:
 - clear collection
 - clear whole list
-- refresh mechanics
+o refresh mechanics
+- add important emails when config changed
 - show important emails as separate list
-- show no important emails
-- show combined list (set current default in UI)
+o show no important emails
+o show combined list
+o set current default in UI
 - fix drag and drop between kmail2 and lionmail
 - monochrome artwork for the panel
 - fix "unknown" emails
