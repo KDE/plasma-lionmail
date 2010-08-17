@@ -37,7 +37,7 @@ target_link_libraries(plasma_applet_emailnotifier
     ${KDE4_AKONADI_KMIME_LIBS}
     #${KDE4_KABC_LIBS}
 #    akonadi-kabccommon
-    ${KDE4_KCAL_LIBS}
+    #${KDE4_KCAL_LIBS}
     ${KDE4_KPIMUTILS_LIBS}
 
 
