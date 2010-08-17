@@ -187,10 +187,12 @@ void EmailNotifier::createConfigurationInterface(KConfigDialog *parent)
     treeView->setModel(checkablePM);
     //treeView->setSelectionModel(m_checkSelection );
 
-    m_viewState = new Akonadi::ETMViewStateSaver(this);
-    m_viewState->setView(treeView);
-    m_viewState->setSelectionModel(m_checkSelection);
-    m_viewState->restoreState(config());
+    // Restore the selection, expansion and scrollstate of our treeview
+    // restoring on the heap, as KViewStateSaver's api docs suggest
+    Akonadi::ETMViewStateSaver* viewState = new Akonadi::ETMViewStateSaver(this);
+    viewState->setView(treeView);
+    viewState->setSelectionModel(m_checkSelection);
+    viewState->restoreState(config());
 
     ui->allowHtml->setChecked(m_allowHtml);
     ui->showImportantNone->setChecked(m_showImportant == None);
@@ -202,7 +204,13 @@ void EmailNotifier::createConfigurationInterface(KConfigDialog *parent)
 void EmailNotifier::configAccepted()
 {
     KConfigGroup cg = config();
-    m_viewState->saveState(cg);
+
+    // Save the selection, expansion and scrollstate of our treeview
+    // saving on the stack, according to apidocs
+    Akonadi::ETMViewStateSaver viewState(this);
+    viewState.setView(ui->collectionsTreeView);
+    viewState.setSelectionModel(m_checkSelection);
+    viewState.saveState(cg);
 
     // Display of important emails
     ImportantDisplay d = None;

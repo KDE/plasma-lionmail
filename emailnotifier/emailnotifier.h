@@ -24,7 +24,6 @@
 #include <QGraphicsItem>
 
 #include <Plasma/PopupApplet>
-//#include <plasma/dataengine.h>
 #include <Plasma/ToolTipManager>
 
 
@@ -34,11 +33,6 @@
 namespace Plasma
 {
     class Svg;
-}
-
-namespace Akonadi
-{
-    class ETMViewStateSaver;
 }
 
 class EmailNotifier : public Plasma::PopupApplet
@@ -76,7 +70,6 @@ class EmailNotifier : public Plasma::PopupApplet
 
         Ui::emailnotifierConfig* ui;
         QItemSelectionModel *m_checkSelection;
-        Akonadi::ETMViewStateSaver *m_viewState;
 
         Dialog* m_dialog;
 
