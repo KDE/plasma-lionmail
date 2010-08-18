@@ -64,9 +64,7 @@ void Dialog::buildDialog(bool showImportant)
     m_titleBar->setText(i18nc("list title", "<b><font size=\"+1\">&nbsp;&nbsp;&nbsp;New Emails</font></b>"));
     gridLayout->addItem(m_titleBar, 0, 0, 1, 2);
 
-
     m_tabBar = new Plasma::TabBar(this);
-
 
     m_unreadList = new EmailList(showImportant, this);
     connect(m_unreadList, SIGNAL(activated(const QUrl)), SLOT(openUrl(const QUrl)));
@@ -174,6 +172,11 @@ void Dialog::refreshClicked()
             kDebug() << "this might be ours" << instance.identifier();
         }
     }
+}
+
+void Dialog::setTitle(const QString &title)
+{
+        m_titleBar->setText(QString("<b><font size=\"+1\">&nbsp;&nbsp;&nbsp;%1</font></b>").arg(title));
 }
 
 void Dialog::instanceStatusChanged(const Akonadi::AgentInstance &instance)

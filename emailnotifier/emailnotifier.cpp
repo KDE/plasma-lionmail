@@ -296,22 +296,24 @@ void EmailNotifier::configChanged()
 
 void EmailNotifier::statusChanged(int emailsCount, const QString& statusText)
 {
-    kDebug() << "----------------- Status changed: " << emailsCount << statusText;
+    //kDebug() << "----------------- Status changed: " << emailsCount << statusText;
     QString icon = "mail-mark-unread";
     if (emailsCount) {
         icon = "mail-mark-unread-new";
         if (!statusText.isEmpty()) {
             updateToolTip(statusText, icon);
+            m_dialog->setTitle(statusText);
         } else {
             const QString _t = i18np("%1 new email", "%1 new emails", emailsCount);
             updateToolTip(_t, icon);
+            m_dialog->setTitle(_t);
         }
         setStatus(Plasma::ActiveStatus);
-        kDebug() << "active" << statusText;
     } else {
-        updateToolTip(i18nc("tooltip: no new emails", "No new email"), icon);
+        QString _t = i18nc("tooltip: no new emails", "No new email");
+        updateToolTip(_t, icon);
         setStatus(Plasma::PassiveStatus);
-        kDebug() << "passive" << icon;
+        m_dialog->setTitle(_t);
     }
     setPopupIcon(icon);
 }

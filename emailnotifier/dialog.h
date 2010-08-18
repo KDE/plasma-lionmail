@@ -61,6 +61,8 @@ namespace Plasma
 
         EmailList* unreadEmailList();
 
+        void setTitle(const QString &title);
+
     Q_SIGNALS:
         void statusChanged(int count, const QString &statusText);
 
