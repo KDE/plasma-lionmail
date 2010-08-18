@@ -138,6 +138,7 @@ void EmailList::deleteItem()
     } else {
         kDebug() << "Sender is not a QGraphicsWidget, something's wrong with your code.";
     }
+    updateStatus();
 }
 
 void EmailList::dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
@@ -315,8 +316,19 @@ bool EmailList::accept(const Akonadi::Item email)
 
 void EmailList::updateStatus()
 {
-    m_emailsCount = m_emailWidgets.count();
-    m_statusText = i18np("%1 new email", "%1 new emails", m_emailsCount);
+    m_emailsCount = 0;
+    foreach (EmailWidget* e, m_emailWidgets) {
+        if (e->status().isUnread()) {
+            m_emailsCount++;
+        }
+    }
+    //m_emailsCount = m_emailWidgets.count();
+    if (m_emailsCount == 0) {
+        m_statusText = i18nc("applet status", "No new email");
+
+    } else {
+        m_statusText = i18ncp("applet status", "%1 new email", "%1 new emails", m_emailsCount);
+    }
 
     emit statusChanged(m_emailsCount, m_statusText);
 }

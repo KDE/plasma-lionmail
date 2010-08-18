@@ -64,6 +64,7 @@ class EmailWidget : public Plasma::Frame
 
         QGraphicsWidget* dialog();
         Akonadi::Item item();
+        Akonadi::MessageStatus status();
 
         qlonglong id;
 
@@ -94,8 +95,6 @@ class EmailWidget : public Plasma::Frame
             Large = 8
         };
         Q_DECLARE_FLAGS(AppletSizes, AppletSize)
-
-        Plasma::PopupApplet* m_applet;
 
         static QString stripTags(QString input);
 
@@ -185,7 +184,6 @@ class EmailWidget : public Plasma::Frame
         bool m_flagsShown;
 
         QString m_body;
-        //QString m_abstract;
         QString m_stylesheet;
         bool m_allowHtml;
         bool m_showSmilies;
@@ -206,15 +204,11 @@ class EmailWidget : public Plasma::Frame
         Plasma::PushButton* m_newIcon;
         Plasma::PushButton* m_importantIcon;
         Plasma::PushButton* m_deleteButton;
-        //Plasma::PushButton* m_unreadIcon;
 
         Plasma::Animation* m_expandIconAnimation;
-        //Plasma::Animation* m_actionsAnimation;
         QPropertyAnimation* m_actionsAnimation;
         Plasma::Animation* m_bodyAnimation;
         Plasma::Animation* m_disappearAnimation;
-
-        //Plasma::WebView* m_bodyView;
 
         QPointF m_startPos;
         int m_fontAdjust; // wheel adjustment of the font size

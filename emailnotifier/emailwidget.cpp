@@ -60,7 +60,6 @@ using namespace Plasma;
 EmailWidget::EmailWidget(QGraphicsWidget *parent)
     : Frame(parent),
       id(0), // what it's supposed to be
-      m_applet(0),
       // Are we already fetching the data?
       m_fetching(false),
       m_item(0),
@@ -148,6 +147,7 @@ void EmailWidget::updateSize(int h)
     // In Layouts, we want to restrict the appletsize as much as possible,
     // on the desktop or more generally, in an applet, we let the applet
     // itself manage the max size
+    /*
     if (m_appletSize != Large && !m_applet) {
         //setMaximumHeight(h);
         //kDebug() << "MAX HEIGHT" << h;
@@ -155,6 +155,7 @@ void EmailWidget::updateSize(int h)
         //setMaximumHeight(QWIDGETSIZE_MAX);
         //kDebug() << "MAX HEIGHT INF" << h;
     }
+    */
     m_layout->updateGeometry();
     updateGeometry();
 }
@@ -467,12 +468,11 @@ void EmailWidget::flagNewClicked()
     //refreshFlags();
 }
 
-/*
-bool EmailWidget::isNew()
+Akonadi::MessageStatus EmailWidget::status()
 {
-    return m_status.isRead();
+    return m_status;
 }
-*/
+
 void EmailWidget::flagImportantClicked()
 {
     kDebug() << "Important clicked";

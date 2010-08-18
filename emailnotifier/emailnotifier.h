@@ -39,6 +39,7 @@ class EmailNotifier : public Plasma::PopupApplet
   Q_OBJECT
 
     enum ImportantDisplay { None = 0, ShowMerged = 1, ShowSeparately = 2 };
+    Q_DECLARE_FLAGS(ImportantDisplays, ImportantDisplay)
 
     public:
         EmailNotifier(QObject* parent, const QVariantList &args);
