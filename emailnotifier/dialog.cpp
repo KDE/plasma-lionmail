@@ -61,7 +61,7 @@ void Dialog::buildDialog(bool showImportant)
     setLayout(gridLayout);
 
     m_titleBar = new Plasma::Label(this);
-    m_titleBar->setText(i18nc("list title", "<b><font size=\"+1\">&nbsp;&nbsp;&nbsp;New Emails</font></b>"));
+    setTitle(i18nc("list title", "New Emails"));
     gridLayout->addItem(m_titleBar, 0, 0, 1, 2);
 
     m_tabBar = new Plasma::TabBar(this);
