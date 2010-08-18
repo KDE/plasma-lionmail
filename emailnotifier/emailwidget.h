@@ -21,22 +21,33 @@
 #define EMAILWIDGET_H
 
 //Qt
-#include <QGraphicsAnchorLayout>
-#include <QGraphicsGridLayout>
-#include <QGraphicsLinearLayout>
-#include <QGraphicsWidget>
-#include <QGraphicsSceneMouseEvent>
-#include <QGraphicsSceneWheelEvent>
+class QGraphicsAnchorLayout;
+class QGraphicsGridLayout;
+class QGraphicsLinearLayout;
+class QGraphicsWidget;
+class QGraphicsSceneHoverEvent;
+class QGraphicsSceneMouseEvent;
+class QGraphicsSceneWheelEvent;
 
 // KDE
-#include <KPushButton>
-#include <KJob>
+class KPushButton;
+class KJob;
 
 // PIM & Akonadi
+namespace Akonadi
+{
+    //class Item;
+    class Monitor;
+    class Session;
+    //class MessageStatus;
+    //class MessagePart;
+}
+
 #include <Akonadi/Item>
-#include <Akonadi/Monitor>
 #include <kmime/kmime_message.h>
+#include <akonadi/kmime/messageparts.h>
 #include <akonadi/kmime/messagestatus.h>
+
 #include <boost/shared_ptr.hpp>
 typedef boost::shared_ptr<KMime::Message> MessagePtr;
 

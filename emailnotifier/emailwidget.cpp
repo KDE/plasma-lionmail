@@ -18,32 +18,34 @@
 */
 
 //Qt
+#include <QApplication>
+#include <QGraphicsAnchorLayout>
 #include <QGraphicsGridLayout>
+#include <QGraphicsLinearLayout>
+#include <QGraphicsWidget>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsSceneWheelEvent>
 #include <QMimeData>
 #include <QLabel>
 #include <QTextDocument>
-#include <QApplication>
 
 //KDE
 #include <KDebug>
 #include <KColorScheme>
-#include <KIcon>
 #include <KGlobalSettings>
+#include <KIcon>
+#include <KJob>
+#include <KPushButton>
 
 // Akonadi
-#include <Akonadi/Item>
-#include <Akonadi/ItemFetchScope>
 #include <Akonadi/Collection>
+#include <Akonadi/ItemFetchScope>
 #include <Akonadi/ItemFetchJob>
-#include <Akonadi/Monitor>
 #include <Akonadi/ItemModifyJob>
-
+#include <Akonadi/Monitor>
+#include <kmime/kmime_dateformatter.h>
 #include <kpimutils/email.h>
 #include <kpimutils/linklocator.h>
-#include <kmime/kmime_dateformatter.h>
-#include <akonadi/kmime/messageparts.h>
-#include <akonadi/kmime/messagestatus.h>
 
 // Plasma
 #include <Plasma/Animation>

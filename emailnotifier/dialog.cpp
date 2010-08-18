@@ -25,8 +25,12 @@
 //KDE
 #include <KDebug>
 #include <KGlobalSettings>
+#include <KIcon>
 #include <KLineEdit>
 #include <KRun>
+
+// Akonadi
+#include <Akonadi/Collection>
 
 //plasma
 #include <Plasma/Dialog>

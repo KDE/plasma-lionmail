@@ -17,34 +17,34 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "emailnotifier.h"
-
+// Qt
 #include <QTreeView>
 
-
+// KDE
 #include <KConfigDialog>
 #include <kselectionproxymodel.h>
 
-
+// Plasma
 #include <Plasma/Svg>
 #include <Plasma/Theme>
 #include <Plasma/Extender>
 #include <Plasma/DataEngine>
+#include <Plasma/ToolTipContent>
+#include <Plasma/ToolTipManager>
 
+// Akonadi
 #include <Akonadi/ChangeRecorder>
-#include <Akonadi/CollectionFetchScope>
-#include <Akonadi/ItemFetchScope>
-#include <Akonadi/Monitor>
-#include <Akonadi/Session>
 #include <Akonadi/EntityTreeModel>
 #include <akonadi/etmviewstatesaver.h>
-
 #include <Akonadi/ServerManager>
 #include <akonadi/entitymimetypefiltermodel.h>
+
 #include "copied_classes/checkableitemproxymodel.h"
 
-#include "../emailmessage/emailmessage.h"
+// Own
 #include "dialog.h"
+#include "emailnotifier.h"
+
 
 using namespace Akonadi;
 

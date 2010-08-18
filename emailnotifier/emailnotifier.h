@@ -20,18 +20,16 @@
 #ifndef EMAILNOTIFIER_H
 #define EMAILNOTIFIER_H
 
-#include <QGraphicsItem>
-
 #include <Plasma/PopupApplet>
-#include <Plasma/ToolTipManager>
-
 
 #include "ui_emailnotifierConfig.h"
-#include "dialog.h"
+
+class Dialog;
 
 namespace Plasma
 {
     class Svg;
+    class ToolTipContent;
 }
 
 class EmailNotifier : public Plasma::PopupApplet
