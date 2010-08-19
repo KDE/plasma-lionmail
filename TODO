@@ -138,3 +138,4 @@ o set current default in UI
 - fix drag and drop between kmail2 and lionmail
 - monochrome artwork for the panel
 - fix "unknown" emails
+- config: checkbox: Show important emails, radios: merged, separate lists

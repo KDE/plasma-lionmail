@@ -81,7 +81,7 @@
       <item>
        <widget class="QRadioButton" name="showImportantNone">
         <property name="text">
-         <string>Do not show emails marked as Important</string>
+         <string>Show only new emails</string>
         </property>
        </widget>
       </item>
