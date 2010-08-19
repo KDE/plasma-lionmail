@@ -127,6 +127,7 @@ Technical Stuff
 
 
 Short TODO emailnotifier:
+- select INBOXen as default collections
 - clear collection
 - clear whole list
 o refresh mechanics
