@@ -154,7 +154,7 @@ void EmailNotifier::createConfigurationInterface(KConfigDialog *parent)
     QWidget *widget = new QWidget();
     ui = new Ui::emailnotifierConfig();
     ui->setupUi(widget);
-    parent->addPage(widget, i18n("Collections"), Applet::icon());
+    parent->addPage(widget, i18n("Mail"), Applet::icon());
     connect(parent, SIGNAL(applyClicked()), this, SLOT(configAccepted()));
     connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
 

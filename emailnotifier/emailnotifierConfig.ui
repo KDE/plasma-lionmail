@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>548</width>
-    <height>558</height>
+    <width>400</width>
+    <height>360</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,7 +18,7 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>500</width>
+    <width>400</width>
     <height>360</height>
    </size>
   </property>
@@ -26,7 +26,7 @@
    <item row="0" column="0">
     <widget class="QLabel" name="selectcollectionslabel">
      <property name="text">
-      <string>&lt;b&gt;Mail Folders&lt;/b&gt;</string>
+      <string>&lt;b&gt;Folders&lt;/b&gt;</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -56,7 +56,7 @@
    <item row="2" column="0">
     <widget class="QLabel" name="selectcollectionslabel_3">
      <property name="text">
-      <string>&lt;b&gt;Filtering&lt;/b&gt;</string>
+      <string>&lt;b&gt;Messages&lt;/b&gt;</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
