@@ -62,6 +62,7 @@ namespace Akonadi {
         virtual QString statusText();
         virtual void addCollection(const quint64 collectionId);
         virtual void removeCollection(const quint64 collectionId);
+
         void setShowImportant(bool show);
         QList<quint64> collectionIds();
 
@@ -71,6 +72,8 @@ namespace Akonadi {
         void statusChanged(int count, const QString &statusText);
 
     protected:
+        virtual void dropEvent(QGraphicsSceneDragDropEvent* dropEvent);
+
         virtual bool accept(const Akonadi::Item email);
         virtual void filter();
         void fetchItem(const quint64 id);

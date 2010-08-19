@@ -1017,7 +1017,7 @@ void EmailWidget::wheelEvent (QGraphicsSceneWheelEvent * event)
 
 KUrl EmailWidget::url()
 {
-    return KUrl(QString("akonadi:?item=%1").arg(id));
+    return m_item.url(Akonadi::Item::UrlWithMimeType);
 }
 
 void EmailWidget::startDrag()

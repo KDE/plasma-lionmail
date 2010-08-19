@@ -19,6 +19,7 @@
 
 //Qt
 #include <QGraphicsGridLayout>
+#include <QGraphicsSceneDragDropEvent>
 #include <QLabel>
 #include <QTimer>
 
@@ -55,7 +56,7 @@ EmailList::EmailList(bool showImportant, QGraphicsWidget *parent)
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-
+    setAcceptDrops(true);
     buildEmailList();
 
 }
@@ -331,6 +332,25 @@ void EmailList::updateStatus()
     }
 
     emit statusChanged(m_emailsCount, m_statusText);
+}
+
+void EmailList::dropEvent(QGraphicsSceneDragDropEvent* dropEvent)
+{
+    const QMimeData *mimeData = 0;
+
+    if (dropEvent) {
+        mimeData = dropEvent->mimeData();
+    }
+    if (!mimeData) {
+        kDebug() << "no mime data";
+        return;
+    }
+    if (KUrl::List::canDecode(mimeData)) {
+        kDebug() << "URL(s)";
+    }
+
+    kDebug() << "unhandled drop event:" << dropEvent->mimeData()->text() << mimeData->urls();
+    //dropEvent->acceptProposedAction();
 }
 
 int EmailList::emailsCount()
