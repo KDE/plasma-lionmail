@@ -808,14 +808,14 @@ void EmailWidget::fetchDone(KJob* job)
     kDebug() << "fetchjob returning";
     if ( job->error() ) {
         kDebug() << "Error fetching item" << id << ": " << job->errorString();
-        setRawBody(i18n("<h3>Fetching email body %1 failed: <p /></h3><pre>%2</pre>", id, job->errorString()));
+        setRawBody(i18n("<h3>Fetching message body %1 failed: <p /></h3><pre>%2</pre>", id, job->errorString()));
         return;
     }
     Akonadi::Item::List items = static_cast<Akonadi::ItemFetchJob*>(job)->items();
 
     kDebug() << "Fetched" << items.count() << "email Items." << id;
     if (items.count() == 0) {
-        setRawBody(i18n("<h3>Could not find Email with id: <p /></h3><pre>%1</pre>", id));
+        setRawBody(i18n("<h3>Could not find message with id: <p /></h3><pre>%1</pre>", id));
     }
     foreach( const Akonadi::Item &item, items ) {
 

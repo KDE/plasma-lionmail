@@ -135,7 +135,7 @@ o refresh mechanics
 o show no important emails
 o show combined list
 o set current default in UI
-- fix drag and drop between kmail2 and lionmail
+o fix drag and drop between kmail2 and lionmail
 - monochrome artwork for the panel
 - fix "unknown" emails
-- config: checkbox: Show important emails, radios: merged, separate lists
+o config: checkbox: Show important emails, radios: merged, separate lists

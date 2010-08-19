@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>504</width>
-    <height>360</height>
+    <width>548</width>
+    <height>558</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -54,7 +54,7 @@
     </widget>
    </item>
    <item row="2" column="0">
-    <widget class="QLabel" name="selectcollectionslabel_2">
+    <widget class="QLabel" name="selectcollectionslabel_3">
      <property name="text">
       <string>&lt;b&gt;Filtering&lt;/b&gt;</string>
      </property>
@@ -63,46 +63,14 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
-    <widget class="KButtonGroup" name="kbuttongroup">
-     <property name="minimumSize">
-      <size>
-       <width>360</width>
-       <height>0</height>
-      </size>
+   <item row="6" column="1">
+    <widget class="QCheckBox" name="allowHtml">
+     <property name="text">
+      <string>Allow HTML</string>
      </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <property name="margin">
-       <number>0</number>
-      </property>
-      <item>
-       <widget class="QRadioButton" name="showImportantNone">
-        <property name="text">
-         <string>Show only new emails</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QRadioButton" name="showImportantMerged">
-        <property name="text">
-         <string>Show emails marked as Important</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QRadioButton" name="showImportantSeparately">
-        <property name="text">
-         <string>Show Important emails in a separate tab</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
     </widget>
    </item>
-   <item row="4" column="0">
+   <item row="5" column="0">
     <widget class="QLabel" name="generallabel">
      <property name="text">
       <string>&lt;b&gt;Display&lt;/b&gt;</string>
@@ -112,23 +80,42 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="1">
-    <widget class="QCheckBox" name="allowHtml">
+   <item row="4" column="1">
+    <widget class="QCheckBox" name="showImportantSeparately">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="text">
-      <string>Allow HTML</string>
+      <string>Show Important messages in a separate list</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QCheckBox" name="showImportant">
+     <property name="text">
+      <string>Also show messages marked as Important</string>
      </property>
     </widget>
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>KButtonGroup</class>
-   <extends>QGroupBox</extends>
-   <header>kbuttongroup.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>showImportant</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>showImportantSeparately</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>318</x>
+     <y>471</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>318</x>
+     <y>496</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

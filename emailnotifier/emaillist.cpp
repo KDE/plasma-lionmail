@@ -325,10 +325,10 @@ void EmailList::updateStatus()
     }
     //m_emailsCount = m_emailWidgets.count();
     if (m_emailsCount == 0) {
-        m_statusText = i18nc("applet status", "No new email");
+        m_statusText = i18nc("applet status", "No New Messages");
 
     } else {
-        m_statusText = i18ncp("applet status", "%1 new email", "%1 new emails", m_emailsCount);
+        m_statusText = i18ncp("applet status", "%1 New Message", "%1 New Messages", m_emailsCount);
     }
 
     emit statusChanged(m_emailsCount, m_statusText);

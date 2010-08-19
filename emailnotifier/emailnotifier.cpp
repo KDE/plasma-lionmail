@@ -195,8 +195,8 @@ void EmailNotifier::createConfigurationInterface(KConfigDialog *parent)
     viewState->restoreState(config());
 
     ui->allowHtml->setChecked(m_allowHtml);
-    ui->showImportantNone->setChecked(m_showImportant == None);
-    ui->showImportantMerged->setChecked(m_showImportant == ShowMerged);
+    ui->showImportant->setChecked(m_showImportant != None);
+    //ui->showImportantMerged->setChecked(m_showImportant == ShowMerged);
     ui->showImportantSeparately->setChecked(m_showImportant == ShowSeparately);
 }
 
@@ -214,22 +214,20 @@ void EmailNotifier::configAccepted()
 
     // Display of important emails
     ImportantDisplay d = None;
-    if (ui->showImportantNone->isChecked()) {
+    if (!ui->showImportant->isChecked()) {
         kDebug() << "None...";
         d = None;
-    }
-    if (ui->showImportantMerged->isChecked()) {
-        kDebug() << "Merged..." << ShowMerged;
-        d = ShowMerged;
-    }
-    if (ui->showImportantSeparately->isChecked()) {
+    } else if (ui->showImportantSeparately->isChecked()) {
         kDebug() << "Separately...";
         d = ShowSeparately;
+    } else {
+        kDebug() << "Merged..." << ShowMerged;
+        d = ShowMerged;
     }
     if (d != m_showImportant) {
         m_showImportant = d;
         m_dialog->unreadEmailList()->setShowImportant(d == ShowMerged);
-        kDebug() << "show important is now" << m_showImportant;
+        kDebug() << "showing important messages in unread list" << (m_showImportant == ShowMerged);
 
         // TODO: create important tab
     }
@@ -304,13 +302,13 @@ void EmailNotifier::statusChanged(int emailsCount, const QString& statusText)
             updateToolTip(statusText, icon);
             m_dialog->setTitle(statusText);
         } else {
-            const QString _t = i18np("%1 new email", "%1 new emails", emailsCount);
+            const QString _t = i18np("%1 New Message", "%1 New Messages", emailsCount);
             updateToolTip(_t, icon);
             m_dialog->setTitle(_t);
         }
         setStatus(Plasma::ActiveStatus);
     } else {
-        QString _t = i18nc("tooltip: no new emails", "No new email");
+        QString _t = i18nc("tooltip: no new emails", "No New Messages");
         updateToolTip(_t, icon);
         setStatus(Plasma::PassiveStatus);
         m_dialog->setTitle(_t);

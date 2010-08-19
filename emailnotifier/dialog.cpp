@@ -61,7 +61,7 @@ void Dialog::buildDialog(bool showImportant)
     setLayout(gridLayout);
 
     m_titleBar = new Plasma::Label(this);
-    setTitle(i18nc("list title", "New Emails"));
+    setTitle(i18nc("list title", "New Messages"));
     gridLayout->addItem(m_titleBar, 0, 0, 1, 2);
 
     m_tabBar = new Plasma::TabBar(this);
@@ -83,7 +83,7 @@ void Dialog::buildDialog(bool showImportant)
 
     m_refreshIcon = new Plasma::IconWidget(this);
     m_refreshIcon->setIcon("view-refresh");
-    m_refreshIcon->setToolTip(i18nc("tooltip on the refresh button", "Check for new email"));
+    m_refreshIcon->setToolTip(i18nc("tooltip on the refresh button", "Check Mail"));
     m_refreshIcon->setMaximumHeight(16);
     gridLayout->addItem(m_refreshIcon, 2, 2, 1, 1);
     connect(m_refreshIcon, SIGNAL(clicked()), this, SLOT(refreshClicked()));
@@ -184,13 +184,13 @@ void Dialog::instanceStatusChanged(const Akonadi::AgentInstance &instance)
     QString _s;
     switch (instance.status()) {
         case Akonadi::AgentInstance::Running:
-            _s = i18nc("sync status running", "Checking email in %1", instance.name());
+            _s = i18nc("sync status running", "Checking mail in %1", instance.name());
             break;
         case Akonadi::AgentInstance::Idle:
             _s = i18nc("sync status idle", "%1 is idle", instance.name());
             break;
         case Akonadi::AgentInstance::Broken:
-            _s = i18nc("sync status error", "Error checking email in %1", instance.name());
+            _s = i18nc("sync status error", "Error checking mail in %1", instance.name());
             break;
     }
     m_statusBar->setText(_s);
