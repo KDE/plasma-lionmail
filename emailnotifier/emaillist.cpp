@@ -46,6 +46,10 @@
 //own
 #include "emaillist.h"
 
+// In order to reverse the layout, we subtract the modelindex's row
+// from MAX_EMAILS, so newer emails end up at the top of the list
+#define MAX_EMAILS 10000000
+
 using namespace Akonadi;
 
 EmailList::EmailList(bool showImportant, QGraphicsWidget *parent)
@@ -225,10 +229,12 @@ void EmailList::rowAdded(const QModelIndex &index, int start, int end)
     Akonadi::EntityTreeModel* _model = dynamic_cast<Akonadi::EntityTreeModel*>(sender());
     if (!_model) {
         kDebug() << "sender - model is not OK, damnit!";
+        return;
     }
     for (int i = start; i <= end; i++) {
         QModelIndex itemindex =  _model->index(i, 0, index);
         quint64 id = itemindex.data(EntityTreeModel::ItemIdRole).value<quint64>();
+        m_rowForId[id] = qMax(0, MAX_EMAILS - i);
         fetchItem(id);
     }
 }
@@ -247,8 +253,7 @@ void EmailList::addItem(Akonadi::Item item)
     m_emailWidgets[item.url()] = ew;
     ew->setSmall();
     ew->itemChanged(item);
-    m_listLayout->insertItem(0, ew);
-    kDebug() << "Added Item:" << item.url() << item.flags() << item.storageCollectionId();
+    m_listLayout->insertItem(m_rowForId[item.id()], ew);
     updateStatus();
 }
 

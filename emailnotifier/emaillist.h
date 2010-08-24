@@ -80,7 +80,8 @@ namespace Akonadi {
 
         Akonadi::Session* m_session;
         QHash<QUrl, EmailWidget*> m_emailWidgets;
-        QHash<quint64, Akonadi::EntityTreeModel*> m_etms;
+        QHash<quint64, quint64> m_rowForId; // mapping item ids to rows in the model
+        QHash<quint64, Akonadi::EntityTreeModel*> m_etms; // holding an etm per collection
 
         int m_emailsCount;
         QString m_statusText;
@@ -105,7 +106,6 @@ namespace Akonadi {
 
         QGraphicsWidget* m_innerWidget;
         QGraphicsLinearLayout* m_listLayout;
-
   };
 
 #endif
