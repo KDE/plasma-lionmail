@@ -93,7 +93,7 @@ void EmailList::addCollection(const quint64 collectionId)
         //m_session = new Session( QByteArray( "PlasmaEmailNotifier-" ) + QByteArray::number( qrand() ), this );
 
     }
-    Session* session = new Session( QByteArray( "PlasmaEmailNotifier-" ) + QByteArray::number( qrand() ), this );
+    Session* session = new Session(QByteArray( "PlasmaEmailNotifier-" ) + QByteArray::number( qrand() ), this);
 
     /*
     Monitor *monitor = new Monitor( this );
@@ -103,18 +103,18 @@ void EmailList::addCollection(const quint64 collectionId)
     */
     kDebug() << " =====> New ETM, monitoring:" << collectionId;
  
-    ChangeRecorder *changeRecorder = new ChangeRecorder( this );
+    ChangeRecorder *changeRecorder = new ChangeRecorder(this);
 
     //changeRecorder->setCollectionMonitored( Collection(201) );
     // // 201 is lion mail local, 191 is INBOX, 111 is lion mail imap
     //changeRecorder->setCollectionMonitored( Collection(201) );
-    changeRecorder->setCollectionMonitored( Collection(collectionId) );
+    changeRecorder->setCollectionMonitored(Collection(collectionId));
     //changeRecorder->setMimeTypeMonitored("inode/directory");
     //changeRecorder->itemFetchScope().fetchPayloadPart(MessagePart::Header);
     changeRecorder->itemFetchScope().fetchPayloadPart(MessagePart::Envelope);
     changeRecorder->collectionFetchScope().setIncludeUnsubscribed(false);
     changeRecorder->setMimeTypeMonitored("message/rfc822");
-    changeRecorder->setSession( session );
+    changeRecorder->setSession(session);
 
     Akonadi::EntityTreeModel* model = new Akonadi::EntityTreeModel(changeRecorder, this);
     //m_model->setItemPopulationStrategy( EntityTreeModel::NoItemPopulation );
@@ -172,7 +172,7 @@ void EmailList::fetchItem(const quint64 id)
     Akonadi::ItemFetchJob* fetchJob = new Akonadi::ItemFetchJob( Akonadi::Item( id ), this );
     //fetchJob->fetchScope().fetchFullPayload();
     fetchJob->fetchScope().fetchPayloadPart( Akonadi::MessagePart::Envelope );
-    connect( fetchJob, SIGNAL(result(KJob*)), SLOT(fetchDone(KJob*)) );
+    connect(fetchJob, SIGNAL(result(KJob*)), SLOT(fetchDone(KJob*)));
 }
 
 void EmailList::fetchDone(KJob* job)
@@ -215,11 +215,14 @@ void EmailList::itemChanged(Akonadi::Item item)
         if (!item.isValid()) {
             kDebug() << "invalid item";
             m_emailWidgets[item.url()]->setDeleted();
+            m_rowForId.remove(item.id());
         }
     } else {
         //kDebug() << "an item becomes visible" << item.url();
         if (accept(item)) {
             addItem(item);
+        } else {
+            m_rowForId.remove(item.id());
         }
     }
 }
@@ -278,6 +281,7 @@ void EmailList::rowsRemoved(const QModelIndex &index, int start, int end)
             m_listLayout->removeItem(ew);
             delete ew;
             m_emailWidgets.remove(item.url());
+            m_rowForId.remove(_id);
         }
         //ew->setSmall();
         //ew->itemChanged(item);
