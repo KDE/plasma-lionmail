@@ -54,7 +54,7 @@ using namespace Akonadi;
 
 EmailList::EmailList(bool showImportant, QGraphicsWidget *parent)
     : Plasma::ScrollWidget(parent),
-    m_session(0),
+    //m_session(0),
     m_showImportant(showImportant)
 {
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -90,18 +90,9 @@ void EmailList::addCollection(const quint64 collectionId)
     if (m_etms.keys().contains(collectionId)) {
         kDebug() << "collection already monitored, skipping...";
         return;
-        //m_session = new Session( QByteArray( "PlasmaEmailNotifier-" ) + QByteArray::number( qrand() ), this );
 
     }
-    if (!m_session) {
-        m_session = new Session(QByteArray( "PlasmaEmailNotifier-" ) + QByteArray::number( qrand() ), this);
-    }
-    /*
-    Monitor *monitor = new Monitor( this );
-    monitor->setMimeTypeMonitored("message/rfc822");
-    monitor->setCollectionMonitored(Collection::root(), false);
-    monitor->itemFetchScope().fetchPayloadPart( MessagePart::Envelope );
-    */
+    Akonadi::Session* session = new Session(QByteArray( "PlasmaEmailNotifier-" ) + QByteArray::number( qrand() ), this);
     kDebug() << " =====> New ETM, monitoring:" << collectionId;
  
     ChangeRecorder *changeRecorder = new ChangeRecorder(this);
@@ -115,7 +106,7 @@ void EmailList::addCollection(const quint64 collectionId)
     changeRecorder->itemFetchScope().fetchPayloadPart(MessagePart::Envelope);
     changeRecorder->collectionFetchScope().setIncludeUnsubscribed(false);
     changeRecorder->setMimeTypeMonitored("message/rfc822");
-    changeRecorder->setSession(m_session);
+    changeRecorder->setSession(session);
 
     Akonadi::EntityTreeModel* model = new Akonadi::EntityTreeModel(changeRecorder, this);
     //m_model->setItemPopulationStrategy( EntityTreeModel::NoItemPopulation );
@@ -130,12 +121,18 @@ void EmailList::addCollection(const quint64 collectionId)
 
 void EmailList::clear()
 {
-
-}
-
-void EmailList::removeCollection(const quint64 collectionId)
-{
-    kDebug() << "removing collection (not implemented):" << collectionId;
+    foreach (EmailWidget* email, m_emailWidgets) {
+        delete email;
+    }
+    m_emailWidgets.clear();
+    foreach (EntityTreeModel* etm, m_etms) {
+        delete etm;
+    }
+    m_etms.clear();
+    m_rowForId.clear();
+    m_listLayout->invalidate();
+    updateStatus();
+    //kDebug() << m_statusText;
 }
 
 void EmailList::deleteItem()

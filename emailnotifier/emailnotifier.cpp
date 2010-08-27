@@ -224,6 +224,10 @@ void EmailNotifier::configAccepted()
         kDebug() << "Merged..." << ShowMerged;
         d = ShowMerged;
     }
+    // Check if the show important settings affect the unread list, so we can reset it if needed
+    bool _changed = ((m_showImportant == ShowMerged) == (d == None || d == ShowSeparately));
+    //kDebug() << "show important has changed for the unread list?" << _changed;
+
     if (d != m_showImportant) {
         m_showImportant = d;
         m_dialog->unreadEmailList()->setShowImportant(d == ShowMerged);
@@ -260,18 +264,11 @@ void EmailNotifier::configAccepted()
     qSort(m_collectionIds.begin(), m_collectionIds.end());
     qSort(m_newCollectionIds.begin(), m_newCollectionIds.end());
 
-    if (m_collectionIds != m_newCollectionIds) {
-        // First, we remove all collections that aren't in the selection anymore ...
-        foreach(const quint64 _id, m_collectionIds) {
-            if (!m_newCollectionIds.contains(_id)) {
-                m_dialog->unreadEmailList()->removeCollection(_id);
-            }
-        }
+    if ((m_collectionIds != m_newCollectionIds) || _changed) {
+        m_dialog->unreadEmailList()->clear();
         // Then we add those collections that weren't previously in the list
         foreach(const quint64 _id, m_newCollectionIds) {
-            if (!m_collectionIds.contains(_id)) {
-                m_dialog->unreadEmailList()->addCollection(_id);
-            }
+            m_dialog->unreadEmailList()->addCollection(_id);
         }
         // We're done synching the list with the configured collections
         m_collectionIds = m_newCollectionIds;
@@ -291,7 +288,7 @@ void EmailNotifier::configChanged()
 
     m_showImportant = (ImportantDisplay)(cg.readEntry("showImportant", 0));
     if (m_dialog) {
-        m_dialog->unreadEmailList()->setShowImportant( m_showImportant == ShowMerged );
+        m_dialog->unreadEmailList()->setShowImportant(m_showImportant == ShowMerged);
     }
 }
 

@@ -61,7 +61,6 @@ namespace Akonadi {
         virtual int emailsCount();
         virtual QString statusText();
         virtual void addCollection(const quint64 collectionId);
-        virtual void removeCollection(const quint64 collectionId);
         virtual void clear();
 
         void setShowImportant(bool show);
@@ -79,7 +78,6 @@ namespace Akonadi {
         virtual void filter();
         void fetchItem(const quint64 id);
 
-        Akonadi::Session* m_session;
         QHash<QUrl, EmailWidget*> m_emailWidgets;
         QHash<quint64, quint64> m_rowForId; // mapping item ids to rows in the model
         QHash<quint64, Akonadi::EntityTreeModel*> m_etms; // holding an etm per collection
