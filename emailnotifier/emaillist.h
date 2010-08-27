@@ -62,6 +62,7 @@ namespace Akonadi {
         virtual QString statusText();
         virtual void addCollection(const quint64 collectionId);
         virtual void removeCollection(const quint64 collectionId);
+        virtual void clear();
 
         void setShowImportant(bool show);
         QList<quint64> collectionIds();

@@ -229,7 +229,9 @@ void EmailNotifier::configAccepted()
         m_dialog->unreadEmailList()->setShowImportant(d == ShowMerged);
         kDebug() << "showing important messages in unread list" << (m_showImportant == ShowMerged);
 
-        // TODO: create important tab
+        if (m_showImportant == ShowSeparately) {
+            // TODO: create important tab
+        }
     }
     cg.writeEntry("showImportant", (int)(d));
 
@@ -249,7 +251,8 @@ void EmailNotifier::configAccepted()
         m_newCollectionIds << _id;
 
         // .. remove me
-        Akonadi::Collection col = itemindex.data(EntityTreeModel::CollectionRole).value<Akonadi::Collection>();
+        Akonadi::Collection col = itemindex.data(
+                                    EntityTreeModel::CollectionRole).value<Akonadi::Collection>();
         kDebug() << "========" << col.name() << col.resource();
 
     }

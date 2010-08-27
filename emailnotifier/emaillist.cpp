@@ -93,8 +93,9 @@ void EmailList::addCollection(const quint64 collectionId)
         //m_session = new Session( QByteArray( "PlasmaEmailNotifier-" ) + QByteArray::number( qrand() ), this );
 
     }
-    Session* session = new Session(QByteArray( "PlasmaEmailNotifier-" ) + QByteArray::number( qrand() ), this);
-
+    if (!m_session) {
+        m_session = new Session(QByteArray( "PlasmaEmailNotifier-" ) + QByteArray::number( qrand() ), this);
+    }
     /*
     Monitor *monitor = new Monitor( this );
     monitor->setMimeTypeMonitored("message/rfc822");
@@ -114,7 +115,7 @@ void EmailList::addCollection(const quint64 collectionId)
     changeRecorder->itemFetchScope().fetchPayloadPart(MessagePart::Envelope);
     changeRecorder->collectionFetchScope().setIncludeUnsubscribed(false);
     changeRecorder->setMimeTypeMonitored("message/rfc822");
-    changeRecorder->setSession(session);
+    changeRecorder->setSession(m_session);
 
     Akonadi::EntityTreeModel* model = new Akonadi::EntityTreeModel(changeRecorder, this);
     //m_model->setItemPopulationStrategy( EntityTreeModel::NoItemPopulation );
@@ -125,6 +126,11 @@ void EmailList::addCollection(const quint64 collectionId)
     connect(model, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex&)), this, SLOT(dataChanged(const QModelIndex&, const QModelIndex&)));
     m_etms[collectionId] = model;
     kDebug() << "Model created and connected. :) Now holding models for col-ids:" << m_etms.keys() << m_etms.values();
+}
+
+void EmailList::clear()
+{
+
 }
 
 void EmailList::removeCollection(const quint64 collectionId)
