@@ -21,6 +21,7 @@ set(emailnotifier_SRCS
     emailnotifier.cpp
     dialog.cpp
     emaillist.cpp
+    importantemaillist.cpp
     emailwidget.cpp
     copied_classes/checkableitemproxymodel.cpp
     )

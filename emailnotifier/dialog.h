@@ -35,6 +35,8 @@
 #include <Plasma/TabBar>
 
 //own
+#include "importantemaillist.h"
+
 #include "emaillist.h"
 
 namespace Plasma
@@ -93,6 +95,7 @@ namespace Plasma
         Plasma::IconWidget *m_refreshIcon;
 
         EmailList* m_unreadList;
+        ImportantEmailList* m_importantList;
 
         bool m_amConnected;
   };

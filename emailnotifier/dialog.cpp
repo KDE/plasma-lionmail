@@ -38,6 +38,7 @@
 
 
 //own
+
 #include "dialog.h"
 
 
@@ -46,7 +47,9 @@ Dialog::Dialog(bool showImportant, QGraphicsWidget *parent)
       //m_navIcon(0),
       m_titleBar(0),
       m_statusBar(0),
-      m_amConnected(false)
+      m_amConnected(false),
+      m_unreadList(0),
+      m_importantList(0)
 {
     buildDialog(showImportant);
 }
@@ -123,12 +126,15 @@ void Dialog::toggleTab()
 void Dialog::addImportantTab(QList<quint64> collectionIds)
 {
     if (m_tabBar->count() == 1) {
+        /*
         Plasma::Label* label = new Plasma::Label(m_tabBar);
         label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         label->setPreferredSize(400, 400);
 
         label->setText("<h2>Important emails go here</h2>");
-        m_tabBar->addTab(KIcon("mail-mark-important"), i18nc("tab title", "Important"), label);
+        */
+        m_importantList = new ImportantEmailList(collectionIds, m_tabBar);
+        m_tabBar->addTab(KIcon("mail-mark-important"), i18nc("tab title", "Important"), m_importantList);
     }
     m_tabBar->setTabBarShown(true);
 }
