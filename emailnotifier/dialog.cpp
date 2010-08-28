@@ -120,6 +120,30 @@ void Dialog::toggleTab()
     }
 }
 
+void Dialog::addImportantTab(QList<quint64> collectionIds)
+{
+    if (m_tabBar->count() == 1) {
+        Plasma::Label* label = new Plasma::Label(m_tabBar);
+        label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        label->setPreferredSize(400, 400);
+
+        label->setText("<h2>Important emails go here</h2>");
+        m_tabBar->addTab(KIcon("mail-mark-important"), i18nc("tab title", "Important"), label);
+    }
+    m_tabBar->setTabBarShown(true);
+}
+
+void Dialog::removeImportantTab()
+{
+    if (m_tabBar->currentIndex() == 1) {
+        m_tabBar->setCurrentIndex(0);
+    }
+    if (m_tabBar->count() == 2) {
+        m_tabBar->removeTab(1);
+    }
+    m_tabBar->setTabBarShown(false);
+}
+
 void Dialog::openUrl(const QUrl url)
 {
     kDebug() << "Opening ..." << url;

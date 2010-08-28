@@ -111,6 +111,12 @@ QGraphicsWidget* EmailNotifier::graphicsWidget()
     if (!m_dialog) {
         m_dialog = new Dialog(m_showImportant == ShowMerged, this);
         m_dialog->unreadEmailList()->setShowImportant(m_showImportant == ShowMerged);
+        if (m_showImportant == ShowSeparately) {
+            m_dialog->addImportantTab(m_collectionIds);
+        } else {
+            m_dialog->removeImportantTab(); // no-op if the tab isn't there to begin with
+        }
+
         connect(m_dialog, SIGNAL(statusChanged(int, const QString&)), this, SLOT(statusChanged(int, const QString&)));
         foreach (const quint64 id, m_collectionIds) {
             kDebug() << "adding unread:" << id;
@@ -225,8 +231,11 @@ void EmailNotifier::configAccepted()
         d = ShowMerged;
     }
     // Check if the show important settings affect the unread list, so we can reset it if needed
-    bool _changed = ((m_showImportant == ShowMerged) == (d == None || d == ShowSeparately));
-    //kDebug() << "show important has changed for the unread list?" << _changed;
+    bool unreadListChanged = ((m_showImportant == ShowMerged) == (d == None || d == ShowSeparately));
+    kDebug() << "show important has changed for the unread list?" << unreadListChanged;
+    bool addImportantTab = ((m_showImportant == None || m_showImportant == ShowMerged) && (d == ShowSeparately));
+    bool removeImportantTab = ((m_showImportant == ShowSeparately) && (d == None || d == ShowMerged));
+    kDebug() << "********** Add Tab:" << addImportantTab << " Remove Tab:" << removeImportantTab;
 
     if (d != m_showImportant) {
         m_showImportant = d;
@@ -255,16 +264,16 @@ void EmailNotifier::configAccepted()
         m_newCollectionIds << _id;
 
         // .. remove me
-        Akonadi::Collection col = itemindex.data(
-                                    EntityTreeModel::CollectionRole).value<Akonadi::Collection>();
-        kDebug() << "========" << col.name() << col.resource();
+        //Akonadi::Collection col = itemindex.data(
+        //                            EntityTreeModel::CollectionRole).value<Akonadi::Collection>();
+        //kDebug() << "collection selected:" << col.name() << col.resource();
 
     }
 
     qSort(m_collectionIds.begin(), m_collectionIds.end());
     qSort(m_newCollectionIds.begin(), m_newCollectionIds.end());
 
-    if ((m_collectionIds != m_newCollectionIds) || _changed) {
+    if ((m_collectionIds != m_newCollectionIds) || unreadListChanged) {
         m_dialog->unreadEmailList()->clear();
         // Then we add those collections that weren't previously in the list
         foreach(const quint64 _id, m_newCollectionIds) {
@@ -275,6 +284,13 @@ void EmailNotifier::configAccepted()
         cg.writeEntry("unreadCollectionIds", m_collectionIds);
     } else {
         kDebug() << "same collections still";
+    }
+    if (addImportantTab) {
+        m_dialog->addImportantTab(m_collectionIds);
+    } else if (removeImportantTab) {
+        m_dialog->removeImportantTab();
+    } else {
+        // FIXME: add new collection ids to important tab
     }
 
     emit configNeedsSaving();
@@ -289,6 +305,11 @@ void EmailNotifier::configChanged()
     m_showImportant = (ImportantDisplay)(cg.readEntry("showImportant", 0));
     if (m_dialog) {
         m_dialog->unreadEmailList()->setShowImportant(m_showImportant == ShowMerged);
+        if (m_showImportant == ShowSeparately) {
+            m_dialog->addImportantTab(m_collectionIds);
+        } else {
+            m_dialog->removeImportantTab(); // no-op if the tab isn't there to begin with
+        }
     }
 }
 

@@ -205,7 +205,7 @@ void EmailList::itemChanged(Akonadi::Item item)
     }
     */
     if (m_emailWidgets.keys().contains(item.url())) {
-        kDebug() << "one of our items changed ..." << item.url() << item.flags();
+        //kDebug() << "one of our items changed ..." << item.url() << item.flags();
         m_emailWidgets[item.url()]->itemChanged(item);
         // Should we remove it?
         if (!accept(item)) {
