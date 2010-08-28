@@ -47,9 +47,9 @@ Dialog::Dialog(bool showImportant, QGraphicsWidget *parent)
       //m_navIcon(0),
       m_titleBar(0),
       m_statusBar(0),
-      m_amConnected(false),
       m_unreadList(0),
-      m_importantList(0)
+      m_importantList(0),
+      m_amConnected(false)
 {
     buildDialog(showImportant);
 }
@@ -60,12 +60,9 @@ Dialog::~Dialog()
 
 void Dialog::buildDialog(bool showImportant)
 {
-    QGraphicsGridLayout *gridLayout = new QGraphicsGridLayout(this);
-    setLayout(gridLayout);
+    m_gridLayout = new QGraphicsGridLayout(this);
+    setLayout(m_gridLayout);
 
-    m_titleBar = new Plasma::Label(this);
-    setTitle(i18nc("list title", "New Messages"));
-    gridLayout->addItem(m_titleBar, 0, 0, 1, 2);
 
     m_tabBar = new Plasma::TabBar(this);
 
@@ -75,24 +72,25 @@ void Dialog::buildDialog(bool showImportant)
     m_tabBar->addTab(KIcon("mail-unread-new"), i18n("Unread"), m_unreadList);
     m_tabBar->setTabBarShown(false);
 
-    gridLayout->addItem(m_tabBar, 1, 0, 1, 3);
+    m_gridLayout->addItem(m_tabBar, 1, 0, 1, 3);
 
     m_statusBar = new Plasma::Label(this);
     //m_statusBar->setText("status");
     m_statusBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     m_statusBar->setMaximumHeight(22);
     m_statusBar->setFont(KGlobalSettings::smallestReadableFont());
-    gridLayout->addItem(m_statusBar, 2, 0, 1, 2);
+    m_gridLayout->addItem(m_statusBar, 2, 0, 1, 2);
 
     m_refreshIcon = new Plasma::IconWidget(this);
     m_refreshIcon->setIcon("view-refresh");
     m_refreshIcon->setToolTip(i18nc("tooltip on the refresh button", "Check Mail"));
     m_refreshIcon->setMaximumHeight(16);
-    gridLayout->addItem(m_refreshIcon, 2, 2, 1, 1);
+    m_gridLayout->addItem(m_refreshIcon, 2, 2, 1, 1);
     connect(m_refreshIcon, SIGNAL(clicked()), this, SLOT(refreshClicked()));
 
     connect(m_tabBar, SIGNAL(currentChanged(int)), SLOT(updateNavIcon(int)));
 
+    setTitleBarShown();
     updateStatus(i18nc("no active search, no results shown", "Idle."));
     updateNavIcon(m_tabBar->currentIndex());
     setPreferredSize(540, 320);
@@ -106,6 +104,21 @@ EmailList* Dialog::unreadEmailList()
 void Dialog::updateStatus(const QString status)
 {
     m_statusBar->setText(status);
+}
+
+void Dialog::setTitleBarShown(bool show)
+{
+    if (show && !m_titleBar) {
+        kDebug() << "----------------" << "adding title bar";
+        m_titleBar = new Plasma::Label(this);
+        setTitle(i18nc("list title", "New Messages"));
+        m_gridLayout->addItem(m_titleBar, 0, 0, 1, 2);
+        setTitle(m_unreadList->statusText());
+    } else if (!show && m_titleBar) {
+        kDebug() << "----------------" << "removing title bar";
+        m_titleBar->deleteLater();
+        m_titleBar = 0;
+    }
 }
 
 void Dialog::updateNavIcon(int tabIndex)
@@ -136,6 +149,7 @@ void Dialog::addImportantTab(QList<quint64> collectionIds)
         m_importantList = new ImportantEmailList(collectionIds, m_tabBar);
         m_tabBar->addTab(KIcon("mail-mark-important"), i18nc("tab title", "Important"), m_importantList);
     }
+    setTitleBarShown(false);
     m_tabBar->setTabBarShown(true);
 }
 
@@ -147,6 +161,7 @@ void Dialog::removeImportantTab()
     if (m_tabBar->count() == 2) {
         m_tabBar->removeTab(1);
     }
+    setTitleBarShown();
     m_tabBar->setTabBarShown(false);
 }
 
@@ -206,7 +221,10 @@ void Dialog::refreshClicked()
 
 void Dialog::setTitle(const QString &title)
 {
+    kDebug() << "titleBar" << m_titleBar;
+    if (m_titleBar) {
         m_titleBar->setText(QString("<b><font size=\"+1\">&nbsp;&nbsp;&nbsp;%1</font></b>").arg(title));
+    }
 }
 
 void Dialog::instanceStatusChanged(const Akonadi::AgentInstance &instance)

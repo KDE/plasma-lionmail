@@ -346,6 +346,11 @@ void EmailList::updateStatus()
     emit statusChanged(m_emailsCount, m_statusText);
 }
 
+QString EmailList::statusText() const
+{
+    return m_statusText;
+}
+
 void EmailList::dropEvent(QGraphicsSceneDragDropEvent* dropEvent)
 {
     const QMimeData *mimeData = 0;

@@ -21,6 +21,7 @@
 #define EMAILNOTIFIERDIALOG_H
 
 //Qt
+#include <QGraphicsGridLayout>
 #include <QLabel>
 #include <QStringList>
 
@@ -72,6 +73,7 @@ namespace Plasma
 
     private Q_SLOTS:
         void toggleTab();
+        void setTitleBarShown(bool show = true);
         void openUrl(const QUrl url);
         void updateNavIcon(int tabIndex);
         void refreshClicked();
@@ -88,6 +90,7 @@ namespace Plasma
         void buildDialog(bool showImportant);
         void updateStatus(const QString status);
 
+        QGraphicsGridLayout *m_gridLayout;
         //Plasma::IconWidget *m_navIcon;
         Plasma::TabBar *m_tabBar;
         Plasma::Label *m_titleBar;

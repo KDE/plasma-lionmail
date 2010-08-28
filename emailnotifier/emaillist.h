@@ -65,6 +65,7 @@ namespace Akonadi {
 
         void setShowImportant(bool show);
         QList<quint64> collectionIds();
+        QString statusText() const;
 
     Q_SIGNALS:
         void updateToolTip(const QString&, int);
