@@ -69,7 +69,8 @@ void Dialog::buildDialog(bool showImportant)
     m_unreadList = new EmailList(showImportant, this);
     connect(m_unreadList, SIGNAL(activated(const QUrl)), SLOT(openUrl(const QUrl)));
     connect(m_unreadList, SIGNAL(statusChanged(int, const QString&)), this, SIGNAL(statusChanged(int, const QString&)));
-    m_tabBar->addTab(KIcon("mail-unread-new"), i18n("Unread"), m_unreadList);
+    connect(m_unreadList, SIGNAL(statusChanged(int, const QString&)), this, SLOT(updateTabs()));
+    m_tabBar->addTab(KIcon("mail-unread-new"), i18n("New Messages"), m_unreadList);
     m_tabBar->setTabBarShown(false);
 
     m_gridLayout->addItem(m_tabBar, 1, 0, 1, 3);
@@ -91,7 +92,7 @@ void Dialog::buildDialog(bool showImportant)
     connect(m_tabBar, SIGNAL(currentChanged(int)), SLOT(updateNavIcon(int)));
 
     setTitleBarShown();
-    updateStatus(i18nc("no active search, no results shown", "Idle."));
+    setStatus(i18nc("no active search, no results shown", "Idle."));
     updateNavIcon(m_tabBar->currentIndex());
     setPreferredSize(540, 320);
 }
@@ -101,9 +102,16 @@ EmailList* Dialog::unreadEmailList()
     return m_unreadList;
 }
 
-void Dialog::updateStatus(const QString status)
+void Dialog::setStatus(const QString status)
 {
     m_statusBar->setText(status);
+}
+
+void Dialog::updateTabs()
+{
+    m_tabBar->setTabText(0, i18nc("tab text", "New (%1)", m_unreadList->emailsCount()));
+    m_tabBar->setTabText(1, i18nc("tab text", "Important (%1)", m_importantList->emailsCount()));
+    //m_statusBar->setText(status);
 }
 
 void Dialog::setTitleBarShown(bool show)
@@ -147,7 +155,8 @@ void Dialog::addImportantTab(QList<quint64> collectionIds)
         label->setText("<h2>Important emails go here</h2>");
         */
         m_importantList = new ImportantEmailList(collectionIds, m_tabBar);
-        m_tabBar->addTab(KIcon("mail-mark-important"), i18nc("tab title", "Important"), m_importantList);
+        m_tabBar->addTab(KIcon("mail-mark-important"), i18nc("tab title", "Important Messages"), m_importantList);
+        connect(m_importantList, SIGNAL(statusChanged(int, const QString&)), this, SLOT(updateTabs()));
     }
     setTitleBarShown(false);
     m_tabBar->setTabBarShown(true);

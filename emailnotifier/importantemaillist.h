@@ -36,6 +36,7 @@
     public:
         ImportantEmailList(QList<quint64> collectionIds, QGraphicsWidget *parent);
         virtual ~ImportantEmailList();
+        virtual int emailsCount();
 
     protected:
         virtual bool accept(const Akonadi::Item email);

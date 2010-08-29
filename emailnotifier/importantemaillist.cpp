@@ -81,4 +81,9 @@ bool ImportantEmailList::accept(const Akonadi::Item email)
     return false;
 }
 
+int ImportantEmailList::emailsCount()
+{
+    return m_emailWidgets.count();
+}
+
 #include "importantemaillist.moc"

@@ -77,7 +77,7 @@ namespace Plasma
         void openUrl(const QUrl url);
         void updateNavIcon(int tabIndex);
         void refreshClicked();
-
+        void updateTabs();
         void instanceStatusChanged(const Akonadi::AgentInstance &instance);
 
     Q_SIGNALS:
@@ -88,7 +88,7 @@ namespace Plasma
         * @internal build the dialog
         **/
         void buildDialog(bool showImportant);
-        void updateStatus(const QString status);
+        void setStatus(const QString status);
 
         QGraphicsGridLayout *m_gridLayout;
         //Plasma::IconWidget *m_navIcon;
