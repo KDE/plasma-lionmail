@@ -34,6 +34,7 @@
 
 // Akonadi
 #include <Akonadi/ChangeRecorder>
+#include <Akonadi/CollectionFetchJob>
 #include <Akonadi/EntityTreeModel>
 #include <akonadi/etmviewstatesaver.h>
 #include <Akonadi/ServerManager>
@@ -82,6 +83,59 @@ EmailNotifier::~EmailNotifier()
     delete ui;
 }
 
+void EmailNotifier::findDefaultCollections()
+{
+    Collection emailCollection(Collection::root());
+    emailCollection.setContentMimeTypes(QStringList() << "message/rfc822");
+    CollectionFetchJob *fetch = new CollectionFetchJob( emailCollection, CollectionFetchJob::Recursive);
+    connect( fetch, SIGNAL(result(KJob*)), SLOT(findDefaultCollectionsDone(KJob*)) );
+}
+
+void EmailNotifier::findDefaultCollectionsDone(KJob* job)
+{
+    kDebug() << "-------------------------------- results:";
+    // called when the job fetching email collections from Akonadi emits result()
+    if ( job->error() ) {
+        kDebug() << "Job Error:" << job->errorString();
+        return;
+    }
+    if (m_collectionIds.count()) {
+        kDebug() << "Config has changed in between, not setting default collections.";
+        return;
+    }
+
+    CollectionFetchJob* cjob = static_cast<CollectionFetchJob*>( job );
+    QList<quint64> defaultCollections;
+    QString _inbox = i18nc("used for string comparison for finding default email folder", "Inbox");
+    foreach( const Collection &collection, cjob->collections() ) {
+        if (collection.contentMimeTypes().contains("message/rfc822")) {
+            QString n = collection.name();
+            if ((n.toLower() == QString("inbox")) ||
+                (n.toLower() == _inbox.toLower())) {
+                kDebug() << "Found an INBOX:" << collection.name();
+                defaultCollections << (quint64)(collection.id());
+            }
+        }
+    }
+    kDebug() << defaultCollections.count() << "Email collections are in now" << defaultCollections;
+
+    if (!defaultCollections.count()) {
+        kWarning() << "No default collections found.";
+        return;
+    }
+    if (m_dialog->importantEmailList()) {
+        m_dialog->importantEmailList()->clear();
+    }
+    m_dialog->unreadEmailList()->clear();
+    foreach(const quint64 _id, defaultCollections) {
+        if (m_dialog->importantEmailList()) {
+            // Then we add those collections that weren't previously in the list
+            m_dialog->importantEmailList()->addCollection(_id);
+        }
+        m_dialog->unreadEmailList()->addCollection(_id);
+    }
+
+}
 /*
 void EmailNotifier::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
@@ -152,6 +206,10 @@ void EmailNotifier::init()
 
     updateToolTip(i18nc("tooltip on startup", "No new email"), "mail-mark-unread");
     //dataEngine("akonadi")->connectSource("EmailCollections", this);
+    if (!m_collectionIds.count()) {
+        findDefaultCollections(); // FIXME: enable
+    }
+    //findDefaultCollections(); // for testing
 }
 
 
@@ -270,27 +328,35 @@ void EmailNotifier::configAccepted()
 
     }
 
+    if (addImportantTab) {
+        QList<quint64> l;
+        m_dialog->addImportantTab(l);
+    } else if (removeImportantTab) {
+        m_dialog->removeImportantTab();
+    }
+
     qSort(m_collectionIds.begin(), m_collectionIds.end());
     qSort(m_newCollectionIds.begin(), m_newCollectionIds.end());
 
+    // write collections to config, update important tab
+    if ((m_collectionIds != m_newCollectionIds)) {
+        m_collectionIds = m_newCollectionIds;
+        cg.writeEntry("unreadCollectionIds", m_collectionIds);
+        if (m_dialog->importantEmailList()) {
+            m_dialog->importantEmailList()->clear();
+            // Then we add those collections that weren't previously in the list
+            foreach(const quint64 _id, m_newCollectionIds) {
+                m_dialog->importantEmailList()->addCollection(_id);
+            }
+        }
+    }
+    // update unread tab
     if ((m_collectionIds != m_newCollectionIds) || unreadListChanged) {
         m_dialog->unreadEmailList()->clear();
         // Then we add those collections that weren't previously in the list
         foreach(const quint64 _id, m_newCollectionIds) {
             m_dialog->unreadEmailList()->addCollection(_id);
         }
-        // We're done synching the list with the configured collections
-        m_collectionIds = m_newCollectionIds;
-        cg.writeEntry("unreadCollectionIds", m_collectionIds);
-    } else {
-        kDebug() << "same collections still";
-    }
-    if (addImportantTab) {
-        m_dialog->addImportantTab(m_collectionIds);
-    } else if (removeImportantTab) {
-        m_dialog->removeImportantTab();
-    } else {
-        // FIXME: add new collection ids to important tab
     }
 
     emit configNeedsSaving();

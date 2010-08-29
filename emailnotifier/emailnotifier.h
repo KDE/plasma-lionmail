@@ -25,6 +25,7 @@
 #include "ui_emailnotifierConfig.h"
 
 class Dialog;
+class KJob;
 
 namespace Plasma
 {
@@ -58,7 +59,13 @@ class EmailNotifier : public Plasma::PopupApplet
     protected:
         void createConfigurationInterface(KConfigDialog *parent);
 
+
+    private Q_SLOTS:
+        void findDefaultCollectionsDone(KJob* job);
+
     private:
+        void findDefaultCollections();
+
         Plasma::Svg* m_theme;
         Plasma::ToolTipContent m_toolTip;
 

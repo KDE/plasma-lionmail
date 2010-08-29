@@ -63,6 +63,7 @@ namespace Plasma
         virtual ~Dialog();
 
         EmailList* unreadEmailList();
+        ImportantEmailList* importantEmailList();
 
         void setTitle(const QString &title);
         void addImportantTab(QList<quint64> collectionIds);

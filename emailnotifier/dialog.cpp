@@ -102,6 +102,11 @@ EmailList* Dialog::unreadEmailList()
     return m_unreadList;
 }
 
+ImportantEmailList* Dialog::importantEmailList()
+{
+    return m_importantList;
+}
+
 void Dialog::setStatus(const QString status)
 {
     m_statusBar->setText(status);
@@ -109,9 +114,10 @@ void Dialog::setStatus(const QString status)
 
 void Dialog::updateTabs()
 {
-    m_tabBar->setTabText(0, i18nc("tab text", "New (%1)", m_unreadList->emailsCount()));
-    m_tabBar->setTabText(1, i18nc("tab text", "Important (%1)", m_importantList->emailsCount()));
-    //m_statusBar->setText(status);
+    if (m_importantList) {
+        m_tabBar->setTabText(0, i18nc("tab text", "New (%1)", m_unreadList->emailsCount()));
+        m_tabBar->setTabText(1, i18nc("tab text", "Important (%1)", m_importantList->emailsCount()));
+    }
 }
 
 void Dialog::setTitleBarShown(bool show)
@@ -230,7 +236,6 @@ void Dialog::refreshClicked()
 
 void Dialog::setTitle(const QString &title)
 {
-    kDebug() << "titleBar" << m_titleBar;
     if (m_titleBar) {
         m_titleBar->setText(QString("<b><font size=\"+1\">&nbsp;&nbsp;&nbsp;%1</font></b>").arg(title));
     }
