@@ -68,6 +68,7 @@ namespace Plasma
         void setTitle(const QString &title);
         void addImportantTab(QList<quint64> collectionIds);
         void removeImportantTab();
+        void setStatus(const QString status);
 
     Q_SIGNALS:
         void statusChanged(int count, const QString &statusText);
@@ -89,7 +90,6 @@ namespace Plasma
         * @internal build the dialog
         **/
         void buildDialog(bool showImportant);
-        void setStatus(const QString status);
 
         QGraphicsGridLayout *m_gridLayout;
         //Plasma::IconWidget *m_navIcon;

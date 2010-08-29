@@ -189,6 +189,7 @@ void Dialog::openUrl(const QUrl url)
 void Dialog::refreshClicked()
 {
     kDebug() << "refresh!";
+    setStatus(i18nc("dialog status", "Checking mail...")); // FIXME: needs to be reset when done
     /*
      *  void AgentManager::synchronizeCollection (   const Collection &  collection   )
         SIGNAL void    instanceStatusChanged (const Akonadi::AgentInstance &instance)
@@ -232,6 +233,8 @@ void Dialog::refreshClicked()
             kDebug() << "this might be ours" << instance.identifier();
         }
     }
+    //setStatus(i18nc("dialog status", "Checking mail finished."));
+
 }
 
 void Dialog::setTitle(const QString &title)

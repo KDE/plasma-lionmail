@@ -85,6 +85,9 @@ EmailNotifier::~EmailNotifier()
 
 void EmailNotifier::findDefaultCollections()
 {
+    if (m_dialog) {
+        m_dialog->setStatus(i18nc("dialog status", "Searching for Inbox folders..."));
+    }
     Collection emailCollection(Collection::root());
     emailCollection.setContentMimeTypes(QStringList() << "message/rfc822");
     CollectionFetchJob *fetch = new CollectionFetchJob( emailCollection, CollectionFetchJob::Recursive);
@@ -134,7 +137,10 @@ void EmailNotifier::findDefaultCollectionsDone(KJob* job)
         }
         m_dialog->unreadEmailList()->addCollection(_id);
     }
-
+    if (m_dialog) {
+        m_dialog->setStatus(i18ncp("dialog status", "Added %1 inbox.", "Added %1 inbox folders.",
+                                    defaultCollections.count()));
+    }
 }
 /*
 void EmailNotifier::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
