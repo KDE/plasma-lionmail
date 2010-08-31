@@ -230,7 +230,6 @@ void EmailNotifier::createConfigurationInterface(KConfigDialog *parent)
 
     QTreeView *treeView = ui->collectionsTreeView;
 
-
     // Set a model that displays only folders containing emails onto the treeView
     ChangeRecorder *changeRecorder = new ChangeRecorder( this );
     changeRecorder->setMimeTypeMonitored("message/rfc822");
@@ -263,6 +262,17 @@ void EmailNotifier::createConfigurationInterface(KConfigDialog *parent)
     viewState->setView(treeView);
     viewState->setSelectionModel(m_checkSelection);
     viewState->restoreState(config());
+
+    // Make sure the UI is in sync with the collections of the applet
+    // this is important so we can add default collections programmatically
+    foreach (quint64 cid, m_collectionIds) {
+        QModelIndex idx = EntityTreeModel::modelIndexForCollection( etm, Collection( cid ) );
+        if (idx.isValid()) {
+            // FIXME: collections come up async, we cannot actually just setChecked() here...
+            m_checkSelection->select(idx, QItemSelectionModel::Select);
+        }
+    }
+
 
     ui->allowHtml->setChecked(m_allowHtml);
     ui->showImportant->setChecked(m_showImportant != None);
