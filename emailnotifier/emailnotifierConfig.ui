@@ -51,6 +51,9 @@
      <property name="toolTip">
       <string>Mark the folders you want to monitor for new and important emails</string>
      </property>
+     <attribute name="headerVisible">
+      <bool>false</bool>
+     </attribute>
     </widget>
    </item>
    <item row="2" column="0">

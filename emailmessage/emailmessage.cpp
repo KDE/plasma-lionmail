@@ -46,7 +46,7 @@ EmailMessage::EmailMessage(QObject *parent, const QVariantList &args)
       m_fadeIn(false)
 {
     KGlobal::locale()->insertCatalog("plasma_applet_lionmail");
-    setBackgroundHints(StandardBackground);
+    //setBackgroundHints(StandardBackground);
     setAspectRatioMode(IgnoreAspectRatio);
     setHasConfigurationInterface(true);
     setAcceptsHoverEvents(true);

@@ -75,6 +75,7 @@ class EmailNotifier : public Plasma::PopupApplet
 
         Ui::emailnotifierConfig* ui;
         QItemSelectionModel *m_checkSelection;
+        KCheckableProxyModel *m_checkable;
 
         Dialog* m_dialog;
 

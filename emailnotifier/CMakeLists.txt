@@ -23,7 +23,6 @@ set(emailnotifier_SRCS
     emaillist.cpp
     importantemaillist.cpp
     emailwidget.cpp
-    copied_classes/checkableitemproxymodel.cpp
     )
 
 kde4_add_ui_files(emailnotifier_SRCS emailnotifierConfig.ui )

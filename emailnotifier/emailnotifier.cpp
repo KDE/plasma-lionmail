@@ -23,6 +23,7 @@
 // KDE
 #include <KConfigDialog>
 #include <kselectionproxymodel.h>
+#include <kcheckableproxymodel.h>
 
 // Plasma
 #include <Plasma/Svg>
@@ -35,12 +36,13 @@
 // Akonadi
 #include <Akonadi/ChangeRecorder>
 #include <Akonadi/CollectionFetchJob>
+#include <Akonadi/CollectionFetchScope>
 #include <Akonadi/EntityTreeModel>
 #include <akonadi/etmviewstatesaver.h>
+#include <Akonadi/ItemFetchScope>
 #include <Akonadi/ServerManager>
+#include <Akonadi/Session>
 #include <akonadi/entitymimetypefiltermodel.h>
-
-#include "copied_classes/checkableitemproxymodel.h"
 
 // Own
 #include "dialog.h"
@@ -85,12 +87,13 @@ EmailNotifier::~EmailNotifier()
 
 void EmailNotifier::findDefaultCollections()
 {
+    //return;
     if (m_dialog) {
         m_dialog->setStatus(i18nc("dialog status", "Searching for Inbox folders..."));
     }
     Collection emailCollection(Collection::root());
     emailCollection.setContentMimeTypes(QStringList() << "message/rfc822");
-    CollectionFetchJob *fetch = new CollectionFetchJob( emailCollection, CollectionFetchJob::Recursive);
+    CollectionFetchJob *fetch = new CollectionFetchJob(emailCollection, CollectionFetchJob::Recursive);
     connect( fetch, SIGNAL(result(KJob*)), SLOT(findDefaultCollectionsDone(KJob*)) );
 }
 
@@ -113,6 +116,7 @@ void EmailNotifier::findDefaultCollectionsDone(KJob* job)
     foreach( const Collection &collection, cjob->collections() ) {
         if (collection.contentMimeTypes().contains("message/rfc822")) {
             QString n = collection.name();
+            kDebug() << "collection" << n;
             if ((n.toLower() == QString("inbox")) ||
                 (n.toLower() == _inbox.toLower())) {
                 kDebug() << "Found an INBOX:" << collection.name();
@@ -213,9 +217,8 @@ void EmailNotifier::init()
     updateToolTip(i18nc("tooltip on startup", "No new email"), "mail-mark-unread");
     //dataEngine("akonadi")->connectSource("EmailCollections", this);
     if (!m_collectionIds.count()) {
-        findDefaultCollections(); // FIXME: enable
+        findDefaultCollections();
     }
-    //findDefaultCollections(); // for testing
 }
 
 
@@ -228,17 +231,39 @@ void EmailNotifier::createConfigurationInterface(KConfigDialog *parent)
     connect(parent, SIGNAL(applyClicked()), this, SLOT(configAccepted()));
     connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
 
-    QTreeView *treeView = ui->collectionsTreeView;
+    kDebug() << "CREATING SESSION _______________________________";
+    Akonadi::Session* session = new Session(QByteArray( "PlasmaEmailNotifier-" ) + QByteArray::number( qrand() ), this);
 
     // Set a model that displays only folders containing emails onto the treeView
     ChangeRecorder *changeRecorder = new ChangeRecorder( this );
     changeRecorder->setMimeTypeMonitored("message/rfc822");
-    changeRecorder->setCollectionMonitored( Collection::root() );
-    changeRecorder->fetchCollection( true );
-    //changeRecorder->setAllMonitored( true );
+    changeRecorder->setCollectionMonitored(Collection::root());
+    changeRecorder->collectionFetchScope().setIncludeUnsubscribed(false);
+    changeRecorder->fetchCollection(true);
+    changeRecorder->setAllMonitored(true);
     //changeRecorder->itemFetchScope().fetchFullPayload( true );
     //changeRecorder->itemFetchScope().fetchAllAttributes( true );
+    changeRecorder->setSession(session);
 
+    EntityTreeModel *etm = new EntityTreeModel(changeRecorder, this);
+    etm->setCollectionFetchStrategy(Akonadi::EntityTreeModel::FetchCollectionsRecursive);
+    etm->setItemPopulationStrategy(Akonadi::EntityTreeModel::ImmediatePopulation);
+    Akonadi::EntityMimeTypeFilterModel *collectionFilter = new Akonadi::EntityMimeTypeFilterModel(this);
+
+    collectionFilter->addMimeTypeInclusionFilter(Akonadi::Collection::mimeType());
+    collectionFilter->setSourceModel(etm);
+    collectionFilter->setHeaderGroup(Akonadi::EntityTreeModel::CollectionTreeHeaders);
+
+    m_checkSelection = new QItemSelectionModel(collectionFilter, this);
+    m_checkable = new KCheckableProxyModel(this);
+    m_checkable->setSourceModel(collectionFilter);
+    m_checkable->setSelectionModel(m_checkSelection);
+
+    QTreeView *treeView = ui->collectionsTreeView;
+    treeView->setModel(m_checkable);
+    treeView->expandAll();
+
+    /*
     EntityTreeModel *etm = new EntityTreeModel( changeRecorder, this );
 
     Akonadi::EntityMimeTypeFilterModel *collectionFilter = new Akonadi::EntityMimeTypeFilterModel(this);
@@ -255,6 +280,7 @@ void EmailNotifier::createConfigurationInterface(KConfigDialog *parent)
     checkablePM->setSourceModel(collectionFilter);
     treeView->setModel(checkablePM);
     //treeView->setSelectionModel(m_checkSelection );
+    */
 
     // Restore the selection, expansion and scrollstate of our treeview
     // restoring on the heap, as KViewStateSaver's api docs suggest
@@ -265,6 +291,9 @@ void EmailNotifier::createConfigurationInterface(KConfigDialog *parent)
 
     // Make sure the UI is in sync with the collections of the applet
     // this is important so we can add default collections programmatically
+
+    // FIXME: this doesn't work, as the collections come in async
+    /*
     foreach (quint64 cid, m_collectionIds) {
         QModelIndex idx = EntityTreeModel::modelIndexForCollection( etm, Collection( cid ) );
         if (idx.isValid()) {
@@ -272,14 +301,12 @@ void EmailNotifier::createConfigurationInterface(KConfigDialog *parent)
             m_checkSelection->select(idx, QItemSelectionModel::Select);
         }
     }
-
-
+    */
     ui->allowHtml->setChecked(m_allowHtml);
     ui->showImportant->setChecked(m_showImportant != None);
     //ui->showImportantMerged->setChecked(m_showImportant == ShowMerged);
     ui->showImportantSeparately->setChecked(m_showImportant == ShowSeparately);
 }
-
 
 void EmailNotifier::configAccepted()
 {
@@ -338,9 +365,9 @@ void EmailNotifier::configAccepted()
         m_newCollectionIds << _id;
 
         // .. remove me
-        //Akonadi::Collection col = itemindex.data(
-        //                            EntityTreeModel::CollectionRole).value<Akonadi::Collection>();
-        //kDebug() << "collection selected:" << col.name() << col.resource();
+        Akonadi::Collection col = itemindex.data(
+                                    EntityTreeModel::CollectionRole).value<Akonadi::Collection>();
+        kDebug() << "collection selected:" << col.name() << col.resource();
 
     }
 
@@ -354,6 +381,7 @@ void EmailNotifier::configAccepted()
     qSort(m_collectionIds.begin(), m_collectionIds.end());
     qSort(m_newCollectionIds.begin(), m_newCollectionIds.end());
 
+    kDebug() << "Collectio IDs changed from " << m_collectionIds << "to" << m_newCollectionIds;
     // write collections to config, update important tab
     if ((m_collectionIds != m_newCollectionIds)) {
         m_collectionIds = m_newCollectionIds;
@@ -382,6 +410,9 @@ void EmailNotifier::configChanged()
 {
     KConfigGroup cg = config();
     m_allowHtml = config().readEntry("allowHtml", false);
+
+    // FIXME: we want to compare old and new and if necessary add the new collections and remove the old one
+    // this should probably be shared through configChanged()
     m_collectionIds = cg.readEntry("unreadCollectionIds", QList<quint64>());
 
     m_showImportant = (ImportantDisplay)(cg.readEntry("showImportant", 0));
