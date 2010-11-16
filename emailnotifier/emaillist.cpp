@@ -324,14 +324,14 @@ bool EmailList::accept(const Akonadi::Item email)
         return true;
     }
     // We accept unread emails
-    return status.isUnread();
+    return !status.isRead();
 }
 
 void EmailList::updateStatus()
 {
     m_emailsCount = 0;
     foreach (EmailWidget* e, m_emailWidgets) {
-        if (e->status().isUnread()) {
+        if (!e->status().isRead()) {
             m_emailsCount++;
         }
     }

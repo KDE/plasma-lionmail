@@ -462,9 +462,9 @@ void EmailWidget::flagNewClicked()
     }
 
     if (m_status.isRead()) {
-        m_status.setUnread();
+        m_status.setRead(false);
     } else {
-        m_status.setRead();
+        m_status.setRead(true);
     }
     syncItemToAkonadi();
     //refreshFlags();
@@ -522,15 +522,15 @@ void EmailWidget::refreshFlags(bool show)
     // Update larger icon with most important flag
     if (m_status.isImportant()) {
         m_icon->setIcon("mail-mark-important");
-    } else if (m_status.isUnread()) {
+    } else if (!m_status.isRead()) {
         m_icon->setIcon("mail-mark-unread-new");
     } else {
         m_icon->setIcon("mail-mark-read");
     }
 
-    m_newIcon->setChecked(m_status.isUnread());
+    m_newIcon->setChecked(!m_status.isRead());
     setSubject(m_subject); // for updating font weight on the subject line
-    if (m_status.isUnread()) {
+    if (!m_status.isRead()) {
         m_newIcon->setIcon(KIcon("mail-mark-read"));
         m_newIcon->setToolTip(i18nc("flag new", "Message is marked as New, click to mark as Read"));
     } else {
@@ -677,7 +677,7 @@ void EmailWidget::setSubject(const QString& subject)
         if (subject.isEmpty()) {
             tmpSubject = i18nc("empty subject label", "(No Subject)");
         }
-        if (m_status.isUnread()) {
+        if (!m_status.isRead()) {
             m_subjectLabel->setText(QString("<b>%1</b>").arg(tmpSubject));
         } else {
             m_subjectLabel->setText(tmpSubject);
