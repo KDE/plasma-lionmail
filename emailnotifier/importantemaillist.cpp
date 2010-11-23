@@ -71,9 +71,14 @@ bool ImportantEmailList::accept(const Akonadi::Item email)
         return false;
     }
 
-    // Show important emails
     Akonadi::MessageStatus status;
     status.setStatusFromFlags(email.flags());
+
+    // deleted emails be gone
+    if (status.isDeleted()) {
+        return false;
+    }
+    // Show important emails
     if (status.isImportant()) {
         return true;
     }

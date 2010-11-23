@@ -319,6 +319,10 @@ bool EmailList::accept(const Akonadi::Item email)
     Akonadi::MessageStatus status;
     status.setStatusFromFlags(email.flags());
 
+    // deleted emails be gone
+    if (status.isDeleted()) {
+        return false;
+    }
     // Conditionally show important emails
     if (m_showImportant && status.isImportant()) {
         return true;

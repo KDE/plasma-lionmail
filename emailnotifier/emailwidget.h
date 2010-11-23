@@ -110,20 +110,21 @@ class EmailWidget : public Plasma::Frame
         static QString stripTags(QString input);
 
     public Q_SLOTS:
-        //void setIcon();
-        //void setTiny();
         void setSmall();
-        //void setMedium();
         void setLarge(bool expanded = false);
 
         void toggleBody();
-        //void toggleMeta();
         void expand();
         void collapse();
 
-        void flagNewClicked();
         void setDeleted(bool deleted = true);
+        void setSpam(bool spam);
+        void setTask(bool task);
+
+        void flagNewClicked();
         void deleteClicked();
+        void setSpamClicked(bool checked);
+        void setTaskClicked(bool checked);
         void flagImportantClicked();
 
         void updateColors();
@@ -139,6 +140,7 @@ class EmailWidget : public Plasma::Frame
 
     protected:
         void wheelEvent (QGraphicsSceneWheelEvent * event);
+        void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 
     protected Q_SLOTS:
         void mousePressEvent(QGraphicsSceneMouseEvent * event);
@@ -156,6 +158,7 @@ class EmailWidget : public Plasma::Frame
         void itemActivated();
         void linkClicked(const QString &link);
         void disappearAnimationFinished();
+        void spamAnimationFinished();
 
     private :
         void syncItemToAkonadi();
@@ -220,6 +223,7 @@ class EmailWidget : public Plasma::Frame
         QPropertyAnimation* m_actionsAnimation;
         Plasma::Animation* m_bodyAnimation;
         Plasma::Animation* m_disappearAnimation;
+        QPropertyAnimation* m_spamAnimation;
 
         QPointF m_startPos;
         int m_fontAdjust; // wheel adjustment of the font size

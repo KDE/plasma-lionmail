@@ -27,14 +27,17 @@
 #include <QGraphicsSceneWheelEvent>
 #include <QMimeData>
 #include <QLabel>
+#include <QMenu>
 #include <QTextDocument>
 
 //KDE
+#include <KAction>
 #include <KDebug>
 #include <KColorScheme>
 #include <KGlobalSettings>
 #include <KIcon>
 #include <KJob>
+#include <KMenu>
 #include <KPushButton>
 
 // Akonadi
@@ -175,6 +178,7 @@ void EmailWidget::setSmall()
     m_subjectLabel->setMinimumWidth(140);
     //m_expandIcon->show();
     m_expandIcon->setIcon("arrow-down");
+    m_expandIcon->setToolTip(i18nc("tooltip on expandbutton", "Show more"));
     //m_fromLabel->show();
     resizeIcon(32);
     refreshFlags(true);
@@ -303,6 +307,8 @@ void EmailWidget::setLarge(bool expanded)
 
     m_appletSize = Large;
     m_expandIcon->setIcon("arrow-up");
+    m_expandIcon->setToolTip(i18nc("tooltip on expandbutton", "Collapse"));
+
     m_subjectLabel->show();
     m_fromLabel->show();
 
@@ -508,6 +514,9 @@ void EmailWidget::syncItemResult(KJob* job)
         kDebug() << "SyncJob Failed:" << job->errorString();
     } else {
         kDebug() << "SyncJob Success!";
+        if (m_status.isDeleted() || m_status.isSpam()) {
+            emit deleteMe();
+        }
     }
 }
 
@@ -522,6 +531,8 @@ void EmailWidget::refreshFlags(bool show)
     // Update larger icon with most important flag
     if (m_status.isImportant()) {
         m_icon->setIcon("mail-mark-important");
+    } else if (!m_status.isToAct()) {
+        m_icon->setIcon("mail-task");
     } else if (!m_status.isRead()) {
         m_icon->setIcon("mail-mark-unread-new");
     } else {
@@ -893,10 +904,73 @@ void EmailWidget::setFrom(const QString& from)
     }
 }
 
+
+void EmailWidget::setTaskClicked(bool checked)
+{
+    Q_UNUSED(checked);
+    setTask(true);
+}
+
+void EmailWidget::setTask(bool task)
+{
+    kDebug() << "Marking email as task";
+    m_status.setToAct(task);
+    syncItemToAkonadi();
+}
+
+void EmailWidget::setSpamClicked(bool checked)
+{
+    Q_UNUSED(checked);
+    setSpam(true);
+}
+
+void EmailWidget::setSpam(bool spam)
+{
+    kDebug() << "Marking email as spam" << spam;
+    m_status.setSpam(spam);
+    if (m_status.isSpam() != spam) {
+        kDebug() << "HUH?" << spam;
+    }
+
+    m_spamAnimation  = new QPropertyAnimation(this, "scale");
+    m_spamAnimation ->setDuration(200);
+    QPointF p = QPointF((qreal)(geometry().width() / 2.0), (qreal)(geometry().height() / 2.0));
+    setProperty("transformOriginPoint", p); // centered
+
+    //m_spamAnimation ->setStartValue(1.0);
+    //m_spamAnimation ->setEndValue(0.0);
+
+    //m_spamAnimation->setProperty("duration", 2000);
+    if (spam) {
+        kDebug() << "DisAppearing";
+        m_spamAnimation ->setStartValue(1.0);
+        m_spamAnimation ->setEndValue(0.0);
+        //m_spamAnimation->setProperty("startOpacity", 1.0);
+        //m_spamAnimation->setProperty("targetOpacity", 0.0);
+        connect(m_spamAnimation, SIGNAL(finished()), this, SLOT(spamAnimationFinished()));
+    } else {
+        kDebug() << "Appearing";
+        m_spamAnimation ->setStartValue(0.0);
+        m_spamAnimation ->setEndValue(1.0);
+        //m_spamAnimation->setProperty("startOpacity", opacity());
+        //m_spamAnimation->setProperty("targetOpacity", 1.0);
+        disconnect(m_spamAnimation, SIGNAL(finished()), this, SLOT(spamAnimationFinished()));
+    }
+    //m_spamAnimation->setTargetWidget(this);
+    m_spamAnimation->start();
+}
+
+void EmailWidget::spamAnimationFinished()
+{
+    if (m_status.isSpam()) {
+        kDebug() << "is spam, synching";
+        syncItemToAkonadi();
+        deleteMe();
+    }
+}
+
 void EmailWidget::setDeleted(bool deleted)
 {
-    if (!deleted && m_isDeleted) {
-    }
     m_isDeleted = deleted;
     m_deleteButton->setChecked(m_isDeleted);
 
@@ -930,8 +1004,10 @@ void EmailWidget::disappearAnimationFinished()
     }
     disconnect( m_monitor, SIGNAL(itemChanged(const Akonadi::Item&, const QSet<QByteArray>&)),
             this, SLOT(itemChanged(const Akonadi::Item&)) );
-
-    emit deleteMe();
+    if (m_isDeleted) {
+        m_status.setDeleted(true);
+    }
+    syncItemToAkonadi();
 }
 
 void EmailWidget::mousePressEvent(QGraphicsSceneMouseEvent * event)
@@ -1035,6 +1111,27 @@ void EmailWidget::startDrag()
     if (drag->start(Qt::CopyAction | Qt::MoveAction)) {
         kDebug() << "dragging starting" << url();
     }
+}
+
+void EmailWidget::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+{
+    kDebug() << "context menu!!!";
+    KMenu *menu = new KMenu();
+
+
+    KAction *task = new KAction(KIcon("mail-mark-task"), i18nc("context menu", "Mark as Todo"), menu);
+    menu->addAction(task);
+    connect(task, SIGNAL(triggered(bool)), SLOT(setTaskClicked(bool)));
+
+    KAction *spam = new KAction(KIcon("mail-mark-junk"), i18nc("context menu", "Mark as Spam"), menu);
+    menu->addAction(spam);
+    connect(spam, SIGNAL(triggered(bool)), SLOT(setSpamClicked(bool)));
+/*     QAction *removeAction = menu.addAction("Remove");
+     QAction *markAction = menu.addAction("Mark");
+     QAction *selectedAction = menu.exec(event->screenPos());*/
+     menu->exec(event->screenPos());
+     event->accept();
+     // ...
 }
 
 QString EmailWidget::stripTags(QString input)
