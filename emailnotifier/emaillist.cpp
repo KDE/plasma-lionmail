@@ -210,7 +210,7 @@ void EmailList::itemChanged(Akonadi::Item item)
         // Should we remove it?
         if (!accept(item)) {
             kDebug() << "Setting deleted";
-            m_emailWidgets[item.url()]->setDeleted();
+            m_emailWidgets[item.url()]->setDeleted(true);
         } else {
             // this is a widget scheduled for deletion
             m_emailWidgets[item.url()]->setDeleted(false);

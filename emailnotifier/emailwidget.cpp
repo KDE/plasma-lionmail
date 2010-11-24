@@ -999,14 +999,12 @@ void EmailWidget::setDeleted(bool deleted)
 
 void EmailWidget::disappearAnimationFinished()
 {
-    if (!m_isDeleted) {
-        return;
-    }
-    disconnect( m_monitor, SIGNAL(itemChanged(const Akonadi::Item&, const QSet<QByteArray>&)),
-            this, SLOT(itemChanged(const Akonadi::Item&)) );
+    m_isDeleted = m_deleteButton->isChecked(); // update, in case the user decided differently
     if (m_isDeleted) {
-        m_status.setDeleted(true);
+        disconnect( m_monitor, SIGNAL(itemChanged(const Akonadi::Item&, const QSet<QByteArray>&)),
+            this, SLOT(itemChanged(const Akonadi::Item&)) );
     }
+    m_status.setDeleted(m_isDeleted);
     syncItemToAkonadi();
 }
 
