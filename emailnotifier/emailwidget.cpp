@@ -971,20 +971,22 @@ void EmailWidget::spamAnimationFinished()
 
 void EmailWidget::setDeleted(bool deleted)
 {
-    m_isDeleted = deleted;
-    m_deleteButton->setChecked(m_isDeleted);
+    //m_isDeleted = deleted;
+    //m_deleteButton->setChecked(m_isDeleted);
 
     // Make it tranlucent for now
 
+    /*
     qreal o = .7;
-    if (!m_isDeleted) {
+    if (!deleted) {
         o = 1.0;
         //setOpacity(1.0);
         //return;
     }
     //setOpacity(o);
+    */
     m_disappearAnimation->setProperty("duration", 2000);
-    if (m_isDeleted) {
+    if (deleted) {
         m_disappearAnimation->setProperty("startOpacity", 1.0);
         m_disappearAnimation->setProperty("targetOpacity", 0.0);
         connect(m_disappearAnimation, SIGNAL(finished()), this, SLOT(disappearAnimationFinished()));
