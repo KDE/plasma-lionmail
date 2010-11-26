@@ -531,7 +531,7 @@ void EmailWidget::refreshFlags(bool show)
     // Update larger icon with most important flag
     if (m_status.isImportant()) {
         m_icon->setIcon("mail-mark-important");
-    } else if (!m_status.isToAct()) {
+    } else if (m_status.isToAct()) {
         m_icon->setIcon("mail-task");
     } else if (!m_status.isRead()) {
         m_icon->setIcon("mail-mark-unread-new");

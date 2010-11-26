@@ -54,7 +54,7 @@ using namespace Akonadi;
 
 EmailList::EmailList(bool showImportant, QGraphicsWidget *parent)
     : Plasma::ScrollWidget(parent),
-    //m_session(0),
+    m_emailsCount(0),
     m_showImportant(showImportant)
 {
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
