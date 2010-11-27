@@ -381,28 +381,33 @@ void EmailNotifier::configAccepted()
     qSort(m_collectionIds.begin(), m_collectionIds.end());
     qSort(m_newCollectionIds.begin(), m_newCollectionIds.end());
 
-    kDebug() << "Collectio IDs changed from " << m_collectionIds << "to" << m_newCollectionIds;
+    kDebug() << "Collection IDs changed from " << m_collectionIds << "to" << m_newCollectionIds;
     // write collections to config, update important tab
     if ((m_collectionIds != m_newCollectionIds)) {
-        m_collectionIds = m_newCollectionIds;
         cg.writeEntry("unreadCollectionIds", m_collectionIds);
+        kDebug() << "new config value:" << m_collectionIds;
         if (m_dialog->importantEmailList()) {
             m_dialog->importantEmailList()->clear();
             // Then we add those collections that weren't previously in the list
+            kDebug() << "Cleared IMPORTANT emails, now adding back collections" << m_collectionIds;
             foreach(const quint64 _id, m_newCollectionIds) {
                 m_dialog->importantEmailList()->addCollection(_id);
             }
         }
     }
     // update unread tab
+    kDebug() << "repopulate new tab?" << (m_collectionIds != m_newCollectionIds) << unreadListChanged;
     if ((m_collectionIds != m_newCollectionIds) || unreadListChanged) {
         m_dialog->unreadEmailList()->clear();
         // Then we add those collections that weren't previously in the list
+        kDebug() << "Cleared NEW emails, now adding back collections" << m_newCollectionIds;
         foreach(const quint64 _id, m_newCollectionIds) {
+            kDebug() << "adding new collection" << _id;
             m_dialog->unreadEmailList()->addCollection(_id);
         }
     }
 
+    m_collectionIds = m_newCollectionIds;
     emit configNeedsSaving();
 }
 

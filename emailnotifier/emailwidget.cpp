@@ -397,6 +397,7 @@ void EmailWidget::buildDialog()
     m_deleteButton->setMaximumHeight(s);
     m_deleteButton->setMaximumWidth(s);
     m_deleteButton->setCheckable(true);
+    m_deleteButton->setToolTip(i18nc("delete email button", "Delete this Message"));
     connect(m_deleteButton, SIGNAL(clicked()), this, SLOT(deleteClicked()));
 
     m_actionsLayout->addItem(m_newIcon);
