@@ -358,6 +358,8 @@ void EmailNotifier::configAccepted()
 
     // Collections
     m_newCollectionIds.clear();
+    m_dialog->clearCollections();
+    //m_collectionResources.clear();
 
     foreach (QModelIndex itemindex, m_checkSelection->selectedIndexes()) {
         // We're only interested in the collection ID
@@ -367,7 +369,9 @@ void EmailNotifier::configAccepted()
         // .. remove me
         Akonadi::Collection col = itemindex.data(
                                     EntityTreeModel::CollectionRole).value<Akonadi::Collection>();
-        kDebug() << "collection selected:" << col.name() << col.resource();
+        kDebug() << "collection selected:" << _id << col.name() << col.resource();
+        m_dialog->addCollection(col);
+        //m_collectionResources[_id] = col;
 
     }
 

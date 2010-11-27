@@ -69,6 +69,8 @@ namespace Plasma
         void addImportantTab(QList<quint64> collectionIds);
         void removeImportantTab();
         void setStatus(const QString status);
+        void addCollection(Akonadi::Collection col);
+        void clearCollections();
 
     Q_SIGNALS:
         void statusChanged(int count, const QString &statusText);
@@ -100,6 +102,8 @@ namespace Plasma
 
         EmailList* m_unreadList;
         ImportantEmailList* m_importantList;
+
+        QHash<quint64, Akonadi::Collection> m_collections;
 
         bool m_amConnected;
   };

@@ -187,6 +187,16 @@ void Dialog::openUrl(const QUrl url)
     KRun::runUrl(url, "message/rfc822", 0);
 }
 
+void Dialog::addCollection(Akonadi::Collection col)
+{
+    m_collections[col.id()] = col;
+}
+
+void Dialog::clearCollections()
+{
+    m_collections.clear();
+}
+
 void Dialog::refreshClicked()
 {
     kDebug() << "refresh!";
@@ -203,10 +213,16 @@ void Dialog::refreshClicked()
                 this, SLOT(instanceStatusChanged(const Akonadi::AgentInstance&)));
         connect(am, SIGNAL(instanceProgressChanged(const Akonadi::AgentInstance&)),
                 this, SLOT(instanceStatusChanged(const Akonadi::AgentInstance&)));
+        m_amConnected = true;
     }
 
     //am->synchronizeCollectionTree();
 
+    foreach(Akonadi::Collection c, m_collections) {
+        kDebug() << "Syncing collection:" << c.id() << c.name() << c.resource();
+        am->synchronizeCollection(c);
+    }
+    /*
     Akonadi::Collection collection;
     foreach(const quint64 id, m_unreadList->collectionIds()) {
         //quint64 id = 111;
@@ -221,8 +237,10 @@ void Dialog::refreshClicked()
             am->synchronizeCollection(collection);
         }
     }
-    //return;
+    */
+    return;
     // demo...
+    /*
     Akonadi::AgentInstance::List instances = am->instances();
     foreach (const Akonadi::AgentInstance &instance, instances ) {
         //kDebug() << "Name:" << instance.name() << "(" << instance.identifier() << ")"
@@ -235,7 +253,7 @@ void Dialog::refreshClicked()
         }
     }
     //setStatus(i18nc("dialog status", "Checking mail finished."));
-
+    */
 }
 
 void Dialog::setTitle(const QString &title)
