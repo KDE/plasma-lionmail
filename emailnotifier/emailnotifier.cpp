@@ -384,8 +384,8 @@ void EmailNotifier::configAccepted()
     kDebug() << "Collection IDs changed from " << m_collectionIds << "to" << m_newCollectionIds;
     // write collections to config, update important tab
     if ((m_collectionIds != m_newCollectionIds)) {
-        cg.writeEntry("unreadCollectionIds", m_collectionIds);
-        kDebug() << "new config value:" << m_collectionIds;
+        cg.writeEntry("unreadCollectionIds", m_newCollectionIds);
+        kDebug() << "new config value:" << m_newCollectionIds;
         if (m_dialog->importantEmailList()) {
             m_dialog->importantEmailList()->clear();
             // Then we add those collections that weren't previously in the list
@@ -408,6 +408,7 @@ void EmailNotifier::configAccepted()
     }
 
     m_collectionIds = m_newCollectionIds;
+    m_newCollectionIds.clear();
     emit configNeedsSaving();
 }
 

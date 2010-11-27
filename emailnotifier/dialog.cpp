@@ -178,6 +178,7 @@ void Dialog::removeImportantTab()
     }
     setTitleBarShown();
     m_tabBar->setTabBarShown(false);
+    m_importantList = 0;
 }
 
 void Dialog::openUrl(const QUrl url)
