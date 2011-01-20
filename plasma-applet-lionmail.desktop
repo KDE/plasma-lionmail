@@ -1,5 +1,6 @@
 [Desktop Entry]
 Name=LionMail
+Name[da]=LionMail
 Name[de]=LionMail
 Name[en_GB]=LionMail
 Name[es]=LionMail
@@ -19,6 +20,7 @@ Name[tr]=LionMail
 Name[uk]=LionMail
 Name[x-test]=xxLionMailxx
 Comment=Keep a sharp eye on your emails
+Comment[da]=Hold nøje øje med dine e-mails
 Comment[en_GB]=Keep a sharp eye on your emails
 Comment[es]=Monitoriza sus correos-e
 Comment[et]=Silma peal hoidmine oma e-kirjadel
