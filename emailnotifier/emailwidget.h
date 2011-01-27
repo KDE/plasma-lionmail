@@ -117,7 +117,7 @@ class EmailWidget : public Plasma::Frame
         void expand();
         void collapse();
 
-        void setDeleted(bool deleted = true);
+        void setDeleted(bool deleted = true, bool noSync = false);
         void setSpam(bool spam);
         void setTask(bool task);
 
@@ -228,6 +228,7 @@ class EmailWidget : public Plasma::Frame
         QPointF m_startPos;
         int m_fontAdjust; // wheel adjustment of the font size
         bool m_hasFullPayload;
+        bool m_noSync;
 };
 
 #endif

@@ -83,8 +83,8 @@ EmailWidget::EmailWidget(QGraphicsWidget *parent)
       m_actionsAnimation(0),
       m_bodyAnimation(0),
       m_fontAdjust(0),
-      m_hasFullPayload(false)
-
+      m_hasFullPayload(false),
+      m_noSync(false)
 {
     setAcceptHoverEvents(true);
 
@@ -970,8 +970,11 @@ void EmailWidget::spamAnimationFinished()
     }
 }
 
-void EmailWidget::setDeleted(bool deleted)
+void EmailWidget::setDeleted(bool deleted, bool noSync)
 {
+    // the item has been deleted from outside Lion Mail,
+    // just make the widget disappear
+    m_noSync = noSync;
     //m_isDeleted = deleted;
     //m_deleteButton->setChecked(m_isDeleted);
 
@@ -1007,8 +1010,14 @@ void EmailWidget::disappearAnimationFinished()
         disconnect( m_monitor, SIGNAL(itemChanged(const Akonadi::Item&, const QSet<QByteArray>&)),
             this, SLOT(itemChanged(const Akonadi::Item&)) );
     }
-    m_status.setDeleted(m_isDeleted);
-    syncItemToAkonadi();
+    // don't sync, item has been deleted from outside.
+    // This prevents cyclic synching to akonadi / infinite loops.
+    if (m_noSync) {
+        emit deleteMe();
+    } else {
+        m_status.setDeleted(m_isDeleted);
+        syncItemToAkonadi();
+    }
 }
 
 void EmailWidget::mousePressEvent(QGraphicsSceneMouseEvent * event)
