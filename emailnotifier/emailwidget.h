@@ -108,6 +108,7 @@ class EmailWidget : public Plasma::Frame
         Q_DECLARE_FLAGS(AppletSizes, AppletSize)
 
         static QString stripTags(QString input);
+        static QString abstract(QString body);
 
     public Q_SLOTS:
         void setSmall();

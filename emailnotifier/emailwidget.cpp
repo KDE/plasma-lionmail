@@ -787,7 +787,7 @@ void EmailWidget::setBody(MessagePtr msg)
     if (!body.isEmpty()) {
         m_hasFullPayload = true;
     }
-    setRawBody(body);
+    setRawBody(abstract(body));
 }
 
 void EmailWidget::fetchPayload(bool full)
@@ -1158,6 +1158,53 @@ QString EmailWidget::stripTags(QString input)
     return txt;
 }
 
+
+QString EmailWidget::abstract(QString body)
+{
+    if (body.isEmpty()) {
+        return body;
+    }
+    /*
+    kDebug() << " ----- ---- ---- ---- ---- ---- ---- ---- BODY --- ---- ---- ---- ----";
+    kDebug() << body;
+    kDebug() << " ----- ---- ---- ---- ---- ---- ---- ---- ABSTRACT --- ---- ---- ---- ----";
+    */
+
+    // filter out more crap
+    QStringList lines = body.split("<br />", QString::SkipEmptyParts); // empty lines be gone
+    QStringList newLines;
+    bool done = false;
+    foreach (const QString &line, lines) {
+        // kill sign
+        if (done || line.trimmed() == "--" || line.trimmed() == "--&nbsp;") {
+            //kDebug() << "### Stop, signature!";
+            done = true;
+            continue;
+        }
+        bool keep = true;
+        if (line.trimmed().startsWith("&gt;")) { // ditch ">" quotes
+            //kDebug() << "### Ditching" << line;
+            keep = false;
+        }
+        // .. more filtering goes here ...
+        QStringList uselessLines;
+        uselessLines << "" << "\n" << "\r" << "\t" << "<br />";
+        if (uselessLines.contains(line.trimmed())) {
+            //kDebug() << "### Useless line:" << line << uselessLines;
+            keep = false;
+        }
+
+
+        if (keep) {
+            //kDebug() << "!!! Keeping" << line;
+            newLines << line;
+        }
+    }
+    QString out = newLines.join("\n<br />");
+    //kDebug() << out;
+    //kDebug() << " ----- ---- ---- ---- ---- ---- ---- ---- </----> --- ---- ---- ---- ----";
+    return out;
+}
 
 
 #include "emailwidget.moc"
