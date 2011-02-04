@@ -1172,7 +1172,7 @@ QString EmailWidget::abstract(QString body)
 
     // filter out more crap
     QStringList lines = body.split("<br />", QString::SkipEmptyParts); // empty lines be gone
-    QStringList newLines;
+    QStringList newLines; // FIXME: use QStringBuilder (too tired now ;))
     bool done = false;
     foreach (const QString &line, lines) {
         // kill sign
@@ -1182,6 +1182,10 @@ QString EmailWidget::abstract(QString body)
             continue;
         }
         bool keep = true;
+
+        // maybe also use QString::simplified()
+
+
         if (line.trimmed().startsWith("&gt;")) { // ditch ">" quotes
             //kDebug() << "### Ditching" << line;
             keep = false;
