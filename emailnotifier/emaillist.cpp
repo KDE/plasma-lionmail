@@ -80,12 +80,12 @@ void EmailList::buildEmailList()
     setPreferredSize(400, 400);
 }
 
-QList<quint64> EmailList::collectionIds()
+QList<Akonadi::Entity::Id> EmailList::collectionIds()
 {
     return m_etms.keys();
 }
 
-void EmailList::addCollection(const quint64 collectionId)
+void EmailList::addCollection(const Akonadi::Entity::Id collectionId)
 {
     if (m_etms.keys().contains(collectionId)) {
         kDebug() << "collection already monitored, skipping...";
@@ -157,7 +157,7 @@ void EmailList::dataChanged(const QModelIndex &topLeft, const QModelIndex &botto
     if (topLeft.row() >= 0) {
         while (bottomRight.row() >= r) {
             QModelIndex itemindex = topLeft.model()->index(r, c);
-            quint64 id = itemindex.data(EntityTreeModel::ItemIdRole).value<quint64>();
+            Akonadi::Entity::Id id = itemindex.data(EntityTreeModel::ItemIdRole).value<Akonadi::Entity::Id>();
             fetchItem(id);
             r++;
         }
@@ -165,7 +165,7 @@ void EmailList::dataChanged(const QModelIndex &topLeft, const QModelIndex &botto
     updateStatus();
 }
 
-void EmailList::fetchItem(const quint64 id)
+void EmailList::fetchItem(const Akonadi::Entity::Id id)
 {
     if (id <= 0) {
         kDebug() << "id invalid";
@@ -239,7 +239,7 @@ void EmailList::rowAdded(const QModelIndex &index, int start, int end)
     }
     for (int i = start; i <= end; i++) {
         QModelIndex itemindex =  _model->index(i, 0, index);
-        quint64 id = itemindex.data(EntityTreeModel::ItemIdRole).value<quint64>();
+        Akonadi::Entity::Id id = itemindex.data(EntityTreeModel::ItemIdRole).value<Akonadi::Entity::Id>();
         m_rowForId[id] = qMax(0, MAX_EMAILS - i);
         fetchItem(id);
     }
@@ -275,7 +275,7 @@ void EmailList::rowsRemoved(const QModelIndex &index, int start, int end)
     }
     for (int i = start; i <= end; i++) {
         QModelIndex itemindex =  index.model()->index(i, 0, index);
-        quint64 _id = itemindex.data(EntityTreeModel::ItemIdRole).value<quint64>();
+        Akonadi::Entity::Id _id = itemindex.data(EntityTreeModel::ItemIdRole).value<Akonadi::Entity::Id>();
         Akonadi::Item item = Akonadi::Item(_id);
         //EmailWidget* ew = new EmailWidget(this);
         if (m_emailWidgets.keys().contains(item.url())) {
@@ -313,7 +313,7 @@ void EmailList::filter()
 bool EmailList::accept(const Akonadi::Item email)
 {
     // discard collections we're not interested in
-    if (!m_etms.keys().contains((quint64)(email.storageCollectionId()))) {
+    if (!m_etms.keys().contains((Akonadi::Entity::Id)(email.storageCollectionId()))) {
         return false;
     }
     Akonadi::MessageStatus status;

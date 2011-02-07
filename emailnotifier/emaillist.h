@@ -60,11 +60,11 @@ namespace Akonadi {
 
         virtual int emailsCount();
         virtual QString statusText();
-        virtual void addCollection(const quint64 collectionId);
+        virtual void addCollection(const Akonadi::Entity::Id collectionId);
         virtual void clear();
 
         void setShowImportant(bool show);
-        QList<quint64> collectionIds();
+        QList<Akonadi::Entity::Id> collectionIds();
         QString statusText() const;
 
     Q_SIGNALS:
@@ -77,11 +77,11 @@ namespace Akonadi {
 
         virtual bool accept(const Akonadi::Item email);
         virtual void filter();
-        void fetchItem(const quint64 id);
+        void fetchItem(const Akonadi::Entity::Id id);
 
         QHash<QUrl, EmailWidget*> m_emailWidgets;
-        QHash<quint64, quint64> m_rowForId; // mapping item ids to rows in the model
-        QHash<quint64, Akonadi::EntityTreeModel*> m_etms; // holding an etm per collection
+        QHash<Akonadi::Entity::Id, Akonadi::Entity::Id> m_rowForId; // mapping item ids to rows in the model
+        QHash<Akonadi::Entity::Id, Akonadi::EntityTreeModel*> m_etms; // holding an etm per collection
 
         int m_emailsCount;
         QString m_statusText;
@@ -103,6 +103,8 @@ namespace Akonadi {
         **/
         void buildEmailList();
         void addItem(Akonadi::Item item);
+
+        Akonadi::Item::List m_hiddenItems;
 
         QGraphicsWidget* m_innerWidget;
         QGraphicsLinearLayout* m_listLayout;

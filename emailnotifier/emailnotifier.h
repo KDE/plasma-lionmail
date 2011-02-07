@@ -71,7 +71,7 @@ class EmailNotifier : public Plasma::PopupApplet
 
         bool m_allowHtml;
         ImportantDisplay m_showImportant;
-        QHash<quint64, QString> m_allCollections;
+        QHash<Akonadi::Entity::Id, QString> m_allCollections;
 
         Ui::emailnotifierConfig* ui;
         QItemSelectionModel *m_checkSelection;
@@ -79,8 +79,8 @@ class EmailNotifier : public Plasma::PopupApplet
 
         Dialog* m_dialog;
 
-        QList<quint64> m_newCollectionIds;
-        QList<quint64> m_collectionIds;
+        QList<Akonadi::Entity::Id> m_newCollectionIds;
+        QList<Akonadi::Entity::Id> m_collectionIds;
 
         bool m_hasFullPayload;
 };

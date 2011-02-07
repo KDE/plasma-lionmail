@@ -150,7 +150,7 @@ void Dialog::toggleTab()
     }
 }
 
-void Dialog::addImportantTab(QList<quint64> collectionIds)
+void Dialog::addImportantTab(QList<Akonadi::Entity::Id> collectionIds)
 {
     if (m_tabBar->count() == 1) {
         /*
@@ -224,8 +224,8 @@ void Dialog::refreshClicked()
     }
     /*
     Akonadi::Collection collection;
-    foreach(const quint64 id, m_unreadList->collectionIds()) {
-        //quint64 id = 111;
+    foreach(const Akonadi::Entity::Id id, m_unreadList->collectionIds()) {
+        //Akonadi::Entity::Id id = 111;
         kDebug() << "Connected, now syncing:" << id;
         Akonadi::Collection collection = Akonadi::Collection(id);
         if (collection.isValid()) {

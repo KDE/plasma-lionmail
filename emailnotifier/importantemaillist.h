@@ -34,7 +34,7 @@
   Q_OBJECT
 
     public:
-        ImportantEmailList(QList<quint64> collectionIds, QGraphicsWidget *parent);
+        ImportantEmailList(QList<Akonadi::Entity::Id> collectionIds, QGraphicsWidget *parent);
         virtual ~ImportantEmailList();
         virtual int emailsCount();
 

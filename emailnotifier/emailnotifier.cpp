@@ -111,7 +111,7 @@ void EmailNotifier::findDefaultCollectionsDone(KJob* job)
     }
 
     CollectionFetchJob* cjob = static_cast<CollectionFetchJob*>( job );
-    QList<quint64> defaultCollections;
+    QList<Akonadi::Entity::Id> defaultCollections;
     QString _inbox = i18nc("used for string comparison for finding default email folder", "Inbox");
     foreach( const Collection &collection, cjob->collections() ) {
         if (collection.contentMimeTypes().contains("message/rfc822")) {
@@ -120,7 +120,7 @@ void EmailNotifier::findDefaultCollectionsDone(KJob* job)
             if ((n.toLower() == QString("inbox")) ||
                 (n.toLower() == _inbox.toLower())) {
                 kDebug() << "Found an INBOX:" << collection.name();
-                defaultCollections << (quint64)(collection.id());
+                defaultCollections << (Akonadi::Entity::Id)(collection.id());
             }
         }
     }
@@ -134,7 +134,7 @@ void EmailNotifier::findDefaultCollectionsDone(KJob* job)
         m_dialog->importantEmailList()->clear();
     }
     m_dialog->unreadEmailList()->clear();
-    foreach(const quint64 _id, defaultCollections) {
+    foreach(const Akonadi::Entity::Id _id, defaultCollections) {
         if (m_dialog->importantEmailList()) {
             // Then we add those collections that weren't previously in the list
             m_dialog->importantEmailList()->addCollection(_id);
@@ -155,7 +155,7 @@ void EmailNotifier::dataUpdated(const QString &source, const Plasma::DataEngine:
         kDebug() << "EmailCollections are in..." << data.keys();
         foreach(const QString &k, data.keys()) {
             QString _k = k;
-            quint64 _id = (quint64)(_k.remove("EmailCollection-").toInt());
+            Akonadi::Entity::Id _id = (Akonadi::Entity::Id)(_k.remove("EmailCollection-").toInt());
             m_allCollections[_id] = data[k].toString();
             kDebug() << k << "id" << _id << m_allCollections[_id];
         }
@@ -182,7 +182,7 @@ QGraphicsWidget* EmailNotifier::graphicsWidget()
         }
 
         connect(m_dialog, SIGNAL(statusChanged(int, const QString&)), this, SLOT(statusChanged(int, const QString&)));
-        foreach (const quint64 id, m_collectionIds) {
+        foreach (const Akonadi::Entity::Id id, m_collectionIds) {
             kDebug() << "adding unread:" << id;
             m_dialog->unreadEmailList()->addCollection(id);
         }
@@ -208,7 +208,7 @@ void EmailNotifier::init()
     m_collectionIds << m_newCollectionIds;
     kDebug() << "add collection ids:" << m_collectionIds;
     if (m_dialog) {
-        foreach(const quint64 _id, m_collectionIds) {
+        foreach(const Akonadi::Entity::Id _id, m_collectionIds) {
             kDebug() << "ID" << _id << "adding to monitored collections...";
             m_dialog->unreadEmailList()->addCollection(_id);
         }
@@ -294,7 +294,7 @@ void EmailNotifier::createConfigurationInterface(KConfigDialog *parent)
 
     // FIXME: this doesn't work, as the collections come in async
     /*
-    foreach (quint64 cid, m_collectionIds) {
+    foreach (Akonadi::Entity::Id cid, m_collectionIds) {
         QModelIndex idx = EntityTreeModel::modelIndexForCollection( etm, Collection( cid ) );
         if (idx.isValid()) {
             // FIXME: collections come up async, we cannot actually just setChecked() here...
@@ -363,7 +363,7 @@ void EmailNotifier::configAccepted()
 
     foreach (QModelIndex itemindex, m_checkSelection->selectedIndexes()) {
         // We're only interested in the collection ID
-        quint64 _id = itemindex.data(EntityTreeModel::CollectionIdRole).value<quint64>();
+        Akonadi::Entity::Id _id = itemindex.data(EntityTreeModel::CollectionIdRole).value<Akonadi::Entity::Id>();
         m_newCollectionIds << _id;
 
         // .. remove me
@@ -376,7 +376,7 @@ void EmailNotifier::configAccepted()
     }
 
     if (addImportantTab) {
-        QList<quint64> l;
+        QList<Akonadi::Entity::Id> l;
         m_dialog->addImportantTab(l);
     } else if (removeImportantTab) {
         m_dialog->removeImportantTab();
@@ -394,7 +394,7 @@ void EmailNotifier::configAccepted()
             m_dialog->importantEmailList()->clear();
             // Then we add those collections that weren't previously in the list
             kDebug() << "Cleared IMPORTANT emails, now adding back collections" << m_collectionIds;
-            foreach(const quint64 _id, m_newCollectionIds) {
+            foreach(const Akonadi::Entity::Id _id, m_newCollectionIds) {
                 m_dialog->importantEmailList()->addCollection(_id);
             }
         }
@@ -405,7 +405,7 @@ void EmailNotifier::configAccepted()
         m_dialog->unreadEmailList()->clear();
         // Then we add those collections that weren't previously in the list
         kDebug() << "Cleared NEW emails, now adding back collections" << m_newCollectionIds;
-        foreach(const quint64 _id, m_newCollectionIds) {
+        foreach(const Akonadi::Entity::Id _id, m_newCollectionIds) {
             kDebug() << "adding new collection" << _id;
             m_dialog->unreadEmailList()->addCollection(_id);
         }
@@ -423,7 +423,7 @@ void EmailNotifier::configChanged()
 
     // FIXME: we want to compare old and new and if necessary add the new collections and remove the old one
     // this should probably be shared through configChanged()
-    m_collectionIds = cg.readEntry("unreadCollectionIds", QList<quint64>());
+    m_collectionIds = cg.readEntry("unreadCollectionIds", QList<Akonadi::Entity::Id>());
 
     m_showImportant = (ImportantDisplay)(cg.readEntry("showImportant", 0));
     if (m_dialog) {

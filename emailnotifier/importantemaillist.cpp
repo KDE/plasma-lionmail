@@ -52,10 +52,10 @@
 
 using namespace Akonadi;
 
-ImportantEmailList::ImportantEmailList(QList<quint64> collectionIds, QGraphicsWidget *parent)
+ImportantEmailList::ImportantEmailList(QList<Akonadi::Entity::Id> collectionIds, QGraphicsWidget *parent)
     : EmailList(false, parent)
 {
-    foreach(const quint64 colId, collectionIds) {
+    foreach(const Akonadi::Entity::Id colId, collectionIds) {
         addCollection(colId);
     }
 }
@@ -67,7 +67,7 @@ ImportantEmailList::~ImportantEmailList()
 bool ImportantEmailList::accept(const Akonadi::Item email)
 {
     // discard collections we're not interested in
-    if (!m_etms.keys().contains((quint64)(email.storageCollectionId()))) {
+    if (!m_etms.keys().contains((Akonadi::Entity::Id)(email.storageCollectionId()))) {
         return false;
     }
 
