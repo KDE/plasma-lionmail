@@ -66,6 +66,7 @@ namespace Plasma
         ImportantEmailList* importantEmailList();
 
         void setTitle(const QString &title);
+        void setEmailsCount(const int emailsCount);
         void addImportantTab(QList<Akonadi::Entity::Id> collectionIds);
         void removeImportantTab();
         void setStatus(const QString status);
@@ -99,6 +100,7 @@ namespace Plasma
         Plasma::Label *m_titleBar;
         Plasma::Label *m_statusBar;
         Plasma::IconWidget *m_refreshIcon;
+        Plasma::PushButton *m_clearButton;
 
         EmailList* m_unreadList;
         ImportantEmailList* m_importantList;

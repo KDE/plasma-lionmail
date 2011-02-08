@@ -78,6 +78,7 @@ bool ImportantEmailList::accept(const Akonadi::Item email)
     if (status.isDeleted()) {
         return false;
     }
+
     // Show important emails
     if (status.isImportant()) {
         return true;

@@ -77,7 +77,7 @@ class EmailWidget : public Plasma::Frame
         Akonadi::Item item();
         Akonadi::MessageStatus status();
 
-        qlonglong id;
+        Akonadi::Entity::Id id;
 
         void setFrom(const QString& from);
         void setTo(const QStringList& to);

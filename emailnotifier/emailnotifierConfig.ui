@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>360</height>
+    <width>471</width>
+    <height>533</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -66,20 +66,10 @@
      </property>
     </widget>
    </item>
-   <item row="6" column="1">
-    <widget class="QCheckBox" name="allowHtml">
+   <item row="3" column="1">
+    <widget class="QCheckBox" name="showImportant">
      <property name="text">
-      <string>Allow HTML</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="0">
-    <widget class="QLabel" name="generallabel">
-     <property name="text">
-      <string>&lt;b&gt;Display&lt;/b&gt;</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      <string>Also show messages marked as Important</string>
      </property>
     </widget>
    </item>
@@ -90,13 +80,6 @@
      </property>
      <property name="text">
       <string>Show Important messages in a separate list</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <widget class="QCheckBox" name="showImportant">
-     <property name="text">
-      <string>Also show messages marked as Important</string>
      </property>
     </widget>
    </item>

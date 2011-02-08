@@ -63,9 +63,13 @@ namespace Akonadi {
         virtual void addCollection(const Akonadi::Entity::Id collectionId);
         virtual void clear();
 
+
         void setShowImportant(bool show);
         QList<Akonadi::Entity::Id> collectionIds();
         QString statusText() const;
+
+    public Q_SLOTS:
+        void hideAllMessages();
 
     Q_SIGNALS:
         void updateToolTip(const QString&, int);
@@ -77,6 +81,7 @@ namespace Akonadi {
 
         virtual bool accept(const Akonadi::Item email);
         virtual void filter();
+
         void fetchItem(const Akonadi::Entity::Id id);
 
         QHash<QUrl, EmailWidget*> m_emailWidgets;
@@ -86,6 +91,7 @@ namespace Akonadi {
         int m_emailsCount;
         QString m_statusText;
         bool m_showImportant;
+        QList<Akonadi::Entity::Id> m_hiddenMessages;
 
     private Q_SLOTS:
         void rowAdded(const QModelIndex &index, int start, int end);
@@ -103,8 +109,6 @@ namespace Akonadi {
         **/
         void buildEmailList();
         void addItem(Akonadi::Item item);
-
-        Akonadi::Item::List m_hiddenItems;
 
         QGraphicsWidget* m_innerWidget;
         QGraphicsLinearLayout* m_listLayout;

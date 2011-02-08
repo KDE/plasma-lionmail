@@ -34,6 +34,7 @@
 
 //plasma
 #include <Plasma/Dialog>
+#include <Plasma/PushButton>
 #include <Plasma/Theme>
 
 
@@ -70,6 +71,7 @@ void Dialog::buildDialog(bool showImportant)
     connect(m_unreadList, SIGNAL(activated(const QUrl)), SLOT(openUrl(const QUrl)));
     connect(m_unreadList, SIGNAL(statusChanged(int, const QString&)), this, SIGNAL(statusChanged(int, const QString&)));
     connect(m_unreadList, SIGNAL(statusChanged(int, const QString&)), this, SLOT(updateTabs()));
+
     m_tabBar->addTab(KIcon("mail-unread-new"), i18n("New Messages"), m_unreadList);
     m_tabBar->setTabBarShown(false);
 
@@ -126,8 +128,16 @@ void Dialog::setTitleBarShown(bool show)
         kDebug() << "----------------" << "adding title bar";
         m_titleBar = new Plasma::Label(this);
         setTitle(i18nc("list title", "New Messages"));
-        m_gridLayout->addItem(m_titleBar, 0, 0, 1, 3);
+        m_gridLayout->addItem(m_titleBar, 0, 0, 1, 2);
         setTitle(m_unreadList->statusText());
+        m_clearButton = new Plasma::PushButton(this);
+        m_clearButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+        m_clearButton->setText(i18nc("clear button in emailnotifier popup -- keep short", "Clear"));
+        m_clearButton->setToolTip(i18nc("tooltip clear button", "Hide all messages"));
+        m_clearButton->hide();
+        connect(m_clearButton, SIGNAL(clicked()), m_unreadList, SLOT(hideAllMessages()));
+        m_gridLayout->addItem(m_clearButton, 0, 2);
+
     } else if (!show && m_titleBar) {
         kDebug() << "----------------" << "removing title bar";
         m_titleBar->deleteLater();
@@ -260,6 +270,15 @@ void Dialog::setTitle(const QString &title)
 {
     if (m_titleBar) {
         m_titleBar->setText(QString("<b><font size=\"+1\">&nbsp;&nbsp;&nbsp;%1</font></b>").arg(title));
+    }
+}
+
+void Dialog::setEmailsCount(const int emailsCount)
+{
+    if (!emailsCount) {
+        m_clearButton->hide();
+    } else {
+        m_clearButton->show();
     }
 }
 

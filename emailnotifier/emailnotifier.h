@@ -48,7 +48,6 @@ class EmailNotifier : public Plasma::PopupApplet
 
         void init();
         void updateToolTip(const QString& statusText, const QString& icon);
-        bool allowHtml();
 
     protected Q_SLOTS:
         void configAccepted();
@@ -69,7 +68,6 @@ class EmailNotifier : public Plasma::PopupApplet
         Plasma::Svg* m_theme;
         Plasma::ToolTipContent m_toolTip;
 
-        bool m_allowHtml;
         ImportantDisplay m_showImportant;
         QHash<Akonadi::Entity::Id, QString> m_allCollections;
 

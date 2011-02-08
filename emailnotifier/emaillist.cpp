@@ -323,6 +323,13 @@ bool EmailList::accept(const Akonadi::Item email)
     if (status.isDeleted()) {
         return false;
     }
+
+    // discard hidden message
+    if (m_hiddenMessages.contains(email.id())) {
+        kDebug() << "hidden:" << email.id();
+        return false;
+    }
+
     // Conditionally show important emails
     if (m_showImportant && status.isImportant()) {
         return true;
@@ -382,6 +389,19 @@ int EmailList::emailsCount()
 QString EmailList::statusText()
 {
     return m_statusText;
+}
+
+void EmailList::hideAllMessages()
+{
+    m_hiddenMessages.clear();
+    foreach(EmailWidget* w, m_emailWidgets) {
+        Akonadi::Entity::Id _id = w->item().id();
+        if (_id) {
+            m_hiddenMessages << _id;
+        }
+    }
+    kDebug() << "hiding all" << m_hiddenMessages;
+    filter();
 }
 
 #include "emaillist.moc"

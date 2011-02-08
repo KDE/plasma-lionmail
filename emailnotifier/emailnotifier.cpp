@@ -53,8 +53,6 @@ using namespace Akonadi;
 
 EmailNotifier::EmailNotifier(QObject *parent, const QVariantList &args)
   : Plasma::PopupApplet(parent, args),
-    m_allowHtml(false),
-    //m_theme(0),
     ui(0),
     m_dialog(0)
 {
@@ -191,11 +189,6 @@ QGraphicsWidget* EmailNotifier::graphicsWidget()
     return m_dialog;
 }
 
-bool EmailNotifier::allowHtml()
-{
-    return m_allowHtml;
-}
-
 void EmailNotifier::init()
 {
     //Akonadi::ServerManager::start();
@@ -302,7 +295,6 @@ void EmailNotifier::createConfigurationInterface(KConfigDialog *parent)
         }
     }
     */
-    ui->allowHtml->setChecked(m_allowHtml);
     ui->showImportant->setChecked(m_showImportant != None);
     //ui->showImportantMerged->setChecked(m_showImportant == ShowMerged);
     ui->showImportantSeparately->setChecked(m_showImportant == ShowSeparately);
@@ -348,13 +340,6 @@ void EmailNotifier::configAccepted()
         }
     }
     cg.writeEntry("showImportant", (int)(d));
-
-    // HTML display
-    if (ui->allowHtml->isChecked() != m_allowHtml) {
-        m_allowHtml = !m_allowHtml;
-        kDebug() << "HTML Allowed changed";
-    }
-    cg.writeEntry("allowHtml", m_allowHtml);
 
     // Collections
     m_newCollectionIds.clear();
@@ -419,7 +404,6 @@ void EmailNotifier::configAccepted()
 void EmailNotifier::configChanged()
 {
     KConfigGroup cg = config();
-    m_allowHtml = config().readEntry("allowHtml", false);
 
     // FIXME: we want to compare old and new and if necessary add the new collections and remove the old one
     // this should probably be shared through configChanged()
@@ -435,9 +419,12 @@ void EmailNotifier::configChanged()
             m_dialog->removeImportantTab(); // no-op if the tab isn't there to begin with
         }
     }
+
     foreach(const Akonadi::Entity::Id _id, m_collectionIds) {
-        m_dialog->unreadEmailList()->addCollection(_id);
-        if (m_dialog->importantEmailList()) {
+        if (m_dialog && m_dialog->importantEmailList()) {
+            m_dialog->unreadEmailList()->addCollection(_id);
+        }
+        if (m_dialog && m_dialog->importantEmailList()) {
             m_dialog->importantEmailList()->addCollection(_id);
         }
     }
@@ -465,6 +452,7 @@ void EmailNotifier::statusChanged(int emailsCount, const QString& statusText)
         setStatus(Plasma::PassiveStatus);
         m_dialog->setTitle(_t);
     }
+    m_dialog->setEmailsCount(emailsCount);
     setPopupIcon(icon);
 }
 
