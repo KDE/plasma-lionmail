@@ -126,7 +126,7 @@ void Dialog::setTitleBarShown(bool show)
         kDebug() << "----------------" << "adding title bar";
         m_titleBar = new Plasma::Label(this);
         setTitle(i18nc("list title", "New Messages"));
-        m_gridLayout->addItem(m_titleBar, 0, 0, 1, 2);
+        m_gridLayout->addItem(m_titleBar, 0, 0, 1, 3);
         setTitle(m_unreadList->statusText());
     } else if (!show && m_titleBar) {
         kDebug() << "----------------" << "removing title bar";
