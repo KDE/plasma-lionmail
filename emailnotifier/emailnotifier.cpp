@@ -424,6 +424,7 @@ void EmailNotifier::configChanged()
     // FIXME: we want to compare old and new and if necessary add the new collections and remove the old one
     // this should probably be shared through configChanged()
     m_collectionIds = cg.readEntry("unreadCollectionIds", QList<Akonadi::Entity::Id>());
+    kDebug() << "config says collections ids:" << m_collectionIds;
 
     m_showImportant = (ImportantDisplay)(cg.readEntry("showImportant", 0));
     if (m_dialog) {
@@ -434,6 +435,13 @@ void EmailNotifier::configChanged()
             m_dialog->removeImportantTab(); // no-op if the tab isn't there to begin with
         }
     }
+    foreach(const Akonadi::Entity::Id _id, m_collectionIds) {
+        m_dialog->unreadEmailList()->addCollection(_id);
+        if (m_dialog->importantEmailList()) {
+            m_dialog->importantEmailList()->addCollection(_id);
+        }
+    }
+
 }
 
 void EmailNotifier::statusChanged(int emailsCount, const QString& statusText)
