@@ -1030,10 +1030,12 @@ void EmailWidget::mousePressEvent(QGraphicsSceneMouseEvent * event)
 
 void EmailWidget::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 {
-    if (event->buttons() & Qt::LeftButton) {
+    // catch events only in the left part
+    if ((event->pos().x() < m_icon->geometry().width() + 8) && event->buttons() & Qt::LeftButton) {
         int distance = (event->pos() - m_startPos).toPoint().manhattanLength();
         if (distance >= QApplication::startDragDistance()) {
             startDrag();
+            event->accept();
         }
     }
 }
