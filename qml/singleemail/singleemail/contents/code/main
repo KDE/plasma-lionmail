@@ -45,6 +45,7 @@ Item {
         onDataChanged: {
             plasmoid.busy = false
             console.log("l0gg0r:" + emailSource.data[eSource]["Subject"])
+            console.log("---- BODY ++++" + emailSource.data[eSource]["Body"])
         }
     }
 
@@ -66,7 +67,8 @@ Item {
         anchors.left: parent.left
         anchors.bottom: flickWidget.top
         onClicked: {
-            console.log("click")
+            console.log("click");
+            emailSource.connectedSources = [eSource, "Email-48"]
         }
     }
 
@@ -97,21 +99,27 @@ Item {
         anchors.top: fromLabel.bottom
         anchors.bottom: parent.bottom
         clip: true
-        //flickingHorizontally: false
         
         contentWidth: bodyView.width
         contentHeight: bodyView.height
         
         PlasmaWidgets.Label {
-            //width: parent.width
-            //height: 600
-            opacity: .8
-            //anchors.fill: parent
+            width: parent.width
+            height: 400
+            //opacity: .8
+            anchors.fill: parent
             id: bodyView
             //text: "<h1>message...</h1>"
-            //styleSheet: "text-align: top"
+            styleSheet: "text-align: top"
             //text: "body:" + mainWindow.emailSource.data[eSource]["Body"]
-            text: emailSource.data[eSource] ? emailSource.data[eSource]["Body"] : "Empty body :("
+            //text: emailSource.data[eSource] ? emailSource.data[eSource]["Body"] : "Empty body :("
+            property string t: emailSource.data[eSource] ? "body: " + emailSource.data[eSource]["Body"] : "empty body"
+            text: t
+            //text: "boo!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\nboo!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\nboo!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\nboo!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
+            
+            Component.onCompleted: {
+              console.log("bla... &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&" + t)
+            }
         }               
     }
 }
