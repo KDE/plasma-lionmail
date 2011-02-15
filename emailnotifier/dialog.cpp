@@ -18,7 +18,8 @@
 */
 
 //Qt
-#include <QGraphicsGridLayout>
+//#include <QGraphicsGridLayout>
+#include <QGraphicsAnchorLayout>
 #include <QLabel>
 #include <QTimer>
 
@@ -61,8 +62,8 @@ Dialog::~Dialog()
 
 void Dialog::buildDialog(bool showImportant)
 {
-    m_gridLayout = new QGraphicsGridLayout(this);
-    setLayout(m_gridLayout);
+    //m_gridLayout = new QGraphicsGridLayout(this);
+    //setLayout(m_gridLayout);
 
 
     m_tabBar = new Plasma::TabBar(this);
@@ -71,27 +72,77 @@ void Dialog::buildDialog(bool showImportant)
     connect(m_unreadList, SIGNAL(activated(const QUrl)), SLOT(openUrl(const QUrl)));
     connect(m_unreadList, SIGNAL(statusChanged(int, const QString&)), this, SIGNAL(statusChanged(int, const QString&)));
     connect(m_unreadList, SIGNAL(statusChanged(int, const QString&)), this, SLOT(updateTabs()));
+    m_titleBar = new Plasma::Label(this);
+    setTitle(i18nc("list title", "New Messages"));
 
+
+    
     m_tabBar->addTab(KIcon("mail-unread-new"), i18n("New Messages"), m_unreadList);
     m_tabBar->setTabBarShown(false);
 
-    m_gridLayout->addItem(m_tabBar, 1, 0, 1, 3);
+    //m_gridLayout->addItem(m_tabBar, 1, 0, 1, 3);
 
     m_statusBar = new Plasma::Label(this);
     //m_statusBar->setText("status");
     m_statusBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     m_statusBar->setMaximumHeight(22);
     m_statusBar->setFont(KGlobalSettings::smallestReadableFont());
-    m_gridLayout->addItem(m_statusBar, 2, 0, 1, 2);
+    //m_gridLayout->addItem(m_statusBar, 2, 0, 1, 2);
 
     m_refreshIcon = new Plasma::IconWidget(this);
     m_refreshIcon->setIcon("view-refresh");
     m_refreshIcon->setToolTip(i18nc("tooltip on the refresh button", "Check Mail"));
     m_refreshIcon->setMaximumHeight(16);
-    m_gridLayout->addItem(m_refreshIcon, 2, 2, 1, 1);
+    //m_gridLayout->addItem(m_refreshIcon, 2, 2, 1, 1);
     connect(m_refreshIcon, SIGNAL(clicked()), this, SLOT(refreshClicked()));
 
     connect(m_tabBar, SIGNAL(currentChanged(int)), SLOT(updateNavIcon(int)));
+
+
+    m_anchorLayout = new QGraphicsAnchorLayout(this);
+    /*
+    // Fix the actual email widget on top-left and bottom-right corners
+    m_anchorLayout->addCornerAnchors(m_emailWidget, Qt::TopLeftCorner,
+                                     m_anchorLayout, Qt::TopLeftCorner);
+    m_anchorLayout->addCornerAnchors(m_emailWidget, Qt::BottomRightCorner,
+                                     m_anchorLayout, Qt::BottomRightCorner);
+
+    m_anchorLayout->addCornerAnchors(m_expandIcon, Qt::TopRightCorner,
+                                     m_anchorLayout, Qt::TopRightCorner);
+    m_anchorLayout->addAnchor(m_actionsWidget, Qt::AnchorTop, m_anchorLayout, Qt::AnchorTop);
+    m_anchorLayout->addAnchor(m_actionsWidget, Qt::AnchorRight, m_expandIcon, Qt::AnchorLeft);
+
+    Plasma::TabBar *m_tabBar;
+    Plasma::Label *m_titleBar;
+    Plasma::Label *m_statusBar;
+    Plasma::IconWidget *m_refreshIcon;
+    Plasma::PushButton *m_clearButton;
+
+    */
+    m_anchorLayout->addCornerAnchors(m_titleBar, Qt::TopLeftCorner,
+                                     m_anchorLayout, Qt::TopLeftCorner);
+    m_anchorLayout->addCornerAnchors(m_titleBar, Qt::TopRightCorner,
+                                     m_anchorLayout, Qt::TopRightCorner);
+
+    m_anchorLayout->addAnchor(m_tabBar, Qt::AnchorLeft,
+                              m_anchorLayout, Qt::AnchorLeft);
+    m_anchorLayout->addAnchor(m_tabBar, Qt::AnchorRight,
+                              m_anchorLayout, Qt::AnchorRight);
+
+    m_anchorLayout->addCornerAnchors(m_statusBar, Qt::BottomLeftCorner,
+                                     m_anchorLayout, Qt::BottomLeftCorner);
+    m_anchorLayout->addCornerAnchors(m_refreshIcon, Qt::BottomRightCorner,
+                                     m_anchorLayout, Qt::BottomRightCorner);
+
+    m_anchorLayout->addAnchor(m_tabBar, Qt::AnchorTop,
+                              m_titleBar, Qt::AnchorBottom);
+    m_anchorLayout->addAnchor(m_tabBar, Qt::AnchorBottom,
+                              m_statusBar, Qt::AnchorTop);
+
+
+
+    setLayout(m_anchorLayout);
+
 
     setTitleBarShown();
     setStatus(i18nc("no active search, no results shown", "Idle."));
@@ -124,11 +175,16 @@ void Dialog::updateTabs()
 
 void Dialog::setTitleBarShown(bool show)
 {
-    if (show && !m_titleBar) {
+    if (show) {
         kDebug() << "----------------" << "adding title bar";
-        m_titleBar = new Plasma::Label(this);
+        //m_titleBar = new Plasma::Label(this);
         setTitle(i18nc("list title", "New Messages"));
-        m_gridLayout->addItem(m_titleBar, 0, 0, 1, 2);
+        // FIXME //m_gridLayout->addItem(m_titleBar, 0, 0, 1, 2);
+        //m_anchorLayout->addCornerAnchors(m_titleBar, Qt::TopLeftCorner,
+                                         //m_anchorLayout, Qt::TopLeftCorner);
+        //m_anchorLayout->addAnchor(m_tabBar, Qt::AnchorTop,
+        //                      m_titleBar, Qt::AnchorBottom);
+        m_titleBar->show();
         setTitle(m_unreadList->statusText());
         m_clearButton = new Plasma::PushButton(this);
         m_clearButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -136,12 +192,18 @@ void Dialog::setTitleBarShown(bool show)
         m_clearButton->setToolTip(i18nc("tooltip clear button", "Hide all messages"));
         m_clearButton->hide();
         connect(m_clearButton, SIGNAL(clicked()), m_unreadList, SLOT(hideAllMessages()));
-        m_gridLayout->addItem(m_clearButton, 0, 2);
+        // FIXME //m_gridLayout->addItem(m_clearButton, 0, 2);
+        m_anchorLayout->addCornerAnchors(m_clearButton, Qt::TopRightCorner,
+                                         m_anchorLayout, Qt::TopRightCorner);
 
     } else if (!show && m_titleBar) {
         kDebug() << "----------------" << "removing title bar";
-        m_titleBar->deleteLater();
-        m_titleBar = 0;
+        //m_anchorLayout->addAnchor(m_tabBar, Qt::AnchorTop,
+        //                          m_anchorLayout, Qt::AnchorTop);
+
+        //m_titleBar->deleteLater();
+        //m_titleBar = 0;
+        m_titleBar->hide();
     }
 }
 
@@ -172,6 +234,9 @@ void Dialog::addImportantTab(QList<Akonadi::Entity::Id> collectionIds)
         */
         m_importantList = new ImportantEmailList(collectionIds, m_tabBar);
         m_tabBar->addTab(KIcon("mail-mark-important"), i18nc("tab title", "Important Messages"), m_importantList);
+        //m_anchorLayout->addAnchor(m_tabBar, Qt::AnchorBottom,
+        //                      m_statusBar, Qt::AnchorTop);
+
         connect(m_importantList, SIGNAL(statusChanged(int, const QString&)), this, SLOT(updateTabs()));
     }
     setTitleBarShown(false);

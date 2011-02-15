@@ -436,14 +436,14 @@ void EmailWidget::buildDialog()
     //setNew(m_isNew);
     //setImportant(m_isImportant);
     refreshFlags();
-    
+
     m_anchorLayout = new QGraphicsAnchorLayout(this);
     // Fix the actual email widget on top-left and bottom-right corners
     m_anchorLayout->addCornerAnchors(m_emailWidget, Qt::TopLeftCorner, 
                                      m_anchorLayout, Qt::TopLeftCorner);
     m_anchorLayout->addCornerAnchors(m_emailWidget, Qt::BottomRightCorner, 
                                      m_anchorLayout, Qt::BottomRightCorner);
-    
+
     m_anchorLayout->addCornerAnchors(m_expandIcon, Qt::TopRightCorner,
                                      m_anchorLayout, Qt::TopRightCorner);
     m_anchorLayout->addAnchor(m_actionsWidget, Qt::AnchorTop, m_anchorLayout, Qt::AnchorTop);

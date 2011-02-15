@@ -95,6 +95,7 @@ namespace Plasma
         void buildDialog(bool showImportant);
 
         QGraphicsGridLayout *m_gridLayout;
+        QGraphicsAnchorLayout *m_anchorLayout;
         //Plasma::IconWidget *m_navIcon;
         Plasma::TabBar *m_tabBar;
         Plasma::Label *m_titleBar;
