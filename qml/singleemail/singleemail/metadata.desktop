@@ -1,0 +1,19 @@
+[Desktop Entry]
+Comment=Shows an Email
+Encoding=UTF-8
+Keywords=
+Name=Mail Message
+Type=Service
+X-KDE-ParentApp=
+X-KDE-PluginInfo-Author=sebas
+X-KDE-PluginInfo-Category=Online Services
+X-KDE-PluginInfo-Email=sebas@kde.org
+X-KDE-PluginInfo-License=GPL
+X-KDE-PluginInfo-Name=qmlemail
+X-KDE-PluginInfo-Version=.2222
+X-KDE-PluginInfo-Website=
+X-KDE-ServiceTypes=Plasma/Applet
+X-Plasma-API=declarativeappletscript
+X-Plasma-DefaultSize=200,100
+X-Plasma-MainScript=code/main.qml
+X-Plasma-RemoteLocation=
