@@ -26,7 +26,7 @@ Item {
     //width: 300
     //height: 400
 
-    property string collection: "emailCollection-13"
+    property string collection: "EmailCollection-13"
     property string source
     property variant individualSources
     property int scrollInterval
@@ -47,8 +47,14 @@ Item {
             plasmoid.busy = false
         }
         onSourceAdded: {
-            //console.log("Source added:" + source)
-            connectSource(source)
+            //var s = new QString(source);
+
+            if (source.match("Email-")) {
+                console.log("connecting: " + source)
+                connectSource(source)
+            } else {
+                console.log("ignoring: " + source)
+            }
         }
         Component.onCompleted: {
             console.log("Completed:" + sources)
@@ -83,40 +89,95 @@ Item {
 
         model: PlasmaCore.DataModel {
             dataSource: collectionSource
-            //keyRoleFilter: "email-[\\d]"
+            //keyRoleFilter: "Email-[\\d]"
         }
 
         delegate: Item {
             property bool expanded: false
+            property int collapsedHeight: 38
+            property int expandedHeight: 200
+
             id: emailItem
             width: entryList.width
-            height: 20
-            //contentMargin: 5
-            PlasmaWidgets.Frame {
-                id: frame
-                anchors.fill: parent
+            height: collapsedHeight
+
+            PlasmaWidgets.IconWidget {
+                id: icon
+                width: 48
+                height: 48
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.bottom: flickWidget.top
+                onClicked: {
+                    console.log("click");
+                }
             }
-            Text {
+
+            PlasmaWidgets.Label {
                 id: subjectLabel
-                wrapMode: Text.NoWrap
-                anchors.fill: parent
-                text: "<strong>" + subject + "</strong>"
+                anchors.left: icon.right
+                anchors.top: parent.top
+                anchors.right: parent.right
+                property string t: Subject
+                //emailSource.data[eSource] ? emailSource.data[eSource]["Subject"] : "empty subject"
+                text: "<strong>" + t + "</strong>"
+                //text: subject
+            }
+
+            PlasmaWidgets.Label {
+                id: fromLabel
+                anchors.left: icon.right
+                anchors.top: subjectLabel.bottom
+                anchors.right: parent.right
+                //text: emailSource.data[eSource] ? emailSource.data[eSource]["From"] : "Unknown sender"
+                //text: "from " + collectionSource.data["emailMessage-121771"]["from"] + ", received today"
+                text: "From: " + From
+                opacity: .5
+            }
+
+            Flickable {
+                id: flickWidget
+                anchors.left: icon.right
+                anchors.right: parent.right
+                anchors.top: fromLabel.bottom
+                anchors.bottom: parent.bottom
+                clip: true
+
+                contentWidth: bodyView.width
+                contentHeight: bodyView.height
+
+                PlasmaWidgets.Label {
+                    id: bodyView
+                    width: parent.width
+                    //height: 400
+                    opacity: .75
+                    anchors.fill: parent
+                    styleSheet: "text-align: top"
+                    //property string t: emailSource.data[eSource] ? emailSource.data[eSource]["Body"] : "empty body"
+                    //text: t
+                    //text: "this is the real message. So say hi! \n\n\n HI!\n\n-- sebas"
+                    text: Body
+                }
             }
 
             PropertyAnimation {
                 id: growAnimation;
                 target: emailItem;
                 property: "height";
-                to: 200;
-                duration: 100
+                to: expandedHeight;
+                duration: 300;
+                easing.type: Easing.InOutElastic;
+                easing.amplitude: 2.0; easing.period: 1.5
             }
 
             PropertyAnimation {
                 id: shrinkAnimation;
                 target: emailItem;
                 property: "height";
-                to: 20;
-                duration: 100
+                to: collapsedHeight
+                duration: 300;
+                easing.type: Easing.InOutElastic;
+                easing.amplitude: 2.0; easing.period: 1.5
             }
 
             MouseArea {
@@ -134,6 +195,10 @@ Item {
                 }
             }
 
+            Component.onCompleted: {
+                icon.setIcon("internet-mail")
+                console.log("done:" + subjectLabel.text)
+            }
         }
 
         ListView.onAdd: {
