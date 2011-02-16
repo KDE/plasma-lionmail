@@ -23,23 +23,35 @@ import org.kde.plasma.graphicswidgets 0.1 as PlasmaWidgets
 
 Item {
     id: mainWindow
+    //width: 300
+    //height: 400
 
+    property string collection: "emailCollection-13"
     property string source
     property variant individualSources
     property int scrollInterval
 
+    Component.onCompleted: {
+        //plasmoid.addEventListener('ConfigChanged', configChanged);
+        plasmoid.busy = true
+        //icon.setIcon("internet-mail")
+    }
+
     PlasmaCore.DataSource {
-        id: feedSource
+        id: collectionSource
         engine: "akonadi"
-        connectedSources: ["EmailCollections"]
+        connectedSources: [collection]
         interval: 50000
         onDataChanged: {
+            //console.log("datachanged" + source)
             plasmoid.busy = false
         }
         onSourceAdded: {
+            //console.log("Source added:" + source)
             connectSource(source)
         }
         Component.onCompleted: {
+            console.log("Completed:" + sources)
             connectedSources = sources
         }
     }
@@ -48,27 +60,85 @@ Item {
         id: theme
     }
 
+    PlasmaWidgets.Label {
+        id: title
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        text: i18nc("title", "<h2>Messages</h2>")
+    }
+
     ListView {
         id: entryList
-        spacing: 5;
+        spacing: 10;
         snapMode: ListView.SnapToItem
         orientation: ListView.Vertical
-        anchors.fill: parent
+        anchors.top: title.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
         clip: true
         highlightMoveDuration: 300
         property int listIndex: index
+
         model: PlasmaCore.DataModel {
-            dataSource: feedSource
-            keyRoleFilter: "items"
+            dataSource: collectionSource
+            //keyRoleFilter: "email-[\\d]"
         }
 
         delegate: Item {
+            property bool expanded: false
+            id: emailItem
             width: entryList.width
             height: 20
-            PlasmaWidgets.Label {
+            //contentMargin: 5
+            PlasmaWidgets.Frame {
+                id: frame
                 anchors.fill: parent
-                text: description
             }
+            Text {
+                id: subjectLabel
+                wrapMode: Text.NoWrap
+                anchors.fill: parent
+                text: "<strong>" + subject + "</strong>"
+            }
+
+            PropertyAnimation {
+                id: growAnimation;
+                target: emailItem;
+                property: "height";
+                to: 200;
+                duration: 100
+            }
+
+            PropertyAnimation {
+                id: shrinkAnimation;
+                target: emailItem;
+                property: "height";
+                to: 20;
+                duration: 100
+            }
+
+            MouseArea {
+                anchors.fill: parent
+
+                onClicked: {
+                    print("clicked: " + subjectLabel.text)
+                    if (!expanded) {
+                        growAnimation.running = true
+                    } else {
+                        shrinkAnimation.running = true
+                    }
+                    expanded = !expanded
+                    //plasmoid.openUrl(model['link'])
+                }
+            }
+
+        }
+
+        ListView.onAdd: {
+            console.log("added...")
+            plasmoid.busy = false
         }
 
         onFlickEnded: {
