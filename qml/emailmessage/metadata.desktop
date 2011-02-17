@@ -1,8 +1,16 @@
 [Desktop Entry]
 Comment=Shows an Email
+Comment[pt]=Mostra um E-mail
+Comment[pt_BR]=Mostrar um e-mail
+Comment[uk]=Показує лист
+Comment[x-test]=xxShows an Emailxx
 Encoding=UTF-8
 Keywords=
 Name=Mail Message
+Name[pt]=Mensagem de E-mail
+Name[pt_BR]=Mensagem de e-mail
+Name[uk]=Поштове повідомлення
+Name[x-test]=xxMail Messagexx
 Type=Service
 X-KDE-ParentApp=
 X-KDE-PluginInfo-Author=sebas
