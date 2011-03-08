@@ -1,6 +1,7 @@
 [Desktop Entry]
 Comment=Shows an Email
 Comment[es]=Muestra un correo
+Comment[et]=E-kirjade näitamine
 Comment[nl]=Toont een e-mailbericht
 Comment[pt]=Mostra um E-mail
 Comment[pt_BR]=Mostrar um e-mail
@@ -11,6 +12,7 @@ Encoding=UTF-8
 Keywords=
 Name=Mail Message
 Name[es]=Mensaje de correo
+Name[et]=E-kiri
 Name[nl]=E-mailbericht
 Name[pt]=Mensagem de E-mail
 Name[pt_BR]=Mensagem de e-mail
