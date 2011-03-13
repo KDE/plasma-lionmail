@@ -118,7 +118,7 @@ Item {
                 anchors.left: icon.right
                 anchors.top: parent.top
                 anchors.right: parent.right
-                property string t: Subject
+                property string t: subject
                 //emailSource.data[eSource] ? emailSource.data[eSource]["Subject"] : "empty subject"
                 text: "<strong>" + t + "</strong>"
                 //text: subject
@@ -131,7 +131,8 @@ Item {
                 anchors.right: parent.right
                 //text: emailSource.data[eSource] ? emailSource.data[eSource]["From"] : "Unknown sender"
                 //text: "from " + collectionSource.data["emailMessage-121771"]["from"] + ", received today"
-                text: "From: " + From
+                //text: "From: someone <some@one.org>"// + From
+                text: "From: " + from
                 opacity: .5
             }
 
