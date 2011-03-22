@@ -1,24 +1,6 @@
 [Desktop Entry]
 Name=Email Notifier
-Name[es]=Notificador de correo electrónico
-Name[et]=Kirjade teavitaja
-Name[km]=កម្មវិធី​ជូនដំណឹង​អ៊ីមែល
-Name[nds]=Nettpost-Bescheden
-Name[nl]=Melder voor e-mail
-Name[pt]=Notificação de E-Mail
-Name[pt_BR]=Notificador de e-mails
-Name[sv]=Information om e-post
-Name[uk]=Сповіщення про електронну пошту
-Name[x-test]=xxEmail Notifierxx
 Comment=Keep an Eye on your Inbox
-Comment[es]=Monitoriza su bandeja de entrada
-Comment[et]=Silma peal hoidmine oma e-kirjadel
-Comment[km]=រក្សា​រូបរាង​ភ្នែក​នៅ​លើប្រអប់​ទទួល​របស់​អ្នក
-Comment[pt]=Dar uma vista de olhos nos seus e-mails
-Comment[pt_BR]=Dar uma olhada nos seus e-mails
-Comment[sv]=Håll ögonen på din inkorg
-Comment[uk]=Наглядайте за вашою текою вхідної пошти
-Comment[x-test]=xxKeep an Eye on your Inboxxx
 Type=Service
 Icon=mail-folder-inbox
 X-KDE-ServiceTypes=Plasma/Applet,Plasma/PopupApplet
