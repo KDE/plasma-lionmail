@@ -1,6 +1,12 @@
 [Desktop Entry]
 Name=LionMail
+Name[pt]=LionMail
+Name[uk]=LionMail
+Name[x-test]=xxLionMailxx
 Comment=Keep a sharp eye on your emails
+Comment[pt]=Manter uma vista de olhos sobre o seu correio
+Comment[uk]=Наглядайте за вашими листами електронної пошти
+Comment[x-test]=xxKeep a sharp eye on your emailsxx
 Type=Service
 Icon=akonadi
 X-KDE-ServiceTypes=Plasma/Applet

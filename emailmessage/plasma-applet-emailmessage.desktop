@@ -1,6 +1,12 @@
 [Desktop Entry]
 Name=Email Message
+Name[pt]=Mensagem de E-Mail
+Name[uk]=Надіслати листа
+Name[x-test]=xxEmail Messagexx
 Comment=View an email
+Comment[pt]=Ver uma mensagem de e-mail
+Comment[uk]=Перегляд листа
+Comment[x-test]=xxView an emailxx
 Icon=view-pim-mail
 Type=Service
 X-KDE-ServiceTypes=Plasma/Applet
