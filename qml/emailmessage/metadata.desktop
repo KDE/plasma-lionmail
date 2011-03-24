@@ -1,12 +1,14 @@
 [Desktop Entry]
 Comment=Shows an Email
 Comment[pt]=Mostra uma Mensagem de E-Mail
+Comment[pt_BR]=Mostrar um e-mail
 Comment[uk]=Показ листа
 Comment[x-test]=xxShows an Emailxx
 Encoding=UTF-8
 Keywords=
 Name=Mail Message
 Name[pt]=Mensagem de Correio
+Name[pt_BR]=Mensagem de e-mail
 Name[uk]=Поштове повідомлення
 Name[x-test]=xxMail Messagexx
 Type=Service
