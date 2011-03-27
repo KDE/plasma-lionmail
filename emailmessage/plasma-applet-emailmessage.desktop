@@ -1,10 +1,12 @@
 [Desktop Entry]
 Name=Email Message
+Name[nds]=Nettpost-Naricht
 Name[pt]=Mensagem de E-Mail
 Name[pt_BR]=Mensagem de e-mail
 Name[uk]=Надіслати листа
 Name[x-test]=xxEmail Messagexx
 Comment=View an email
+Comment[nds]=En Nettbreef ankieken
 Comment[pt]=Ver uma mensagem de e-mail
 Comment[pt_BR]=Visualizar um e-mail
 Comment[uk]=Перегляд листа
