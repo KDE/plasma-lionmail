@@ -1,5 +1,7 @@
 [Desktop Entry]
 Name=Email Message
+Name[cs]=Emailová zpráva
+Name[de]=E-Mail-Nachricht
 Name[es]=Mensaje de correo
 Name[et]=E-kiri
 Name[nds]=Nettpost-Naricht
@@ -9,6 +11,8 @@ Name[pt_BR]=Mensagem de e-mail
 Name[uk]=Надіслати листа
 Name[x-test]=xxEmail Messagexx
 Comment=View an email
+Comment[cs]=Prohlížet e-mail
+Comment[de]=Eine E-Mail ansehen
 Comment[es]=Ver un correo
 Comment[et]=E-kirja vaatamine
 Comment[nds]=En Nettbreef ankieken

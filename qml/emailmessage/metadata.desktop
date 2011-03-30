@@ -1,5 +1,7 @@
 [Desktop Entry]
 Comment=Shows an Email
+Comment[cs]=Zobrazí e-mail
+Comment[de]=Zeigt eine E-Mail an
 Comment[es]=Muestra un correo
 Comment[et]=E-kirjade näitamine
 Comment[nds]=En Nettbreef wiesen
@@ -11,6 +13,7 @@ Comment[x-test]=xxShows an Emailxx
 Encoding=UTF-8
 Keywords=
 Name=Mail Message
+Name[cs]=Emailová zpráva
 Name[es]=Mensaje de correo
 Name[et]=E-kiri
 Name[nl]=E-mailbericht

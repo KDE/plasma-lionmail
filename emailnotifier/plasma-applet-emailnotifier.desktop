@@ -1,5 +1,7 @@
 [Desktop Entry]
 Name=Email Notifier
+Name[cs]=Upozornění na email
+Name[de]=E-Mail-Benachrichtigung
 Name[es]=Notificador de correo electrónico
 Name[et]=Kirjade teavitaja
 Name[nds]=Nettpost-Bescheden
@@ -9,6 +11,7 @@ Name[pt_BR]=Notificador de e-mails
 Name[uk]=Сповіщення про електронну пошту
 Name[x-test]=xxEmail Notifierxx
 Comment=Keep an Eye on your Inbox
+Comment[de]=Behalten Sie Ihren Posteingang im Auge
 Comment[es]=Monitoriza su bandeja de entrada
 Comment[et]=Silma peal hoidmine oma e-kirjadel
 Comment[nl]=Houdt uw postvak-in in de gaten
