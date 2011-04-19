@@ -118,7 +118,7 @@ Item {
                 anchors.left: icon.right
                 anchors.top: parent.top
                 anchors.right: parent.right
-                property string t: subject
+                property string t: Subject
                 //emailSource.data[eSource] ? emailSource.data[eSource]["Subject"] : "empty subject"
                 text: "<strong>" + t + "</strong>"
                 //text: subject
@@ -132,14 +132,14 @@ Item {
                 //text: emailSource.data[eSource] ? emailSource.data[eSource]["From"] : "Unknown sender"
                 //text: "from " + collectionSource.data["emailMessage-121771"]["from"] + ", received today"
                 //text: "From: someone <some@one.org>"// + From
-                text: "From: " + from
+                text: "From: " + From
                 opacity: .5
             }
 
             Flickable {
                 id: flickWidget
                 anchors.left: icon.right
-                anchors.right: parent.right
+                anchors.right: fromLabel.right
                 anchors.top: fromLabel.bottom
                 anchors.bottom: parent.bottom
                 clip: true
@@ -149,15 +149,13 @@ Item {
 
                 PlasmaWidgets.Label {
                     id: bodyView
-                    width: parent.width
-                    //height: 400
-                    opacity: .75
                     anchors.fill: parent
+                    opacity: .75
                     styleSheet: "text-align: top"
                     //property string t: emailSource.data[eSource] ? emailSource.data[eSource]["Body"] : "empty body"
                     //text: model.dataSource["body"]
                     //text: "this is the real message. So say hi! \n\n\n HI!\n\n-- sebas"
-                    text: body
+                    text: Body
                 }
             }
 
@@ -192,18 +190,12 @@ Item {
                         shrinkAnimation.running = true
                     }
                     expanded = !expanded
-                    //plasmoid.openUrl(model['link'])
+                    //plasmoid.openUrl(Url)
                 }
             }
 
             Component.onCompleted: {
-                for (p in emailItem.model) {
-                    print("Prop:" + p);
-                }
-                print ('===========');
-
                 icon.setIcon("internet-mail")
-                console.log("done:" + subjectLabel.text)
             }
         }
 
