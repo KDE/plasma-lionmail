@@ -1,0 +1,2 @@
+add_subdirectory(emailmessage)
+add_subdirectory(messagecollection)

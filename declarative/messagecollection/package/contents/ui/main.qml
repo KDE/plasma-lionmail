@@ -26,7 +26,7 @@ Item {
     //width: 300
     //height: 400
 
-    property string collection: "EmailCollection-13"
+    property string collection: "EmailCollection-109"
     property string source
     property variant individualSources
     property int scrollInterval
@@ -155,9 +155,9 @@ Item {
                     anchors.fill: parent
                     styleSheet: "text-align: top"
                     //property string t: emailSource.data[eSource] ? emailSource.data[eSource]["Body"] : "empty body"
-                    //text: t
+                    //text: model.dataSource["body"]
                     //text: "this is the real message. So say hi! \n\n\n HI!\n\n-- sebas"
-                    text: Body
+                    text: body
                 }
             }
 
@@ -197,6 +197,11 @@ Item {
             }
 
             Component.onCompleted: {
+                for (p in emailItem.model) {
+                    print("Prop:" + p);
+                }
+                print ('===========');
+
                 icon.setIcon("internet-mail")
                 console.log("done:" + subjectLabel.text)
             }
