@@ -24,7 +24,7 @@ import org.kde.plasma.graphicslayouts 4.7 as GraphicsLayouts
 
 Item {
     id: mainWindow
-    
+
     property string eSource: "Email-124208"
 
     Component.onCompleted: {
@@ -41,12 +41,17 @@ Item {
         id: emailSource
         engine: "akonadi"
         connectedSources: [eSource]
-        interval: 120000
+        interval: 0
         onDataChanged: {
             plasmoid.busy = false
-            console.log("l0gg0r:" + emailSource.data[eSource]["Subject"])
-            console.log("---- BODY ++++" + emailSource.data[eSource]["Body"])
+            console.log("l0gg0r:" + connectedSources)
+            //console.log("---- BODY ++++" + emailSource.data[eSource]["Body"])
         }
+        Component.onCompleted: {
+            console.log("Completed:" + sources)
+            connectedSources = sources
+        }
+
     }
 
     PlasmaCore.DataModel {
