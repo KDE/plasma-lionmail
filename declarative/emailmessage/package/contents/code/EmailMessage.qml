@@ -25,7 +25,7 @@ import org.kde.plasma.graphicslayouts 4.7 as GraphicsLayouts
 Item {
     id: mainWindow
     
-    property string eSource: "Email-50"
+    property string eSource: "Email-124208"
 
     Component.onCompleted: {
         plasmoid.addEventListener('ConfigChanged', configChanged);
