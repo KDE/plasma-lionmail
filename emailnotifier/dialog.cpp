@@ -360,6 +360,9 @@ void Dialog::instanceStatusChanged(const Akonadi::AgentInstance &instance)
         case Akonadi::AgentInstance::Broken:
             _s = i18nc("sync status error", "Error checking mail in %1", instance.name());
             break;
+        case Akonadi::AgentInstance::NotConfigured:
+            _s = i18nc("sync status not configured", "%1 is not configured", instance.name());
+            break;
     }
     m_statusBar->setText(_s);
     kDebug() << "Instance changed:" << _s << instance.statusMessage() << instance.progress();

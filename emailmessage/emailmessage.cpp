@@ -116,7 +116,7 @@ void EmailMessage::popupEvent(bool show)
 void EmailMessage::constraintsEvent(Plasma::Constraints constraints)
 {
     if (constraints & (Plasma::FormFactorConstraint | Plasma::SizeConstraint)) {
-        int tiny = m_emailWidget->widgetHeight(EmailWidget::Small);
+        //int tiny = m_emailWidget->widgetHeight(EmailWidget::Small);
         //setMinimumSize(tiny, m_emailWidget->minimumWidth());
         //kDebug() << contentsRect();
         kDebug() << "emailwidget minheight" << m_emailWidget->minimumHeight() << contentsRect().height();
@@ -124,7 +124,7 @@ void EmailMessage::constraintsEvent(Plasma::Constraints constraints)
         //if (m_emailWidget->minimumSize().width()+proximity > m_emailWidget->geometry().width() ) {
         if (contentsRect().width() < 180 ) {
             // not wide enough, only show the icon
-            int small = m_emailWidget->widgetHeight(EmailWidget::Small);
+            //int small = m_emailWidget->widgetHeight(EmailWidget::Small);
             //setMinimumSize(small, small);
             m_emailWidget->setIcon();
         } else {
