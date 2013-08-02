@@ -1,5 +1,6 @@
 [Desktop Entry]
 Comment=Shows an Email
+Comment[bs]=Prikazuje e-poštu
 Comment[cs]=Zobrazí e-mail
 Comment[de]=Zeigt eine E-Mail an
 Comment[es]=Muestra un correo
@@ -23,6 +24,7 @@ Comment[x-test]=xxShows an Emailxx
 Encoding=UTF-8
 Keywords=
 Name=Mail Message
+Name[bs]=Poruka elektronske pošte
 Name[cs]=E-mailová zpráva
 Name[de]=E-Mail-Nachricht
 Name[es]=Mensaje de correo
